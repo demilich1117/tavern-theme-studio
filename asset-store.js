@@ -53,7 +53,9 @@ export async function createAssetStore(dataDir) {
   }
   async function read(id) {
     if (!ASSET_ID.test(id)) throw new Error('素材编号无效。');
-    return { bytes: await readFile(path.join(dir, id)), mime: mime[id.split('.').at(-1)] };
+    const bytes = await readFile(path.join(dir, id));
+    if (!id.startsWith(createHash('sha256').update(bytes).digest('hex') + '.')) throw new Error(`素材哈希不匹配：${id}；原文件已保留。`);
+    return { bytes, mime: mime[id.split('.').at(-1)] };
   }
   async function extract(css) {
     if (typeof css !== 'string') return css;
@@ -84,7 +86,7 @@ export async function createAssetStore(dataDir) {
     async command(command, project) {
       if (command?.type === 'optimize-assets') return { type: 'import-project', project: await mapProjectCss(project, extract) };
       if (command?.type === 'import-project') return { ...command, project: await mapProjectCss(command.project, extract) };
-      if (['import-theme', 'base-theme'].includes(command?.type)) return { ...command, theme: { ...command.theme, custom_css: await extract(command.theme?.custom_css ?? '') } };
+      if (['import-theme', 'base-theme', 'source-refresh'].includes(command?.type)) return { ...command, theme: { ...command.theme, custom_css: await extract(command.theme?.custom_css ?? '') } };
       if (command?.type === 'custom-css') return { ...command, css: await extract(command.css) };
       if (command?.type === 'variable' && typeof command.value === 'string') return { ...command, value: await extract(command.value) };
       return command;

@@ -24,6 +24,13 @@ function boundary(css, start, value = false) {
   }
   return i;
 }
+// A binding describes the declaration, not the byte offset or current value.
+// Two independent hashes keep IDs compact; matching also checks the full key.
+function bindingHash(text) {
+  let a = 2166136261, b = 3335557771;
+  for (let i = 0; i < text.length; i++) { a = Math.imul(a ^ text.charCodeAt(i), 16777619); b = Math.imul(b ^ text.charCodeAt(i), 2246822519); }
+  return [a, b].map(n => (n >>> 0).toString(16).padStart(8, '0')).join('');
+}
 export function scanVariables(css = '') {
   const result = [];
   function block(start, contexts) {
@@ -53,7 +60,7 @@ export function scanVariables(css = '') {
         const before = [...css.slice(statementStart, i).matchAll(/\/\*([\s\S]*?)\*\//g)].at(-1)?.[1];
         const inner = [...raw.matchAll(/\/\*([\s\S]*?)\*\//g)].at(-1)?.[1];
         const label = (after || inner || before || '').replace(/\s+/g, ' ').trim().slice(0, 220);
-        result.push({ id: `var-${i}`, name, value: css.slice(valueStart, valueEnd), start: valueStart, end: valueEnd,
+        result.push({ legacyId: `var-${i}`, name, value: css.slice(valueStart, valueEnd), start: valueStart, end: valueEnd,
           line: css.slice(0, i).split('\n').length, context: contexts.join(' → '), label, important: !!important });
         i = end + (css[end] === ';' ? 1 : 0); continue;
       }
@@ -65,7 +72,18 @@ export function scanVariables(css = '') {
     }
     return i;
   }
-  block(0, []); return result;
+  block(0, []);
+  const counts = new Map(), occurrences = new Map();
+  for (const v of result) {
+    v.bindingKey = JSON.stringify([v.name, v.context.replace(/\s+/g, ' ')]);
+    counts.set(v.bindingKey, (counts.get(v.bindingKey) || 0) + 1);
+  }
+  for (const v of result) {
+    const n = occurrences.get(v.bindingKey) || 0; occurrences.set(v.bindingKey, n + 1);
+    v.ambiguous = counts.get(v.bindingKey) > 1;
+    v.id = `binding-${bindingHash(v.bindingKey)}${v.ambiguous ? `-${n + 1}` : ''}`;
+  }
+  return result;
 }
 export function validateVariableValue(value) {
   if (typeof value !== 'string' || !value.trim() || value.length > 4000) throw new Error('变量值需为 1–4000 字的 CSS 值。');
@@ -89,7 +107,7 @@ export function validateVariableValue(value) {
 }
 export function rewriteVariables(css, edits = {}) {
   const vars = scanVariables(css);
-  const byId = new Map(vars.map(v => [v.id, v]));
+  const byId = new Map(vars.flatMap(v => [[v.id, v], [v.legacyId, v]]));
   const replacements = Object.entries(edits).map(([id, value]) => {
     const variable = byId.get(id); if (!variable) throw new Error('变量位置已改变，请重新读取主题变量。');
     return { ...variable, next: validateVariableValue(value) };

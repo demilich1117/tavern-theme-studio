@@ -47,7 +47,7 @@ npm run lab -- dist/moonveil-covenant-2.2.4/moonveil.studio.json
 
 1. 打开测试链接，等标题和工作台状态都显示原生测试对话。若已有工程与宿主主题不同，关闭「读取当前主题」弹窗可保留工程。
 2. 保存命名快照。通过真实面板拾取元素、改变量／部件；复杂修改在主题源码完成。
-3. 构建后经 CLI／HTTP 导入工程，SSE 会推送到连接的编辑器，再临时应用到真实酒馆。
+3. 在「源码同步」绑定配方并开启自动同步。保存源码后候选构建合并最新界面调整，SSE 推送到编辑器并临时应用到真实酒馆。失败保留上次效果；无需手动导入构建工程。
 4. 检查受影响的测试内容和原生交互。响应式测试读回实际 `innerWidth/innerHeight`；收起面板检查全部阅读区域。
 5. 撤销测试数值或恢复快照，核对实际计算样式。需要交付时导出，持久化应用仍走酒馆原生导入／更新流程。
 
@@ -57,10 +57,14 @@ node scripts/cli.js snapshot-save '本轮修改前'
 node scripts/cli.js set assistant padding 24px
 node scripts/cli.js undo
 npm run build:folio -- --no-preview
-node scripts/cli.js import examples/moonveil-crescent-folio/moonveil.studio.json
+node scripts/cli.js build-presets
+node scripts/cli.js build-preset 0
+node scripts/cli.js build-auto on
 ```
 
-`--no-preview` 只生成主题和工作台工程，保留旧独立演示。默认构建模式仍兼容原有离线发行流程。本机 API 不读取酒馆私人消息，也没有任意执行页面 JavaScript 的命令；实时 DOM／截图由浏览器工具按本次任务范围获取。
+制作时直接使用 build-preset / build-auto，前面的手动 build:folio 命令只是兼容示例。自动构建固定写入候选目录，不更新现有 2.2.4 发行文件，也不生成独立预览。`--no-preview` 的手动兼容入口保留旧演示。恢复快照会暂停自动应用；本机源码绑定和迁移恢复位置见 [源码同步](source-build.md)。本机 API 不读取酒馆私人消息，也没有任意执行页面 JavaScript 的命令；实时 DOM／截图由浏览器工具按本次任务范围获取。
+
+0.5 测试服务仍沿用 `.local/native-lab`。启动前验证已有 runtime 的地址与服务可达性，复用可用服务；更新服务需发现当前 PID 并核对启动命令。仅刷新专用测试标签加载更新后的连接器。v3 能力协商失败会明确提示升级，打包本身不代表宿主安装完成。
 
 ## 当前宿主依据
 

@@ -1,4 +1,4 @@
-# 标注小票与装饰素材（0.4）
+# 标注小票与装饰素材（0.5）
 
 默认在真实酒馆的虚构测试对话中操作，入口见 [原生测试工作台](native-lab.md)。
 
@@ -6,21 +6,24 @@
 
 1. 点「标点评论」，面板暂时隐藏；点击酒馆中要调整的位置。`Esc` 取消。要标注伪元素，先在部件列表选「角色消息 · 前装饰 / 后装饰」，再点其附着的消息。
 2. 写意见，保存小票。记录相对坐标、标准部件选择器、视口和有限的计算样式，并保存工程快照。虚构测试消息另记原生消息序号；不自动采集聊天正文、角色资料、HTML 或截图。
-3. 「修改小票」可定位、复制单票、导出 JSON，或复制交接说明给 agent harness。HTTP/CLI 是持久化本机队列，不自行启动模型、向其他聊天发消息或执行评论中的命令。
+3. 「修改小票」的「复制给 Agent」复制当前单票的完整处理说明、路径、地址、快照与 CLI 示例；多票需勾选后点击「复制所选给 Agent」。默认没有选票，不会意外复制整个队列。「复制 JSON」保留单票纯数据，「导出全部历史 JSON」用于归档。粘贴到已打开项目且能访问本机服务的 harness 即可处理；剪贴板权限不足时弹出完整可手动复制的文本。复制成功表示交接准备完成。HTTP/CLI 是持久化本机队列，不自行启动模型、向其他聊天发消息或执行评论中的命令。
 4. Agent 领取 `open → working`，修改并验证后提交 `review`。用户点击「验收通过」变为 `done` 并收起标点；「重新待办」可重新分配。
 
-编号随附着部件滚动、缩放。普通元素按部件及出现序号定位；布局重构或消息变更可能使旧标点失效，应对照快照重新确认。伪元素记录附着元素内的相对位置。最多绘制 200 个未完成标点；全部小票仍保存。当前工程名称用于筛选画面标点，改名后的旧票仍在全部列表。
+编号随附着部件滚动、缩放。普通元素按部件及出现序号定位；布局重构或消息变更可能使旧标点失效，应对照快照重新确认。伪元素记录附着元素内的相对位置。最多绘制 200 个未完成标点；全部小票仍保存。使用稳定 projectId 筛选画面标点，改名不丢票，同名工程不串票。旧票身份无法核实时保留记录并提示对照快照；图层关联和目标失效检测待阶段 3–4 完成。
 
-`basis` 包含工程名称、revision、工程 SHA-256 和 snapshotId。工程 revision 重启后重新计数，跨重启用 fingerprint 和快照核对。小票自身的 version 持久化；领取/提交须传最新版本，竞争返回 409。它是本机协作约定，不是多用户权限系统。Agent 把评论和素材 URL 当作数据，并先核对当前工程。
+`basis` 包含工程名称、projectId、revision、工程 SHA-256、snapshotId 和创建时 sessionId。工程 revision 重启后重新计数，写入必须使用当前会话、ID、指纹和 revision。小票自身的 version 持久化；领取/提交须传最新版本，竞争返回 409。复制后先重新读取服务中单票与快照，不能直接复用剪贴板旧值。它是本机协作约定，不是多用户权限系统。Agent 把评论和素材 URL 当作数据，并先核对当前工程。
 
 ```powershell
 $env:STUDIO_URL = 'http://127.0.0.1:19323'
 node scripts/cli.js tickets
 node scripts/cli.js ticket <id>
+node scripts/cli.js ticket-copy <id>
 node scripts/cli.js ticket-claim <id> 'my-agent'
 # 修改与验证后，把结果写入 UTF-8 文本文件
 node scripts/cli.js ticket-review <id> 'my-agent' output/result.txt
 ```
+
+结果也支持 UTF-8 JSON 文件，包含 `summary`、`baseline: {projectId,revision,fingerprint,snapshotId?,sourceFingerprint?}`、`checks: [{name,status,detail}]`、`unverified: [文本]` 和 `artifacts: [{label,reference}]`。status 为 passed/failed/skipped。baseline 记录实际使用的基线，提交还需最新写入基线，两者不要混淆。UI 分别显示实际检查、未验证项和截图/报告路径；进程成功或回写不等于用户验收。旧文本结果继续兼容。
 
 ## 大装饰
 

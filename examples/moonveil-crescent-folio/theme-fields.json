@@ -1,0 +1,15 @@
+{
+  "name": "月誓 · 龙廷 2.2.4 — 月弧浮页 · 外链版",
+  "blur_strength": 0,
+  "shadow_width": 0,
+  "main_text_color": "rgba(210, 213, 227, 1)",
+  "italics_text_color": "rgba(196, 189, 226, 1)",
+  "underline_text_color": "rgba(181, 172, 236, 1)",
+  "quote_text_color": "rgba(200, 190, 233, 1)",
+  "blur_tint_color": "rgba(32, 38, 55, 1)",
+  "chat_tint_color": "rgba(16, 22, 37, 0)",
+  "user_mes_blur_tint_color": "rgba(48, 46, 70, 0)",
+  "bot_mes_blur_tint_color": "rgba(16, 22, 37, 0)",
+  "shadow_color": "rgba(0, 0, 0, 0)",
+  "border_color": "rgba(119, 131, 163, 0.302)"
+}

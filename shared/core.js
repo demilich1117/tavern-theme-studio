@@ -1,4 +1,5 @@
 import { rewriteVariables, scanVariables, validateVariableValue } from './variables.js';
+import { migrateProject, bindingRecords, mergeSourceTheme, newProjectId, defaultBreakpoints } from './migrations.js';
 // Self-contained illustrated themes embed raster assets in their base CSS.
 export const MAX_THEME_CSS_LENGTH = 1_000_000;
 export const TARGETS = [
@@ -45,8 +46,8 @@ export function validateTheme(theme) {
   if (theme.custom_css !== undefined && (typeof theme.custom_css !== 'string' || theme.custom_css.length > MAX_THEME_CSS_LENGTH)) throw new Error('主题 CSS 必须是文本且不超过 1,000,000 字符。');
   return clone(theme);
 }
-export function createProject(theme = { name: '新主题', custom_css: '' }) {
-  return { schemaVersion: 2, name: theme.name, baseTheme: validateTheme(theme), rules: { base: {}, mobile: {} }, variableEdits: {}, customCss: '' };
+export function createProject(theme = { name: '新主题', custom_css: '' }, { projectId = newProjectId() } = {}) {
+  return { schemaVersion: 3, projectId, name: theme.name, baseTheme: validateTheme(theme), rules: { base: {}, mobile: {} }, variableEdits: {}, variableBindings: bindingRecords(theme.custom_css || ''), bindingConflicts: [], breakpoints: defaultBreakpoints(), decorations: [], assetRefs: [], customCss: '' };
 }
 export function normalizeValue(key, value) {
   const field = FIELDS.find(x => x.key === key);
@@ -64,23 +65,41 @@ export function normalizeValue(key, value) {
   return `${Number(n.toFixed(3))}${field.unit}`;
 }
 export function validateProject(value) {
-  if (!object(value) || ![1, 2].includes(value.schemaVersion)) throw new Error('不支持的工程格式或版本。');
+  if (!object(value)) throw new Error('不支持的工程格式或版本。');
+  value = migrateProject(value);
   if (typeof value.name !== 'string' || !value.name.trim() || value.name.length > 120) throw new Error('工程名称无效。');
-  const p = createProject(validateTheme(value.baseTheme));
+  const p = createProject(validateTheme(value.baseTheme), { projectId: value.projectId });
   p.name = value.name;
   if (typeof value.customCss !== 'string' || value.customCss.length > 250000) throw new Error('高级 CSS 格式错误或过大。');
   p.customCss = value.customCss;
-  if (value.schemaVersion === 2) {
+  if (value.schemaVersion === 3) {
     if (!object(value.variableEdits)) throw new Error('主题变量格式错误。');
-    const ids = new Set(scanVariables(p.baseTheme.custom_css || '').map(v => v.id));
+    const variables = scanVariables(p.baseTheme.custom_css || ''), ids = new Set(variables.map(v => v.id));
     for (const [id, v] of Object.entries(value.variableEdits)) {
       if (!ids.has(id)) throw new Error('变量位置已改变，请重新读取主题变量。');
       p.variableEdits[id] = validateVariableValue(v);
     }
+    for (const v of variables) {
+      const saved = value.variableBindings?.[v.id];
+      if (saved && saved.key !== v.bindingKey) throw new Error('变量绑定不匹配，请重新读取工程。');
+    }
+    p.bindingConflicts = variables.filter(v => v.ambiguous && v.id in p.variableEdits).map(v => ({ id: v.id, name: v.name, context: v.context, reason: '相同上下文含重复声明；继续源码同步前需解除歧义。' }));
   }
-  if (!object(value.rules) || Object.keys(value.rules).some(k => !['base', 'mobile'].includes(k))) throw new Error('样式范围无效。');
-  for (const scope of ['base', 'mobile']) {
+  if (!Array.isArray(value.breakpoints) || value.breakpoints.length > 20) throw new Error('断点配置无效。');
+  const scopeIds = new Set(['base']);
+  p.breakpoints = value.breakpoints.map(b => {
+    if (!object(b) || !/^[a-z][\w-]{0,47}$/.test(b.id) || scopeIds.has(b.id) || typeof b.name !== 'string' || !b.name.trim() || b.name.length > 80 || typeof b.condition !== 'string' || !/^\((?:min|max)-width: \d{1,5}px\)$/.test(b.condition)) throw new Error('断点 ID、名称或宽度条件无效。');
+    scopeIds.add(b.id); return clone(b);
+  });
+  if (!scopeIds.has('mobile')) throw new Error('请保留旧工程的 mobile 断点。');
+  if (!Array.isArray(value.decorations) || value.decorations.some(d => !object(d) || typeof d.id !== 'string') || value.decorations.length > 200) throw new Error('装饰配置无效。');
+  p.decorations = clone(value.decorations);
+  if (!Array.isArray(value.assetRefs) || value.assetRefs.some(a => !object(a) || typeof a.reference !== 'string' || /^(?:[a-z]:[\\/]|file:)/i.test(a.reference))) throw new Error('可移植素材引用无效。');
+  p.assetRefs = clone(value.assetRefs);
+  if (!object(value.rules) || Object.keys(value.rules).some(k => !scopeIds.has(k))) throw new Error('样式范围无效。');
+  for (const scope of scopeIds) {
     if (!object(value.rules[scope])) throw new Error('缺少样式范围。');
+    p.rules[scope] = {};
     for (const [target, props] of Object.entries(value.rules[scope])) {
       if (!TARGETS.some(x => x.id === target) || !object(props)) throw new Error('样式部件无效。');
       p.rules[scope][target] = {};
@@ -98,7 +117,7 @@ export function applyCommand(project, command) {
   switch (command.type) {
     case 'set': {
       const { scope = 'base', target, property, value } = command;
-      if (!['base', 'mobile'].includes(scope) || !TARGETS.some(x => x.id === target)) throw new Error('部件或范围无效。');
+      if (!(scope in next.rules) || !TARGETS.some(x => x.id === target)) throw new Error('部件或范围无效。');
       const normalized = normalizeValue(property, value);
       next.rules[scope][target] ??= {};
       if (normalized === null) delete next.rules[scope][target][property];
@@ -107,7 +126,7 @@ export function applyCommand(project, command) {
       break;
     }
     case 'reset-target':
-      if (!['base', 'mobile'].includes(command.scope) || !TARGETS.some(x => x.id === command.target)) throw new Error('部件或范围无效。');
+      if (!(command.scope in next.rules) || !TARGETS.some(x => x.id === command.target)) throw new Error('部件或范围无效。');
       delete next.rules[command.scope][command.target];
       break;
     case 'rename': next.name = command.name; break;
@@ -119,7 +138,8 @@ export function applyCommand(project, command) {
       else next.variableEdits[command.id] = validateVariableValue(command.value);
       break;
     }
-    case 'base-theme': next.baseTheme = validateTheme(command.theme); next.variableEdits = {}; break;
+    case 'base-theme': next.baseTheme = validateTheme(command.theme); next.variableEdits = {}; next.variableBindings = bindingRecords(next.baseTheme.custom_css || ''); break;
+    case 'source-refresh': return validateProject(mergeSourceTheme(next, validateTheme(command.theme)));
     case 'import-theme': return createProject(validateTheme(command.theme));
     case 'import-project': return validateProject(command.project);
     default: throw new Error('未知命令。');
@@ -136,8 +156,8 @@ export function compileOverrides(project) {
     return [`/* ${target.name} */\n${target.selector} {\n${declarations.join('\n')}\n}`];
   }).join('\n\n');
   const base = compile('base');
-  const mobile = compile('mobile');
-  return [base, mobile && `@media (max-width: 767px) {\n${mobile}\n}`, project.customCss].filter(Boolean).join('\n\n');
+  const responsive = (project.breakpoints || defaultBreakpoints()).map(b => { const css = compile(b.id); return css && `@media ${b.condition} {\n${css}\n}`; });
+  return [base, ...responsive, project.customCss].filter(Boolean).join('\n\n');
 }
 export function exportTheme(project) {
   const p = validateProject(project);

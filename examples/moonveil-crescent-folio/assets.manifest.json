@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "repository": "demilich1117/source-hub",
+  "commit": "283d7e6c952b0555b288ec7dd3f4725c0be0a37f",
+  "sourceThemeSha256": "261eea3b4c716ef5b830c010350ec06fd7b7fe933b1a8b7f62f6086acc401b29",
+  "sourceCssSha256": "6e0a946b66e759ee5a2da8465bf72cf7d0297d466ae281bafe50f0a66f87084e",
+  "assets": [
+    {
+      "marker": "__CASTLE_ART__",
+      "originalFile": "castle-folio.webp",
+      "sha256": "cfea02fb39805421ffb45a6387fef7cc1fbd96ccc1278f96e6213de2c569dffc",
+      "bytes": 149366,
+      "width": 1774,
+      "height": 887,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/castle-folio-cfea02fb39805421.webp"
+    },
+    {
+      "marker": "__DRAGON_ART__",
+      "originalFile": "sleeping-dragon-desktop.webp",
+      "sha256": "764ec95d2d261a2100d732ffb0fa83ca4896a7c64bceb4df183d44a248be22f5",
+      "bytes": 210836,
+      "width": 1200,
+      "height": 572,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/sleeping-dragon-desktop-764ec95d2d261a21.webp"
+    },
+    {
+      "marker": "__BABY_DRAGON_ART__",
+      "originalFile": "sleeping-dragon-mobile.webp",
+      "sha256": "71e84322bc1ea6c335e68b53a9a2087f965ad9896a0c9d118c6564c57f9f572b",
+      "bytes": 37252,
+      "width": 400,
+      "height": 238,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/sleeping-dragon-mobile-71e84322bc1ea6c3.webp"
+    },
+    {
+      "marker": "__WRITING_ART__",
+      "originalFile": "writing-frame.webp",
+      "sha256": "4e197fc1ba1afb0597e39ecce6f72638b6ddbbb86e9951377b472b607a563384",
+      "bytes": 60830,
+      "width": 1600,
+      "height": 187,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/writing-frame-4e197fc1ba1afb05.webp"
+    },
+    {
+      "marker": "__ARC_ART__",
+      "originalFile": "lunar-arc-balanced.webp",
+      "sha256": "bdc7e941caceaa33a8dfbecc94e9017a52dd238f79dd3cdc73d803bfd058e7a6",
+      "bytes": 80246,
+      "width": 1710,
+      "height": 342,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/lunar-arc-balanced-bdc7e941caceaa33.webp"
+    },
+    {
+      "marker": "__PENDANT_ART__",
+      "originalFile": "nav-pendant.webp",
+      "sha256": "1bb5831879a34361ee5c237451385d785c89d1a79440d46d2092461d6c7f85f4",
+      "bytes": 11246,
+      "width": 160,
+      "height": 240,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/nav-pendant-1bb5831879a34361.webp"
+    },
+    {
+      "marker": "__SLIP_ART__",
+      "originalFile": "violet-slip.webp",
+      "sha256": "95ec2177b42b1fea1629b71b158fde6cc89c24ff0a8c6a6507768af8b3b923d1",
+      "bytes": 51428,
+      "width": 1400,
+      "height": 211,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/violet-slip-95ec2177b42b1fea.webp"
+    },
+    {
+      "marker": "__QUILL_ART__",
+      "originalFile": "quote-quill.webp",
+      "sha256": "b9e58f32d4fb547e064de063bf134fab32ae6204f63b4a71a80f62c520058732",
+      "bytes": 16650,
+      "width": 144,
+      "height": 432,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/quote-quill-b9e58f32d4fb547e.webp"
+    },
+    {
+      "marker": "__JEWEL_ART__",
+      "originalFile": "scroll-dragon-bookmark.webp",
+      "sha256": "149f2869eb972c3e1d4ff5ec6c0fd31b0b0bfe154a436f7a40f62cd0f3d51b7e",
+      "bytes": 58434,
+      "width": 180,
+      "height": 786,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/scroll-dragon-bookmark-149f2869eb972c3e.webp"
+    },
+    {
+      "marker": "__AVATAR_ART__",
+      "originalFile": "avatar-talons.webp",
+      "sha256": "f241fc74729f21121c7556e7e82bef0a00d2b59fe31b59bab024214bd51d85f3",
+      "bytes": 8752,
+      "width": 200,
+      "height": 200,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/avatar-talons-f241fc74729f2112.webp"
+    },
+    {
+      "marker": "__SEAL_ART__",
+      "originalFile": "lunar-wax-seal.webp",
+      "sha256": "2fae2cd136ce9fc1053267e1c7a69498537c442303fee0d7a5892f35a7dd83ae",
+      "bytes": 14070,
+      "width": 144,
+      "height": 219,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/lunar-wax-seal-2fae2cd136ce9fc1.webp"
+    },
+    {
+      "marker": "__FRAME_ART__",
+      "originalFile": "silver-frame.webp",
+      "sha256": "8e337b5605952e8d268cc48cd79b8fe98b4e3c1857c9aa4640b4d38acec5161f",
+      "bytes": 22402,
+      "width": 400,
+      "height": 400,
+      "url": "https://raw.githubusercontent.com/demilich1117/source-hub/283d7e6c952b0555b288ec7dd3f4725c0be0a37f/assets/moonveil-covenant/2.2.4/silver-frame-8e337b5605952e8d.webp"
+    }
+  ]
+}

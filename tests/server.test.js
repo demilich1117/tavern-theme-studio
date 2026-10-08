@@ -13,7 +13,10 @@ test('HTTP editing persists, rejects forged requests, handles conflicts and surv
     app = await createServer({ dataDir: dir, port: 0 });
     const get = async p => (await fetch(app.address + p)).json();
     const session = await get('/api/session');
-    const post = (command, revision, headers = {}) => fetch(app.address + '/api/commands', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Studio-Token': session.token, ...headers }, body: JSON.stringify({ command, revision }) });
+    const post = async (command, revision, headers = {}) => {
+      const current = await get('/api/project');
+      return fetch(app.address + '/api/commands', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Studio-Token': session.token, ...headers }, body: JSON.stringify({ sessionId: current.sessionId, projectId: current.projectId, fingerprint: current.fingerprint, command, revision }) });
+    };
     assert.equal((await post({ type: 'rename', name: 'forged' }, 0, { 'X-Studio-Token': 'invalid' })).status, 403);
     assert.equal((await post({ type: 'rename', name: 'forged' }, 0, { Origin: 'https://example.com' })).status, 403);
     const forgedHostStatus = await new Promise((resolve, reject) => {

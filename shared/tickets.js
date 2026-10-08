@@ -22,3 +22,19 @@ export function validateAnchor(input) {
   for (const f of FIELDS) if (typeof input.values?.[f.key] === 'string') anchor.values[f.key] = input.values[f.key].slice(0, 100);
   return anchor;
 }
+export function validateTicketResult(value) {
+  if (typeof value === 'string') return { summary: ticketText(value, 8000, '处理结果'), details: null };
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('处理结果需为文本或结构化结果。');
+  const summary = ticketText(value.summary, 4000, '改动摘要'), baseline = value.baseline;
+  if (!baseline || typeof baseline.projectId !== 'string' || !Number.isInteger(baseline.revision) || baseline.revision < 0 || !/^[a-f0-9]{64}$/.test(baseline.fingerprint)) throw new Error('结构化结果需记录实际使用的工程 ID、revision 与指纹。');
+  const used = { projectId: baseline.projectId, revision: baseline.revision, fingerprint: baseline.fingerprint };
+  if (/^[a-f0-9]{32}$/.test(baseline.snapshotId)) used.snapshotId = baseline.snapshotId;
+  if (/^[a-f0-9]{64}$/.test(baseline.sourceFingerprint)) used.sourceFingerprint = baseline.sourceFingerprint;
+  const checks = value.checks || [], unverified = value.unverified || [], artifacts = value.artifacts || [];
+  if (!Array.isArray(checks) || checks.length > 100 || !Array.isArray(unverified) || unverified.length > 100 || !Array.isArray(artifacts) || artifacts.length > 40) throw new Error('结果检查/未验证项/证据列表无效。');
+  return { summary, details: { schemaVersion: 1, summary, baseline: used,
+    checks: checks.map(c => { if (!['passed', 'failed', 'skipped'].includes(c?.status)) throw new Error('验证状态应为 passed/failed/skipped。'); return { name: ticketText(c.name, 160, '验证名称'), status: c.status, detail: ticketText(c.detail, 2000, '验证说明') }; }),
+    unverified: unverified.map(v => ticketText(v, 2000, '未验证项')),
+    artifacts: artifacts.map(a => ({ label: ticketText(a?.label, 160, '证据名称'), reference: ticketText(a?.reference, 2000, '证据路径/链接') })),
+  } };
+}

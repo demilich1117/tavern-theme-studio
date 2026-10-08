@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "月弧浮页 · 可维护源码",
+  "config": {
+    "root": ".",
+    "program": "$NODE",
+    "args": ["scripts/build-moonveil-crescent.js", "--output", "{output}", "--asset-mode", "{mode}", "--no-preview"],
+    "watch": ["examples/moonveil-crescent-folio/theme.css", "examples/moonveil-crescent-folio/theme-fields.json", "examples/moonveil-crescent-folio/assets.manifest.json", "examples/moonveil-crescent-folio/assets/production", "scripts/folio-build.mjs", "scripts/build-moonveil-crescent.js", "shared/core.js", "shared/variables.js", "shared/migrations.js"],
+    "mode": "local",
+    "debounceMs": 180,
+    "timeoutMs": 60000
+  }
+}

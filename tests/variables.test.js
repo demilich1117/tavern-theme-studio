@@ -41,7 +41,7 @@ test('rejects declaration injection and broken expressions while allowing valid 
 test('v1 migration, variable undo, base replacement and snapshot comparisons preserve other work', () => {
   const base = createProject({ name: 'Theme', custom_css: ':root{--gap:12px}' });
   const legacy = { ...base, schemaVersion: 1 }; delete legacy.variableEdits;
-  const migrated = validateProject(legacy); assert.equal(migrated.schemaVersion, 2); assert.deepEqual(migrated.variableEdits, {});
+  const migrated = validateProject(legacy); assert.equal(migrated.schemaVersion, 3); assert.deepEqual(migrated.variableEdits, {});
   const id = scanVariables(base.baseTheme.custom_css)[0].id, h = new ProjectHistory(migrated);
   h.execute({ type: 'variable', id, value: '24px' }, 0);
   assert.equal(h.project.baseTheme.custom_css, base.baseTheme.custom_css); assert.match(exportTheme(h.project).custom_css, /--gap:24px/);

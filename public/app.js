@@ -2,11 +2,12 @@ import { TARGETS, FIELDS, applyCommand, compileOverrides, exportTheme, ruleCount
 import { attachAdvanced } from '/advanced.js';
 import { FIXTURE_SCENES } from '/shared/fixture.js';
 import { attachWorkflow } from '/workflow.js';
+import { attachSource } from '/source.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
 let peer, peerOrigin, session, ready = false, live = false, lastSeen = 0, isPicking = false, connectedTheme;
-let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, detailsExpanded = false;
+let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, detailsExpanded = false;
 let fixtureBusy = false, fixtureSupported = false;
 function updateFixture(fixture) {
   fixtureSupported = fixture?.supported === true;
@@ -22,10 +23,10 @@ function preview(project = previewProject || state?.project) { if (ready && proj
 async function command(value) {
   $('#save-status').textContent = '保存中…';
   const run = async () => {
-    const res = await fetch('/api/commands', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Studio-Token': token }, body: JSON.stringify({ revision: state.revision, command: value }) });
+    const res = await fetch('/api/commands', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Studio-Token': token }, body: JSON.stringify({ revision: state.revision, sessionId: state.sessionId, projectId: state.projectId, fingerprint: state.fingerprint, command: value }) });
     const data = await res.json();
     previewProject = null;
-    if (!res.ok) { if (res.status === 409) state = await (await fetch('/api/project')).json(); render(); preview(); throw new Error(data.error); }
+    if (!res.ok) { if ([403, 409, 428].includes(res.status)) await refreshSession(); render(); preview(); throw new Error(data.error); }
     receiveState(data); return data;
   };
   const task = commandQueue.then(run); commandQueue = task.catch(() => {});
@@ -33,8 +34,19 @@ async function command(value) {
 }
 function act(value) { command(value).catch(() => {}); }
 function receiveState(next) {
+  if (state?.sessionId !== next.sessionId) { refreshSession().catch(e => toast(e.message, true)); return; }
   if (state && next.revision < state.revision) return;
   state = next; render(); preview();
+}
+let sessionRefresh;
+function refreshSession() {
+  if (sessionRefresh) return sessionRefresh;
+  sessionRefresh = (async () => {
+    const response = await fetch('/api/session'), data = await response.json();
+    if (!response.ok) throw new Error(data.error || '本地服务无法连接。');
+    token = data.token; state = data; previewProject = null; render(); preview();
+  })().finally(() => { sessionRefresh = null; });
+  return sessionRefresh;
 }
 function fieldValue(field) {
   const own = state.project.rules[scope][selected]?.[field.key];
@@ -75,7 +87,7 @@ function render() {
   $('#selection-breadcrumb').textContent = `${live ? '真实酒馆' : '示例场景'} / ${target.name} / ${scope === 'base' ? '所有尺寸' : '仅手机'}`;
   $('#rule-count').textContent = `${ruleCount(state.project)} 项样式修改`;
   $('#css-badge').textContent = state.project.customCss.trim() ? '●' : '';
-  renderFields(); advanced?.render(); workflow?.render();
+  renderFields(); advanced?.render(); workflow?.render(); source?.render();
 }
 function setSelected(id) { selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
 function setDevice(next) {
@@ -126,6 +138,10 @@ window.addEventListener('message', event => {
   workflow?.receive(data);
   switch (data.type) {
     case 'ready': {
+      if (data.capabilities?.projectSchema !== 3) {
+        ready = false; $('#connection-caption').textContent = '连接器需要更新';
+        toast('此工程使用 v3。请安装新版连接器，再刷新专用测试标签。', true); break;
+      }
       const first = !ready; ready = true; clearInterval(helloTimer); connectedTheme = data.theme;
       $('#preview-label').textContent = live ? '真实酒馆' : '示例预览'; $('#connection-caption').textContent = live ? peerOrigin : '未连接酒馆';
       $('#connection-dot').classList.toggle('connected', live); $('#connect-button').textContent = live ? '已连接' : '连接酒馆';
@@ -133,7 +149,7 @@ window.addEventListener('message', event => {
       if (live && first) {
         $('#live-details').textContent = `已识别 ${data.targets.filter(x => x.count).length} / ${TARGETS.length} 类部件 · ${data.hostName}`;
         if (!ruleCount(state.project) && !state.project.customCss && state.project.baseTheme.name === '新主题') act({ type: 'base-theme', theme: data.theme });
-        else if (JSON.stringify(state.project.baseTheme) !== JSON.stringify(data.theme)) $('#base-dialog').showModal();
+        else if (!state.sourceBound && JSON.stringify(state.project.baseTheme) !== JSON.stringify(data.theme)) $('#base-dialog').showModal();
       }
       updateFixture(data.fixture); preview(); send('select', { target: selected }); workflow?.ready(); break;
     }
@@ -227,7 +243,9 @@ try {
   buildControls(); bindControls();
   advanced = attachAdvanced({ getState: () => state, command, preview, send, toast, getSelected: () => selected, isLive: () => live, isReady: () => ready, setDevice, getDevice: () => device });
   workflow = attachWorkflow({ getState: () => state, getToken: () => token, getScope: () => scope, command, send, toast, isReady: () => ready, stopPicking: () => setPicking(false), download });
+  source = attachSource({ getState: () => state, getToken: () => token, toast });
   render(); connect();
-  const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { $('#save-status').textContent = '已保存到本机'; };
+  const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };
   workflow.events(events);
+  source.events(events);
 } catch (e) { $('#save-status').textContent = '启动失败'; toast(e.message, true); }

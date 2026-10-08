@@ -70,7 +70,7 @@ function mount() {
         const label = document.createElement('span'); label.textContent = '主题工作台 · 实时预览'; label.style.fontSize = '12px';
         const close = document.createElement('button'); close.type = 'button'; close.textContent = '关闭并恢复原样'; close.style.cssText = 'font:12px sans-serif;color:#e7e8ea;background:transparent;border:0;cursor:pointer;padding:6px'; close.addEventListener('click', () => bridge?.dispose());
         bar.append(label, close);
-        const frame = document.createElement('iframe'); frame.title = '酒馆主题工作台编辑面板'; frame.src = url.href; Object.assign(frame.style, { width: '100%', flex: '1', minHeight: '0', border: '0' });
+        const frame = document.createElement('iframe'); frame.title = '酒馆主题工作台编辑面板'; frame.src = url.href; frame.allow = 'clipboard-write'; Object.assign(frame.style, { width: '100%', flex: '1', minHeight: '0', border: '0' });
         const fold = document.createElement('button'); fold.type = 'button'; fold.textContent = '收起面板'; fold.setAttribute('aria-expanded', 'true'); fold.style.cssText = close.style.cssText;
         let collapsed = false;
         collapseDock = () => {

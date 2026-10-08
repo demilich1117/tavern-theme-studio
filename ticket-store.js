@@ -1,7 +1,7 @@
 import { readFile, writeFile, rename } from 'node:fs/promises';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
-import { validateAnchor, ticketText, TICKET_STATES } from './shared/tickets.js';
+import { validateAnchor, ticketText, TICKET_STATES, validateTicketResult } from './shared/tickets.js';
 
 export async function createTicketStore(dataDir) {
   const file = path.join(dataDir, 'tickets.json'); let tickets = [];
@@ -19,13 +19,16 @@ export async function createTicketStore(dataDir) {
     async update(id, input, currentBasis) {
       const old = tickets.find(t => t.id === id); if (!old) throw Object.assign(new Error('小票不存在。'), { status: 404 });
       if (input.version !== old.version) throw conflict('小票已被更新，请重新读取后重试。');
+      if (input.action !== 'reopen' && old.basis.projectId !== currentBasis.projectId) throw conflict('小票与当前工程身份不一致，请先核对快照并重新定位。');
       const next = { ...old, version: old.version + 1, updatedAt: new Date().toISOString() };
       if (input.action === 'claim') {
         if (old.state !== 'open') throw conflict('这张小票已被领取。');
         next.owner = ticketText(input.owner, 120, '处理者名称'); next.state = 'working';
       } else if (input.action === 'review') {
         if (old.state !== 'working' || input.owner !== old.owner) throw conflict('只有当前处理者能提交验收。');
-        next.result = ticketText(input.result, 8000, '处理结果'); next.state = 'review'; next.completedBasis = currentBasis;
+        const result = validateTicketResult(input.result);
+        if (result.details && result.details.baseline.projectId !== old.basis.projectId) throw conflict('结果使用的基线与小票工程 ID 不一致。');
+        next.result = result.summary; next.resultDetails = result.details; next.state = 'review'; next.completedBasis = currentBasis;
       } else if (input.action === 'accept') {
         if (old.state !== 'review') throw conflict('请先提交处理结果。'); next.state = 'done';
       } else if (input.action === 'reopen') { next.state = 'open'; next.owner = ''; }

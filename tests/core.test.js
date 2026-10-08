@@ -12,7 +12,7 @@ test('export preserves original theme fields and CSS; reimport retains rendered 
   assert.ok(exported.custom_css.startsWith(base.custom_css));
   assert.match(exported.custom_css, /padding: 24px !important/);
   assert.equal(exportTheme(createProject(exported)).custom_css, exported.custom_css);
-  assert.deepEqual(original, createProject(base));
+  assert.deepEqual(original, createProject(base, { projectId: original.projectId }));
 });
 test('mobile overrides follow base rules and removing an override restores inheritance', () => {
   let p = createProject();

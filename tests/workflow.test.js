@@ -56,7 +56,10 @@ test('HTTP large-image import, asset headers, ticket claim races, review and per
   try {
     let session = await (await fetch(app.address + '/api/session')).json();
     const get = async route => (await fetch(app.address + route)).json();
-    const post = (route, data, headers = {}) => fetch(app.address + route, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Studio-Token': session.token, ...headers }, body: JSON.stringify(data) });
+    const post = async (route, data, headers = {}) => {
+      const current = await get('/api/project');
+      return fetch(app.address + route, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Studio-Token': session.token, ...headers }, body: JSON.stringify({ sessionId: current.sessionId, projectId: current.projectId, fingerprint: current.fingerprint, revision: current.revision, ...data }) });
+    };
     assert.equal((await post('/api/tickets', {}, { 'X-Studio-Token': 'bad' })).status, 403);
     assert.equal((await post('/api/assets/link', { url: 'file:///bad' })).status, 400);
     // A valid PNG signature plus a large ancillary payload exercises the transport boundary.

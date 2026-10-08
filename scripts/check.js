@@ -4,7 +4,7 @@ import path from 'node:path';
 const root = path.resolve(import.meta.dirname, '..');
 for (const folder of ['', 'shared', 'public', 'connector', 'scripts', 'tests']) {
   for (const file of await readdir(path.join(root, folder))) {
-    if (file.endsWith('.js')) execFileSync(process.execPath, ['--check', path.join(root, folder, file)], { stdio: 'inherit', windowsHide: true });
+    if (/\.(?:js|mjs)$/.test(file)) execFileSync(process.execPath, ['--check', path.join(root, folder, file)], { stdio: 'inherit', windowsHide: true });
   }
 }
 const manifest = JSON.parse(await readFile(path.join(root, 'connector/manifest.json')));

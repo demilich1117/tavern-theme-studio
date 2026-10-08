@@ -36,6 +36,7 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
       const reset = node('button', '↺', 'quiet'); reset.title = '还原原始声明'; reset.setAttribute('aria-label', `还原变量 ${variable.name} 第 ${variable.line} 行`); reset.disabled = !(variable.id in edits);
       reset.addEventListener('click', () => command({ type: 'variable', id: variable.id, value: null }).catch(() => {})); head.append(reset); row.append(head);
       if (variable.label) row.append(node('p', variable.label, 'variable-label'));
+      if (variable.ambiguous) row.append(node('p', '绑定待解决：相同上下文含重复声明。源码刷新时会保留旧预览并报告冲突。', 'diagnostic-warning'));
       const context = node('p', `第 ${variable.line} 行 · ${variable.context}${variable.important ? ' · !important' : ''}`, 'variable-context'); context.title = context.textContent; row.append(context);
       // Embedded artwork is preserved in the source; don't expose a multi-KB base64
       // blob in a value control that cannot accept it under the edit size limit.
