@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "moonveil-crescent-folio",
+  "name": "月弧浮页 · 十二装饰",
+  "version": "2.2.4",
+  "slots": [
+    {"id":"castle","name":"月夜城堡 · 页面背景","group":"场景","selector":"body","pseudo":"::before","method":"background","sourceOwned":true,"assetVariable":"--cc-castle-art","position":"fixed","aspectRatio":2,"note":"背景铺满页面；保持正文与原生控件独立。"},
+    {"id":"silver-dragon","name":"伏睡银龙 · 桌面页边","group":"场景","selector":"body","pseudo":"::after","method":"background","sourceOwned":true,"assetVariable":"--cc-dragon-art","position":"fixed","condition":"(min-width: 1001px)","aspectRatio":2.097902,"note":"桌面银龙在阅读层下面；缩放整个装饰框保持绘制比例，基础尺寸由银龙变量控制。"},
+    {"id":"baby-dragon","name":"Q版睡龙 · 手机输入栏","group":"场景","selector":"#nonQRFormItems","pseudo":"::after","method":"background","sourceOwned":true,"assetVariable":"--cc-baby-dragon-art","condition":"(max-width: 1000px)","aspectRatio":1.677852,"note":"仅 1000px 及以下显示，区别于通用 767px 手机覆盖。"},
+    {"id":"writing-frame","name":"银色书写框 · 输入栏边框","group":"边框","selector":"#nonQRFormItems","pseudo":"::before","method":"nine-slice","sourceOwned":true,"assetVariable":"--cc-writing-art","aspectRatio":8.55615,"note":"九切片；桌面 24% 16%，边宽23px 78px；600px下沿用源码14px 34px。"},
+    {"id":"lunar-arc","name":"月弧 · 顶部导航","group":"导航","selector":"#top-settings-holder","pseudo":"::before","method":"background","sourceOwned":true,"assetVariable":"--cc-arc-art","aspectRatio":5,"note":"只绘制月弧，原生菜单命中区域不随装饰移动。"},
+    {"id":"pendant","name":"吊坠 · 导航按钮","group":"导航","selector":"#top-settings-holder>.drawer>.drawer-toggle","pseudo":"::before","method":"background","sourceOwned":true,"assetVariable":"--cc-pendant-art","aspectRatio":0.666667,"exclude":["#top-settings-holder>.drawer:nth-child(5)>.drawer-toggle"],"note":"中央按钮保留空环；换图不会给中央按钮重新加吊坠。"},
+    {"id":"violet-slip","name":"紫色便笺 · 用户消息","group":"消息","selector":"#chat .mes[is_user=true]","pseudo":"::before","method":"nine-slice","sourceOwned":true,"assetVariable":"--cc-slip-art","aspectRatio":6.635071,"note":"九切片35% 7.2% 25% 7.2% fill；正文与作者信息共用便笺材质。"},
+    {"id":"quill","name":"羽笔 · 引用块","group":"消息","selector":"#chat .mes .mes_text blockquote","pseudo":"::before","method":"background","sourceOwned":true,"assetVariable":"--cc-quill-art","aspectRatio":0.333333,"note":"引用块左侧羽笔；随引用块滚动。"},
+    {"id":"bookmark","name":"龙纹书签 · 原生滚动条","group":"导航","selector":"#chat","pseudo":"::-webkit-scrollbar-thumb","method":"background","sourceOwned":true,"assetVariable":"--cc-jewel-art","geometry":false,"aspectRatio":0.229008,"note":"沿用 Chromium 原生滚动条拖动；只换图或背景适配，不添加编辑拖柄。"},
+    {"id":"avatar-talons","name":"龙爪 · 消息头像框","group":"消息","selector":"#chat .mes .avatar","pseudo":"::after","method":"background","sourceOwned":true,"assetVariable":"--cc-avatar-art","aspectRatio":1,"note":"头像外的独立装饰；不读取或修改真实头像文件。"},
+    {"id":"wax-seal","name":"月徽蜡封 · 用户便笺","group":"消息","selector":"#chat .mes[is_user=true]","pseudo":"::after","method":"background","sourceOwned":true,"assetVariable":"--cc-seal-art","aspectRatio":0.657534,"note":"用户消息右侧蜡封；小屏使用源码的对应大小。"},
+    {"id":"silver-frame","name":"银框 · 原生抽屉边框","group":"边框","selector":"#top-settings-holder .drawer-content","method":"nine-slice","sourceOwned":true,"assetVariable":"--cc-frame-art","geometry":false,"aspectRatio":1,"note":"只控制边框材质和切片，不旋转、缩放或降低原生抽屉整体透明度。"}
+  ],
+  "variables": [
+    {"name":"--cc-font-size","label":"正文字号","group":"阅读","min":10,"max":36},
+    {"name":"--cc-line-height","label":"正文行高","group":"阅读","min":1,"max":3},
+    {"name":"--cc-message-gap","label":"消息间距","group":"阅读","min":0,"max":80},
+    {"name":"--cc-avatar-size","label":"头像大小","group":"阅读","min":20,"max":120},
+    {"name":"--cc-dragon-width","label":"银龙基础宽度","group":"场景"},
+    {"name":"--cc-dragon-bottom","label":"银龙距底边","group":"场景"},
+    {"name":"--cc-art-opacity","label":"银龙基础透明度","group":"场景","min":0,"max":1},
+    {"name":"--cc-castle-art","label":"月夜城堡素材","group":"场景"},
+    {"name":"--cc-dragon-art","label":"桌面银龙素材","group":"场景"},
+    {"name":"--cc-baby-dragon-art","label":"手机睡龙素材","group":"场景"},
+    {"name":"--cc-writing-art","label":"输入栏九切片素材","group":"边框"},
+    {"name":"--cc-arc-art","label":"顶部月弧素材","group":"导航"},
+    {"name":"--cc-pendant-art","label":"导航吊坠素材","group":"导航"},
+    {"name":"--cc-slip-art","label":"用户便笺素材","group":"消息"},
+    {"name":"--cc-quill-art","label":"引用羽笔素材","group":"消息"},
+    {"name":"--cc-jewel-art","label":"滚动书签素材","group":"导航"},
+    {"name":"--cc-avatar-art","label":"头像龙爪素材","group":"消息"},
+    {"name":"--cc-seal-art","label":"便笺蜡封素材","group":"消息"},
+    {"name":"--cc-frame-art","label":"抽屉九切片素材","group":"边框"}
+  ]
+}

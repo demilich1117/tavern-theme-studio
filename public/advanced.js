@@ -25,12 +25,15 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
   function renderVariables() {
     if ($('#variables-list').contains(document.activeElement) && document.activeElement.matches('input, select')) return;
     const edits = getState().project.variableEdits || {}, search = $('#variable-search').value.toLowerCase().trim();
-    const shown = variables.filter(v => (!$('#variables-modified').checked || v.id in edits) && `${v.name} ${v.label} ${v.context}`.toLowerCase().includes(search));
+    const specs = getState().project.recipe?.variables || [];
+    const labeled = variables.map(v => { const spec = specs.find(s => s.name === v.name && (!s.context || s.context === v.context)); return { ...v, label: spec ? `${spec.group} / ${spec.label}` : v.label, spec }; });
+    const shown = labeled.filter(v => (!$('#variables-modified').checked || v.id in edits) && `${v.name} ${v.label} ${v.context}`.toLowerCase().includes(search));
     $('#variables-total').textContent = `${shown.length} / ${variables.length}`;
     $('#variables-list').replaceChildren();
     if (!shown.length) { $('#variables-list').append(node('p', variables.length ? '没有匹配的变量。' : '基础主题中没有可识别的变量声明。可以继续使用部件编辑，或导入包含 CSS 变量的主题。', 'empty-state')); return; }
     for (const variable of shown) {
       const current = edits[variable.id] ?? variable.value, config = variableControl(variable.value);
+      if (config.type === 'range' && variable.spec) { if (variable.spec.min !== undefined) config.min = variable.spec.min; if (variable.spec.max !== undefined) config.max = variable.spec.max; }
       const row = node('section', undefined, 'variable-row'); row.dataset.variable = variable.id;
       const head = node('div', undefined, 'variable-heading'); head.append(node('code', variable.name));
       const reset = node('button', '↺', 'quiet'); reset.title = '还原原始声明'; reset.setAttribute('aria-label', `还原变量 ${variable.name} 第 ${variable.line} 行`); reset.disabled = !(variable.id in edits);

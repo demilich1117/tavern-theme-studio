@@ -97,7 +97,7 @@ node scripts/cli.js command output/command.json
 
 保存快照同样检查 revision，但不修改工程、不推进 revision，响应额外含 `snapshotCreated`。恢复快照进入正常修改历史，可撤销。快照为独立文件，不随导入主题删除。命名版本差异含稳定 `path` 和可读 `label`；大段 CSS 只摘要其变化，原文可在返回的快照工程中取得。
 
-工程格式为 `schemaVersion: 3`：稳定 `projectId`、`variableEdits` / `variableBindings`、`bindingConflicts`、`breakpoints`、`decorations` 和 `assetRefs`。v1/v2 自动迁移，首次升级磁盘数据前备份原始工程、快照与小票，校验失败不替换原文件。旧票只能依据其快照和原指纹归属；无法证明是当前工程时标为需核对，绝不按同名合并。当前装饰字段作为后续阶段基础，尚无图层编辑与编译能力。
+工程格式为 `schemaVersion: 3`：稳定 `projectId`、`variableEdits` / `variableBindings`、`bindingConflicts`、`breakpoints`、`recipe`、`decorations` 和 `assetRefs`。v1/v2 自动迁移，首次升级磁盘数据前备份原始工程、快照与小票，校验失败不替换原文件。旧票只能依据其快照和原指纹归属；无法证明是当前工程时标为需核对，绝不按同名合并。0.6 的可选配方与图层接口见 [装饰配方](decorations.md)；旧 v3 缺少配方时仍可读取。
 
 `baseTheme.custom_css` 保持原文，编译顺序为基础主题及变量修改、部件规则和断点覆盖、高级 CSS。手动 `base-theme` 重新读取会清空变量覆盖；自动 `source-refresh` 按稳定绑定合并最新界面修改。工程备份不包含本机源码路径/程序配置。恢复快照与撤销基础 CSS 会暂停自动应用，继续同步须明确调用 build-now 或 build-auto on。
 

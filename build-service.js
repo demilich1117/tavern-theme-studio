@@ -6,6 +6,7 @@ import path from 'node:path';
 import { atomicJson } from './storage-migrations.js';
 import { validateTheme } from './shared/core.js';
 import { validateBuiltCss } from './shared/css-validation.js';
+import { validateRecipe } from './shared/decorations.js';
 import { MAX_ASSET_BYTES, MAX_IMPORT_BYTES } from './asset-store.js';
 
 const excluded = new Set(['.git', '.local', 'dist', 'output', 'node_modules', '.playwright-cli', 'cache', '.cache', 'history', 'logs']);
@@ -72,7 +73,7 @@ export async function readBuildCandidate(directory) {
     if (sha256 !== item.sha256 || (item.bytes !== undefined && bytes.length !== item.bytes)) throw failure(`素材校验失败：${item.name || item.file}`);
     assets.push({ ...item, candidatePath: await realpath(path.join(root, relativeFile(item.file))) });
   }
-  return { theme, assets, assetRefs: manifest.assetRefs || [] };
+  return { theme, assets, assetRefs: manifest.assetRefs || [], recipe: validateRecipe(manifest.recipe) };
 }
 
 export async function createBuildService({ dataDir, getProjectId, commit, publish = () => {} }) {

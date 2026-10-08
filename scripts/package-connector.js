@@ -6,6 +6,7 @@ const files = { 'manifest.json': 'connector/manifest.json', 'connector/index.js'
 for (const file of ['connector/fixture-host.js', 'shared/fixture.js', 'connector/assets/fixture-user.svg', 'connector/assets/fixture-guide.svg', 'connector/assets/fixture-landscape.svg', 'connector/assets/fixture-note.txt']) files[file] = file;
 for (const file of ['connector/annotations.js', 'shared/assets.js', 'shared/tickets.js']) files[file] = file;
 files['shared/migrations.js'] = 'shared/migrations.js';
+files['shared/decorations.js'] = 'shared/decorations.js';
 // Standard ZIP, store method. No runtime or packaging dependencies.
 const table = Array.from({ length: 256 }, (_, n) => { for (let k = 0; k < 8; k++) n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1; return n >>> 0; });
 function crc32(buffer) { let crc = 0xffffffff; for (const byte of buffer) crc = table[(crc ^ byte) & 0xff] ^ (crc >>> 8); return (crc ^ 0xffffffff) >>> 0; }

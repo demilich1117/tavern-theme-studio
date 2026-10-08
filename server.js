@@ -22,7 +22,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
   let history = new ProjectHistory(migration.project);
   const sessionId = randomUUID();
   let builds;
-  const view = () => ({ ...history.snapshot(), sessionId, projectId: history.project.projectId, fingerprint: projectFingerprint(history.project), sourceBound: builds?.status().bound === true, capabilities: { projectSchema: 3, stableBindings: true, sourceBuild: 1 }, migrationRecovery: migration.recovery });
+  const view = () => ({ ...history.snapshot(), sessionId, projectId: history.project.projectId, fingerprint: projectFingerprint(history.project), sourceBound: builds?.status().bound === true, capabilities: { projectSchema: 3, stableBindings: true, sourceBuild: 1, decorations: 1 }, migrationRecovery: migration.recovery });
   function checkBasis(input) {
     if (!input.sessionId || !input.fingerprint || !input.projectId) throw Object.assign(new Error('需要 v3 会话、工程 ID 与指纹；请更新工作台/CLI 并重新读取工程。'), { status: 428 });
     if (input.sessionId !== sessionId || input.projectId !== history.project.projectId || input.fingerprint !== projectFingerprint(history.project) || input.revision !== history.revision) throw Object.assign(new Error('工程或服务会话已更新，请重新读取后核对修改。'), { status: 409 });
@@ -77,7 +77,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
         const saved = await assets.put(bytes, asset.name);
         if (saved.id !== asset.id) throw new Error(`候选素材在提交前发生变化：${asset.name}`);
       }
-      const resolved = await assets.command({ type: 'source-refresh', theme: build.theme }, history.project);
+      const resolved = await assets.command({ type: 'source-refresh', theme: build.theme, recipe: build.recipe }, history.project);
       const candidate = new ProjectHistory(history.project);
       candidate.past = [...history.past]; candidate.future = [...history.future]; candidate.revision = history.revision;
       candidate.execute(resolved, history.revision);

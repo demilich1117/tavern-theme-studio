@@ -9,6 +9,10 @@ const node = (tag, text, cls) => { const el = document.createElement(tag); if (t
 const size = bytes => bytes >= 1048576 ? `${(bytes / 1048576).toFixed(2)} MiB` : `${(bytes / 1024).toFixed(1)} KiB`;
 export function attachWorkflow({ getState, getToken, getScope, command, send, toast, isReady, stopPicking, download }) {
   let tickets = [], assets = [], draft, marking = false, busy = false, lastProjectId;
+  const layerTargetLabel = node('label', '选择目标图层（也可使用下方图片变量）', 'panel-hint'), layerTarget = node('select');
+  layerTarget.id = 'asset-layer'; layerTarget.setAttribute('aria-label', '选择素材替换图层'); layerTargetLabel.append(layerTarget); $('#assets-dialog .dialog-body').prepend(layerTargetLabel);
+  layerTarget.addEventListener('change', () => { if (layerTarget.value) $('#asset-variable').value = ''; });
+  $('#asset-variable').addEventListener('change', () => { if ($('#asset-variable').value) layerTarget.value = ''; });
   const selectedTickets = new Set();
   async function copyClipboard(text, message) {
     try { await navigator.clipboard.writeText(text); toast(message); return true; }
@@ -101,6 +105,9 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
   }
   async function loadAssets() { assets = await api('/api/assets'); renderAssets(); }
   function renderAssetVariables() {
+    const previousLayer = layerTarget.value; layerTarget.replaceChildren(new Option('选择图层', ''));
+    for (const layer of getState().project.decorations) { const option = new Option(layer.name + (layer.locked ? ' · 已锁定' : ''), layer.id); option.disabled = layer.locked; layerTarget.add(option); }
+    if ([...layerTarget.options].some(o => o.value === previousLayer)) layerTarget.value = previousLayer;
     const select = $('#asset-variable'), old = select.value;
     const variables = scanVariables(getState().project.baseTheme.custom_css || '');
     select.replaceChildren();
@@ -125,6 +132,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
       info.append(node('b', image.alt), caption);
       const actions = node('div', undefined, 'asset-actions');
       const replace = node('button', '替换'); replace.addEventListener('click', run(async () => {
+        if (layerTarget.value) { await command({ type: 'decoration-update', id: layerTarget.value, patch: { asset: asset.reference } }); return toast('素材已应用到图层，真实酒馆同步预览。'); }
         const id = $('#asset-variable').value; if (!id) throw new Error('请先选择要替换的图片变量。');
         await command({ type: 'variable', id, value: cssImage(asset.reference) }); toast('装饰已替换，真实酒馆同步预览。');
       }));

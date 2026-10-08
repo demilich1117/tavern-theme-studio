@@ -3,11 +3,12 @@ import { attachAdvanced } from '/advanced.js';
 import { FIXTURE_SCENES } from '/shared/fixture.js';
 import { attachWorkflow } from '/workflow.js';
 import { attachSource } from '/source.js';
+import { attachLayers } from '/layers.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
 let peer, peerOrigin, session, ready = false, live = false, lastSeen = 0, isPicking = false, connectedTheme;
-let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, detailsExpanded = false;
+let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, layers, detailsExpanded = false;
 let fixtureBusy = false, fixtureSupported = false;
 function updateFixture(fixture) {
   fixtureSupported = fixture?.supported === true;
@@ -87,7 +88,7 @@ function render() {
   $('#selection-breadcrumb').textContent = `${live ? '真实酒馆' : '示例场景'} / ${target.name} / ${scope === 'base' ? '所有尺寸' : '仅手机'}`;
   $('#rule-count').textContent = `${ruleCount(state.project)} 项样式修改`;
   $('#css-badge').textContent = state.project.customCss.trim() ? '●' : '';
-  renderFields(); advanced?.render(); workflow?.render(); source?.render();
+  renderFields(); advanced?.render(); workflow?.render(); source?.render(); layers?.render();
 }
 function setSelected(id) { selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
 function setDevice(next) {
@@ -136,9 +137,10 @@ window.addEventListener('message', event => {
   if (event.source !== peer || event.origin !== peerOrigin || data?.channel !== CHANNEL || data?.session !== session) return;
   lastSeen = Date.now();
   workflow?.receive(data);
+  layers?.receive(data);
   switch (data.type) {
     case 'ready': {
-      if (data.capabilities?.projectSchema !== 3) {
+      if (data.capabilities?.projectSchema !== 3 || (state.project.recipe && data.capabilities?.decorations !== 1)) {
         ready = false; $('#connection-caption').textContent = '连接器需要更新';
         toast('此工程使用 v3。请安装新版连接器，再刷新专用测试标签。', true); break;
       }
@@ -244,8 +246,11 @@ try {
   advanced = attachAdvanced({ getState: () => state, command, preview, send, toast, getSelected: () => selected, isLive: () => live, isReady: () => ready, setDevice, getDevice: () => device });
   workflow = attachWorkflow({ getState: () => state, getToken: () => token, getScope: () => scope, command, send, toast, isReady: () => ready, stopPicking: () => setPicking(false), download });
   source = attachSource({ getState: () => state, getToken: () => token, toast });
+  layers = attachLayers({ getState: () => state, command, preview, toast });
   render(); connect();
   const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };
+  window.addEventListener('pagehide', () => { events.close(); clearInterval(helloTimer); clearInterval(heartbeat); }, { once: true });
   workflow.events(events);
   source.events(events);
+  layers.events(events);
 } catch (e) { $('#save-status').textContent = '启动失败'; toast(e.message, true); }

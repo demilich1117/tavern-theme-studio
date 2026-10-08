@@ -3,6 +3,7 @@ import { targetElement, diagnose, auditScene } from './diagnostics.js';
 import { createThemeIsolation, createThemePresentation } from './theme-isolation.js';
 import { resolveAssetUrls } from '../shared/assets.js';
 import { captureAnchor, createAnnotationPins } from './annotations.js';
+import { layerAsset } from '../shared/decorations.js';
 
 export const CHANNEL = 'tavern-theme-studio/v1';
 const STYLE_ID = 'tts-preview-style';
@@ -54,6 +55,34 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
   document.getElementById(VARS_ID)?.remove(); document.head.append(variables);
   const style = document.createElement('style'); style.id = STYLE_ID;
   document.getElementById(STYLE_ID)?.remove(); document.head.append(style);
+  function renderPreview(project, enabled) {
+    if (!enabled) { style.textContent = ''; send('decoration-status', { issues: [] }); return; }
+    // Probe authored CSS without editor decorations. Existing host extension
+    // pseudo content must not become an invisible casualty of a new layer.
+    const base = { ...project, recipe: null, decorations: [] };
+    style.textContent = resolveAssetUrls(exportTheme(base).custom_css, origin);
+    const issues = [], blocked = new Set();
+    const hidden = (project.recipe?.hiddenSlots || []).map(slotId => ({ id: `hidden-${slotId}`, slotId, asset: null }));
+    for (const layer of [...project.decorations, ...hidden]) {
+      const slot = project.recipe?.slots.find(s => s.id === layer.slotId);
+      if (!slot || !slot.pseudo || slot.pseudo === '::-webkit-scrollbar-thumb' || (slot.condition && !matchMedia(slot.condition).matches)) continue;
+      let elements; try { elements = [...document.querySelectorAll(slot.selector)].filter(e => !e.closest('[data-tts-ui]')).slice(0, 200); } catch { continue; }
+      if (!elements.length) { issues.push({ layerId: layer.id, message: '当前画面没有目标部件；展开原生控件或对照快照定位。' }); continue; }
+      for (const element of elements) {
+        if (slot.exclude?.some(s => element.matches(s))) continue;
+        const css = getComputedStyle(element, slot.pseudo), content = css.content;
+        const expected = layerAsset(project, { ...layer, asset: null });
+        const expectedUrl = expected ? resolveAssetUrls(expected, origin) : null;
+        const image = slot.method === 'nine-slice' ? css.borderImageSource : css.backgroundImage;
+        const occupied = content && !['none', 'normal'].includes(content);
+        const mismatch = slot.sourceOwned ? occupied && ((!['""', "''"].includes(content)) || (expectedUrl && !image.includes(expectedUrl))) : occupied;
+        if (mismatch) { blocked.add(layer.id); issues.push({ layerId: layer.id, message: '真实宿主伪元素被其他规则占用；保留现有效果，请检查样式诊断与插槽所有权。' }); break; }
+      }
+    }
+    const display = { ...project, recipe: project.recipe ? { ...project.recipe, hiddenSlots: project.recipe.hiddenSlots.filter(id => !blocked.has(`hidden-${id}`)) } : null, decorations: project.decorations.filter(l => !blocked.has(l.id)) };
+    style.textContent = resolveAssetUrls(exportTheme(display).custom_css, origin);
+    send('decoration-status', { issues });
+  }
   const overlay = document.createElement('div'); overlay.id = OVERLAY_ID;
   Object.assign(overlay.style, { position: 'fixed', pointerEvents: 'none', zIndex: '2147483646', border: '2px solid #e6aa64', borderRadius: '4px', boxShadow: '0 0 0 1px #131517', display: 'none', boxSizing: 'border-box' });
   document.getElementById(OVERLAY_ID)?.remove(); document.body.append(overlay);
@@ -93,7 +122,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
     lastSeen = Date.now();
     try {
       switch (data.type) {
-        case 'hello': send('ready', { capabilities: { projectSchema: 3, stableBindings: true }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); break;
+        case 'hello': send('ready', { capabilities: { projectSchema: 3, stableBindings: true, decorations: 1 }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); break;
         case 'ping': send('pong', { fixture: fixture?.status() }); break;
         case 'preview': {
           const project = validateProject(data.project);
@@ -103,7 +132,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
           // Keep imports first in their own stylesheet. Separate variables override
           // host inline variables without mutating them; advanced CSS follows.
           variables.textContent = data.enabled === false ? '' : themeVariablesCss(project);
-          style.textContent = data.enabled === false ? '' : resolveAssetUrls(exportTheme(project).custom_css, origin);
+          renderPreview(project, data.enabled !== false);
           requestAnimationFrame(inspect); break;
         }
         case 'select': if (!TARGETS.some(x => x.id === data.target)) throw new Error('未知部件。'); if (selected !== data.target) pickedElement = undefined; selected = data.target; inspect(); break;

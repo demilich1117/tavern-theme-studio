@@ -31,6 +31,8 @@ export async function mapProjectCss(value, transform) {
     }
   }
   if (typeof next.customCss === 'string') next.customCss = await transform(next.customCss);
+  for (const layer of next.decorations || []) if (typeof layer.asset === 'string') layer.asset = await transform(layer.asset);
+  for (const reference of next.assetRefs || []) if (typeof reference.reference === 'string') reference.reference = await transform(reference.reference);
   return next;
 }
 export async function createAssetStore(dataDir) {
@@ -89,6 +91,8 @@ export async function createAssetStore(dataDir) {
       if (['import-theme', 'base-theme', 'source-refresh'].includes(command?.type)) return { ...command, theme: { ...command.theme, custom_css: await extract(command.theme?.custom_css ?? '') } };
       if (command?.type === 'custom-css') return { ...command, css: await extract(command.css) };
       if (command?.type === 'variable' && typeof command.value === 'string') return { ...command, value: await extract(command.value) };
+      if (command?.type === 'decoration-add' && command.asset) return { ...command, asset: await extract(command.asset) };
+      if (command?.type === 'decoration-update' && command.patch?.asset) return { ...command, patch: { ...command.patch, asset: await extract(command.patch.asset) } };
       return command;
     },
     portableProject: project => mapProjectCss(project, embed),

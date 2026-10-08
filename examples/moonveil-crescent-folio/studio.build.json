@@ -5,7 +5,7 @@
     "root": ".",
     "program": "$NODE",
     "args": ["scripts/build-moonveil-crescent.js", "--output", "{output}", "--asset-mode", "{mode}", "--no-preview"],
-    "watch": ["examples/moonveil-crescent-folio/theme.css", "examples/moonveil-crescent-folio/theme-fields.json", "examples/moonveil-crescent-folio/assets.manifest.json", "examples/moonveil-crescent-folio/assets/production", "scripts/folio-build.mjs", "scripts/build-moonveil-crescent.js", "shared/core.js", "shared/variables.js", "shared/migrations.js"],
+    "watch": ["examples/moonveil-crescent-folio/theme.css", "examples/moonveil-crescent-folio/theme-fields.json", "examples/moonveil-crescent-folio/assets.manifest.json", "examples/moonveil-crescent-folio/studio.recipe.json", "examples/moonveil-crescent-folio/assets/production", "scripts/folio-build.mjs", "scripts/build-moonveil-crescent.js", "shared/core.js", "shared/variables.js", "shared/migrations.js", "shared/decorations.js"],
     "mode": "local",
     "debounceMs": 180,
     "timeoutMs": 60000

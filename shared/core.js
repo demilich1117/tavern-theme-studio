@@ -1,5 +1,6 @@
 import { rewriteVariables, scanVariables, validateVariableValue } from './variables.js';
 import { migrateProject, bindingRecords, mergeSourceTheme, newProjectId, defaultBreakpoints } from './migrations.js';
+import { validateRecipe, validateLayer, validateLayerProps, layersFromRecipe, mergeRecipe, compileDecorations, layerAsset } from './decorations.js';
 // Self-contained illustrated themes embed raster assets in their base CSS.
 export const MAX_THEME_CSS_LENGTH = 1_000_000;
 export const TARGETS = [
@@ -47,7 +48,7 @@ export function validateTheme(theme) {
   return clone(theme);
 }
 export function createProject(theme = { name: '新主题', custom_css: '' }, { projectId = newProjectId() } = {}) {
-  return { schemaVersion: 3, projectId, name: theme.name, baseTheme: validateTheme(theme), rules: { base: {}, mobile: {} }, variableEdits: {}, variableBindings: bindingRecords(theme.custom_css || ''), bindingConflicts: [], breakpoints: defaultBreakpoints(), decorations: [], assetRefs: [], customCss: '' };
+  return { schemaVersion: 3, projectId, name: theme.name, baseTheme: validateTheme(theme), rules: { base: {}, mobile: {} }, variableEdits: {}, variableBindings: bindingRecords(theme.custom_css || ''), bindingConflicts: [], breakpoints: defaultBreakpoints(), recipe: null, decorations: [], assetRefs: [], customCss: '' };
 }
 export function normalizeValue(key, value) {
   const field = FIELDS.find(x => x.key === key);
@@ -92,8 +93,10 @@ export function validateProject(value) {
     scopeIds.add(b.id); return clone(b);
   });
   if (!scopeIds.has('mobile')) throw new Error('请保留旧工程的 mobile 断点。');
-  if (!Array.isArray(value.decorations) || value.decorations.some(d => !object(d) || typeof d.id !== 'string') || value.decorations.length > 200) throw new Error('装饰配置无效。');
-  p.decorations = clone(value.decorations);
+  p.recipe = validateRecipe(value.recipe);
+  if (!Array.isArray(value.decorations) || value.decorations.length > 200) throw new Error('装饰配置无效。');
+  p.decorations = value.decorations.map(d => validateLayer(d, scopeIds));
+  if (new Set(p.decorations.map(d => d.id)).size !== p.decorations.length) throw new Error('图层 ID 重复。');
   if (!Array.isArray(value.assetRefs) || value.assetRefs.some(a => !object(a) || typeof a.reference !== 'string' || /^(?:[a-z]:[\\/]|file:)/i.test(a.reference))) throw new Error('可移植素材引用无效。');
   p.assetRefs = clone(value.assetRefs);
   if (!object(value.rules) || Object.keys(value.rules).some(k => !scopeIds.has(k))) throw new Error('样式范围无效。');
@@ -117,7 +120,7 @@ export function applyCommand(project, command) {
   switch (command.type) {
     case 'set': {
       const { scope = 'base', target, property, value } = command;
-      if (!(scope in next.rules) || !TARGETS.some(x => x.id === target)) throw new Error('部件或范围无效。');
+      if (!Object.hasOwn(next.rules, scope) || !TARGETS.some(x => x.id === target)) throw new Error('部件或范围无效。');
       const normalized = normalizeValue(property, value);
       next.rules[scope][target] ??= {};
       if (normalized === null) delete next.rules[scope][target][property];
@@ -126,7 +129,7 @@ export function applyCommand(project, command) {
       break;
     }
     case 'reset-target':
-      if (!(command.scope in next.rules) || !TARGETS.some(x => x.id === command.target)) throw new Error('部件或范围无效。');
+      if (!Object.hasOwn(next.rules, command.scope) || !TARGETS.some(x => x.id === command.target)) throw new Error('部件或范围无效。');
       delete next.rules[command.scope][command.target];
       break;
     case 'rename': next.name = command.name; break;
@@ -139,7 +142,49 @@ export function applyCommand(project, command) {
       break;
     }
     case 'base-theme': next.baseTheme = validateTheme(command.theme); next.variableEdits = {}; next.variableBindings = bindingRecords(next.baseTheme.custom_css || ''); break;
-    case 'source-refresh': return validateProject(mergeSourceTheme(next, validateTheme(command.theme)));
+    case 'source-refresh': return validateProject(mergeRecipe(mergeSourceTheme(next, validateTheme(command.theme)), command.recipe));
+    case 'recipe': next.recipe = validateRecipe(command.recipe); next.decorations = next.recipe ? layersFromRecipe(next.recipe) : []; break;
+    case 'decoration-add': {
+      let slot = next.recipe?.slots.find(s => s.id === command.slotId);
+      if (!slot) {
+        const target = TARGETS.find(t => t.id === command.target && !t.pseudo);
+        if (!target || !['::before', '::after'].includes(command.pseudo)) throw new Error('请选择普通部件及前/后伪元素插槽。');
+        next.recipe ??= { schemaVersion: 1, id: 'custom-' + newProjectId(), name: '自定义装饰', version: '1', slots: [], hiddenSlots: [], variables: [] };
+        slot = { id: 'slot-' + newProjectId(), name: command.name || '新装饰', group: '自定义', selector: target.selector, pseudo: command.pseudo, method: command.method || 'background', sourceOwned: false, geometry: true, position: command.target === 'global' ? 'fixed' : 'absolute' };
+        next.recipe.slots.push(slot);
+      }
+      next.recipe.hiddenSlots = next.recipe.hiddenSlots.filter(id => id !== slot.id);
+      next.decorations.push({ id: 'layer-' + newProjectId(), slotId: slot.id, name: command.name || slot.name, asset: command.asset || null, visible: true, locked: false, preserveRatio: true, props: command.props || {}, overrides: {} }); break;
+    }
+    case 'decoration-update': {
+      const layer = next.decorations.find(d => d.id === command.id);
+      if (!layer || !object(command.patch)) throw new Error('图层已删除或修改格式无效。');
+      if (Object.keys(command.patch).some(k => !['name', 'slotId', 'asset', 'visible', 'locked', 'preserveRatio', 'props'].includes(k))) throw new Error('不支持的图层字段。');
+      if (layer.locked && (Object.keys(command.patch).length !== 1 || command.patch.locked !== false)) throw new Error('图层已锁定，请先解锁。');
+      if (command.patch.slotId && command.patch.slotId !== layer.slotId) {
+        if (!next.recipe?.slots.some(s => s.id === command.patch.slotId)) throw new Error('目标插槽不存在。');
+        const oldSlot = next.recipe.slots.find(s => s.id === layer.slotId);
+        if (oldSlot?.sourceOwned && !next.decorations.some(d => d.id !== layer.id && d.slotId === layer.slotId)) next.recipe.hiddenSlots = [...new Set([...next.recipe.hiddenSlots, layer.slotId])];
+        if (command.patch.asset === undefined && layer.asset === null) layer.asset = layerAsset(next, layer);
+        next.recipe.hiddenSlots = next.recipe.hiddenSlots.filter(id => id !== command.patch.slotId);
+      }
+      const { props, ...rest } = command.patch; Object.assign(layer, rest);
+      if (props !== undefined) {
+        const scope = command.scope || 'base'; if (!Object.hasOwn(next.rules, scope)) throw new Error('图层断点不存在。');
+        if (scope === 'base') layer.props = validateLayerProps(props); else layer.overrides[scope] = validateLayerProps(props);
+      }
+      break;
+    }
+    case 'decoration-duplicate': {
+      const layer = next.decorations.find(d => d.id === command.id); if (!layer) throw new Error('图层已删除。');
+      next.decorations.push({ ...clone(layer), id: 'layer-' + newProjectId(), name: layer.name.slice(0, 110) + ' · 副本', locked: false }); break;
+    }
+    case 'decoration-remove': {
+      const layer = next.decorations.find(d => d.id === command.id); if (!layer) throw new Error('图层已删除。'); if (layer.locked) throw new Error('请先解锁图层。');
+      next.decorations = next.decorations.filter(d => d.id !== layer.id);
+      if (!next.decorations.some(d => d.slotId === layer.slotId) && next.recipe?.slots.some(s => s.id === layer.slotId && s.sourceOwned)) next.recipe.hiddenSlots = [...new Set([...next.recipe.hiddenSlots, layer.slotId])];
+      break;
+    }
     case 'import-theme': return createProject(validateTheme(command.theme));
     case 'import-project': return validateProject(command.project);
     default: throw new Error('未知命令。');
@@ -157,14 +202,14 @@ export function compileOverrides(project) {
   }).join('\n\n');
   const base = compile('base');
   const responsive = (project.breakpoints || defaultBreakpoints()).map(b => { const css = compile(b.id); return css && `@media ${b.condition} {\n${css}\n}`; });
-  return [base, ...responsive, project.customCss].filter(Boolean).join('\n\n');
+  return [base, ...responsive, compileDecorations(project), project.customCss].filter(Boolean).join('\n\n');
 }
 export function exportTheme(project) {
   const p = validateProject(project);
   return { ...clone(p.baseTheme), name: p.name, custom_css: [rewriteVariables(p.baseTheme.custom_css || '', p.variableEdits), compileOverrides(p)].filter(Boolean).join('\n\n/* Tavern Theme Studio */\n') };
 }
 export function ruleCount(project) {
-  return Object.keys(project.variableEdits || {}).length + Object.values(project.rules).reduce((sum, scope) => sum + Object.values(scope).reduce((n, props) => n + Object.keys(props).length, 0), 0);
+  return Object.keys(project.variableEdits || {}).length + Object.values(project.rules).reduce((sum, scope) => sum + Object.values(scope).reduce((n, props) => n + Object.keys(props).length, 0), 0) + (project.decorations || []).filter(d => d.asset || !d.visible || Object.keys(d.props).length || Object.keys(d.overrides).length).length;
 }
 
 export class ProjectHistory {

@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
-import { createProject, exportTheme } from '../shared/core.js';
+import { createProject, exportTheme, applyCommand } from '../shared/core.js';
 
 const projectRoot = path.resolve(import.meta.dirname, '..');
 export const folioSource = path.join(projectRoot, 'examples/moonveil-crescent-folio');
@@ -36,14 +36,15 @@ export async function buildFolio({ outputDir, mode = 'embedded', preview = false
     }
   }
   if (/__\w+__/.test(css)) throw new Error('CSS 仍含未解析素材占位符。');
-  const theme = { ...fields, custom_css: css }, project = createProject(theme);
+  const recipe = JSON.parse(await readFile(path.join(folioSource, 'studio.recipe.json'), 'utf8'));
+  const theme = { ...fields, custom_css: css }, project = applyCommand(createProject(theme), { type: 'recipe', recipe });
   project.assetRefs = assetRefs;
   const native = { ...fields, custom_css: nativeCss };
   await mkdir(outputDir, { recursive: true });
   if (!legacy) {
     for (const asset of assets) { await mkdir(path.dirname(path.join(outputDir, asset.file)), { recursive: true }); await writeFile(path.join(outputDir, asset.file), asset.data); }
     await writeFile(path.join(outputDir, 'theme.json'), JSON.stringify(theme, null, 2));
-    await writeFile(path.join(outputDir, 'build.json'), JSON.stringify({ schemaVersion: 1, themeFile: 'theme.json', mode, assets: assets.map(({ data, ...asset }) => asset), assetRefs }, null, 2));
+    await writeFile(path.join(outputDir, 'build.json'), JSON.stringify({ schemaVersion: 1, themeFile: 'theme.json', mode, assets: assets.map(({ data, ...asset }) => asset), assetRefs, recipe }, null, 2));
   }
   await writeFile(path.join(outputDir, 'moonveil.theme.json'), JSON.stringify(native, null, 2));
   await writeFile(path.join(outputDir, 'moonveil.studio.json'), JSON.stringify(project, null, 2));

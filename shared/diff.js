@@ -6,7 +6,7 @@ export function diffProjects(before, after) {
   const add = (path, a, b, label = path) => { if (JSON.stringify(a) !== JSON.stringify(b)) changes.push({ path, label, before: a ?? null, after: b ?? null }); };
   add('工程名称', before.name, after.name);
   add('projectId', before.projectId, after.projectId, '工程身份');
-  for (const key of ['breakpoints', 'decorations', 'assetRefs', 'bindingConflicts']) add(key, before[key], after[key]);
+  for (const key of ['breakpoints', 'decorations', 'recipe', 'assetRefs', 'bindingConflicts']) add(key, before[key], after[key]);
   for (const scope of new Set([...Object.keys(before.rules), ...Object.keys(after.rules)])) {
     const a = before.rules[scope] || {}, b = after.rules[scope] || {};
     for (const target of new Set([...Object.keys(a), ...Object.keys(b)])) {

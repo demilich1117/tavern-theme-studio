@@ -39,6 +39,7 @@ export function attachSource({ getState, getToken, toast }) {
     $('#source-args').value = config.args.join('\n'); $('#source-watch').value = config.watch.join('\n'); $('#source-mode').value = config.mode || 'local';
   }
   function renderStatus() {
+    if (!dialog.isConnected) return;
     const status = info?.status || { state: 'unbound' };
     $('#source-status').textContent = stateNames[status.state] || status.state;
     $('#source-badge').textContent = ['failed', 'conflict', 'interrupted'].includes(status.state) ? '!' : status.state === 'running' ? '…' : '';
