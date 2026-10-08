@@ -2,7 +2,7 @@
 
 配方声明可编辑关系，不自动猜测任意 CSS。工程 v3 的 `recipe` 可为空；无配方时原有 CSS 和编辑保持。月弧浮页的 `studio.recipe.json` 声明十二张素材的中文用途、插槽、素材变量、实际 1000px 条件与边框用法；源码候选的 `build.json` 可携带 `recipe`，同配方身份刷新保留图层与已移除插槽。
 
-在「装饰图层」搜索中文用途，选择图层，再换图或修改参数。所有尺寸与命名断点分别编辑；锁定禁止修改，解锁后可操作。复制会产生新 ID 并提示插槽冲突，需要选择空闲插槽。移除源码装饰保留隐藏插槽声明，后续自动构建不会重加它。每项操作可撤销。当前尚未提供真实画面拖动。
+在「装饰图层」搜索中文用途，选择图层，再换图或修改参数。所有尺寸与命名断点分别编辑；锁定禁止修改，解锁后可操作。复制会产生新 ID 并提示插槽冲突，需要选择空闲插槽。移除源码装饰保留隐藏插槽声明，后续自动构建不会重加它。每项操作可撤销。0.7 已提供 [真实画面定位与拖动](layouts-and-geometry.md)。
 
 配方 `schemaVersion:1` 含 `id/name/version/slots/variables/hiddenSlots`。插槽字段包括 `id/name/group/selector/pseudo/method/sourceOwned/assetVariable/assetContext/geometry/position/condition/aspectRatio/exclude/note`；`method` 为 background 或 nine-slice，条件目前支持单一 min/max-width。已有源码插槽必须声明唯一素材变量及实际规则使用。原生控件直接边框与滚动条只允许声明的换图，禁止变换整个控件。
 

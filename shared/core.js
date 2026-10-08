@@ -1,11 +1,13 @@
 import { rewriteVariables, scanVariables, validateVariableValue } from './variables.js';
 import { migrateProject, bindingRecords, mergeSourceTheme, newProjectId, defaultBreakpoints } from './migrations.js';
 import { validateRecipe, validateLayer, validateLayerProps, layersFromRecipe, mergeRecipe, compileDecorations, layerAsset } from './decorations.js';
+import { LAYOUT_FIELDS, LAYOUT_TARGETS, normalizeLayoutValue } from './layouts.js';
 // Self-contained illustrated themes embed raster assets in their base CSS.
 export const MAX_THEME_CSS_LENGTH = 1_000_000;
 export const TARGETS = [
   { id: 'global', name: '全局界面', selector: 'body', icon: '◉', note: '页面底色与基础文字；局部主题样式可能覆盖继承值。' },
   { id: 'chat', name: '聊天区域', selector: '#chat', icon: '▤', note: '消息列表的背景、宽度与留白。' },
+  { id: 'stage', name: '阅读面板', selector: '#sheld', icon: '▥', note: '原生阅读与输入外框；使用最大宽度与留白避免正文溢出。' },
   { id: 'assistant', name: '角色消息', selector: '#chat .mes[is_user="false"]', icon: '◇', note: '作用于全部角色消息，包括之后生成的消息。' },
   { id: 'user', name: '我的消息', selector: '#chat .mes[is_user="true"]', icon: '◈', note: '作用于全部用户消息。' },
   { id: 'avatar', name: '消息头像', selector: '#chat .mes .avatar, #chat .mes .avatar img', icon: '▣', note: '统一调整消息头像容器和图片。' },
@@ -51,6 +53,7 @@ export function createProject(theme = { name: '新主题', custom_css: '' }, { p
   return { schemaVersion: 3, projectId, name: theme.name, baseTheme: validateTheme(theme), rules: { base: {}, mobile: {} }, variableEdits: {}, variableBindings: bindingRecords(theme.custom_css || ''), bindingConflicts: [], breakpoints: defaultBreakpoints(), recipe: null, decorations: [], assetRefs: [], customCss: '' };
 }
 export function normalizeValue(key, value) {
+  if (LAYOUT_FIELDS.some(f => f.key === key)) return normalizeLayoutValue(key, value);
   const field = FIELDS.find(x => x.key === key);
   if (!field) throw new Error('不支持的样式属性。');
   if (value === null) return null;
@@ -90,6 +93,7 @@ export function validateProject(value) {
   const scopeIds = new Set(['base']);
   p.breakpoints = value.breakpoints.map(b => {
     if (!object(b) || !/^[a-z][\w-]{0,47}$/.test(b.id) || scopeIds.has(b.id) || typeof b.name !== 'string' || !b.name.trim() || b.name.length > 80 || typeof b.condition !== 'string' || !/^\((?:min|max)-width: \d{1,5}px\)$/.test(b.condition)) throw new Error('断点 ID、名称或宽度条件无效。');
+    if (b.id === 'mobile' && b.condition !== '(max-width: 767px)') throw new Error('保留旧 mobile 的 767px 条件；其他尺寸请新建断点。');
     scopeIds.add(b.id); return clone(b);
   });
   if (!scopeIds.has('mobile')) throw new Error('请保留旧工程的 mobile 断点。');
@@ -107,6 +111,7 @@ export function validateProject(value) {
       if (!TARGETS.some(x => x.id === target) || !object(props)) throw new Error('样式部件无效。');
       p.rules[scope][target] = {};
       for (const [key, v] of Object.entries(props)) {
+        if (LAYOUT_FIELDS.some(f => f.key === key) && !LAYOUT_TARGETS.includes(target)) throw new Error('此部件不支持容器布局。');
         const normalized = normalizeValue(key, v);
         if (normalized !== null) p.rules[scope][target][key] = normalized;
       }
@@ -132,6 +137,14 @@ export function applyCommand(project, command) {
       if (!Object.hasOwn(next.rules, command.scope) || !TARGETS.some(x => x.id === command.target)) throw new Error('部件或范围无效。');
       delete next.rules[command.scope][command.target];
       break;
+    case 'breakpoints': {
+      if (!Array.isArray(command.breakpoints)) throw new Error('断点列表无效。');
+      next.breakpoints = clone(command.breakpoints);
+      const scopes = new Set(['base', ...next.breakpoints.map(b => b.id)]);
+      next.rules = Object.fromEntries([...scopes].map(id => [id, Object.hasOwn(next.rules, id) ? next.rules[id] : {}]));
+      for (const layer of next.decorations) layer.overrides = Object.fromEntries(Object.entries(layer.overrides).filter(([id]) => scopes.has(id)));
+      break;
+    }
     case 'rename': next.name = command.name; break;
     case 'custom-css': next.customCss = command.css; break;
     case 'variable': {

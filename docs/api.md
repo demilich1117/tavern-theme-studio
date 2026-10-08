@@ -108,3 +108,7 @@ node scripts/cli.js command output/command.json
 建议工具映射：`inspect_project` → `status`，`list_targets` → `targets`，`set_style` → `set`，`undo_change` → `undo`，`export_theme` → `export`。工具返回命令结果，避免让 Agent 直接写 `.local/project.json` 或酒馆设置。
 
 一个可操作流程：读取工程、变量与部件 → 保存命名快照 → 修改变量或部件 → 在真实酒馆中观察与诊断 → 运行场景检查 → 对比快照 → 用户微调 → 导出主题。当前 HTTP API 返回工程与快照状态，不包含截图、聊天正文或实时 DOM；浏览器诊断和场景检查由界面向连接器请求，报告可从界面导出。Agent 需要另用经授权的浏览器工具获取视觉反馈。工作台未接入任何远程模型，也不发送聊天数据。
+
+## 0.7 布局与画面定位
+
+`breakpoints` 命令原子更新断点列表及各尺寸覆盖，旧 mobile 保留 767px。`set` 可修改受控容器的布局字段。定位桥接带完整基线，临时拖动不写入，松手提交一次。字段与限制见 [定位与布局](layouts-and-geometry.md)。

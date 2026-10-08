@@ -60,6 +60,7 @@ function mount() {
       if (url.protocol !== 'http:' || !['127.0.0.1', 'localhost'].includes(url.hostname)) throw new Error('第一版仅支持本机 HTTP 工作台。');
       bridge?.dispose();
       let collapseDock = () => {};
+      let disposeDock = () => {};
       const session = crypto.randomUUID();
       url.pathname = '/'; url.search = ''; url.hash = new URLSearchParams({ origin: location.origin, session }).toString();
       dock?.remove();
@@ -71,16 +72,25 @@ function mount() {
         const close = document.createElement('button'); close.type = 'button'; close.textContent = '关闭并恢复原样'; close.style.cssText = 'font:12px sans-serif;color:#e7e8ea;background:transparent;border:0;cursor:pointer;padding:6px'; close.addEventListener('click', () => bridge?.dispose());
         bar.append(label, close);
         const frame = document.createElement('iframe'); frame.title = '酒馆主题工作台编辑面板'; frame.src = url.href; frame.allow = 'clipboard-write'; Object.assign(frame.style, { width: '100%', flex: '1', minHeight: '0', border: '0' });
+        const resize = document.createElement('div'); resize.setAttribute('role','separator'); resize.setAttribute('aria-label','调整工作台宽度'); resize.setAttribute('aria-orientation','vertical'); resize.tabIndex=0;
+        resize.style.cssText='position:absolute;left:0;top:32px;bottom:0;width:7px;cursor:ew-resize;touch-action:none;background:linear-gradient(90deg,#e6aa6440,transparent);';
+        let panelWidth = 440, resizing;
+        const width = value => { panelWidth=Math.max(Math.min(320,innerWidth),Math.min(900,innerWidth,value)); if(!collapsed)dock.style.width=panelWidth+'px'; resize.setAttribute('aria-valuenow',Math.round(panelWidth));resize.setAttribute('aria-valuemin',Math.min(320,innerWidth));resize.setAttribute('aria-valuemax',Math.min(900,innerWidth)); };
+        resize.addEventListener('pointerdown',e=>{if(e.button!==0)return;resizing={x:e.clientX,width:panelWidth};resize.setPointerCapture(e.pointerId);e.preventDefault();});
+        resize.addEventListener('pointermove',e=>{if(resizing)width(resizing.width+resizing.x-e.clientX);});
+        resize.addEventListener('pointerup',()=>{resizing=undefined;});resize.addEventListener('pointercancel',()=>{resizing=undefined;});
+        resize.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();e.stopPropagation();width(panelWidth+(e.key==='ArrowLeft'?1:-1)*(e.shiftKey?50:10));}});
+        const onResize=()=>width(panelWidth);window.addEventListener('resize',onResize);disposeDock=()=>window.removeEventListener('resize',onResize);
         const fold = document.createElement('button'); fold.type = 'button'; fold.textContent = '收起面板'; fold.setAttribute('aria-expanded', 'true'); fold.style.cssText = close.style.cssText;
         let collapsed = false;
         collapseDock = () => {
           collapsed = !collapsed; frame.style.display = collapsed ? 'none' : '';
-          Object.assign(dock.style, { height: collapsed ? 'auto' : '100dvh', width: collapsed ? 'auto' : 'min(440px, 100vw)', top: collapsed ? 'auto' : '0', bottom: collapsed ? '0' : 'auto' });
+          Object.assign(dock.style, { height: collapsed ? 'auto' : '100dvh', width: collapsed ? 'auto' : panelWidth+'px', top: collapsed ? 'auto' : '0', bottom: collapsed ? '0' : 'auto' }); resize.hidden=collapsed;
           label.hidden = collapsed; close.hidden = collapsed;
           fold.textContent = collapsed ? '显示工作台' : '收起面板'; fold.setAttribute('aria-expanded', String(!collapsed));
         };
         fold.addEventListener('click', collapseDock); bar.prepend(fold);
-        dock.append(bar, frame); document.body.append(dock); studioWindow = frame.contentWindow;
+        dock.append(bar, frame, resize); document.body.append(dock); width(panelWidth); studioWindow = frame.contentWindow;
       } else {
         studioWindow = window.open(url.href, 'tavern-theme-studio', 'popup,width=1440,height=960');
         if (!studioWindow) throw new Error('浏览器阻止了新窗口，可使用酒馆内的面板入口。');
@@ -88,7 +98,7 @@ function mount() {
       bridge = attachBridge({ peer: studioWindow, origin: url.origin, session, readTheme, fixture,
         onFixtureScene: id => focusFixtureScene(fixture, id), onCollapse: collapseDock,
         onPickChange: picking => { if (embedded && dock) dock.style.visibility = picking ? 'hidden' : 'visible'; },
-        onClose: () => { dock?.remove(); dock = undefined; stop.disabled = true; status.textContent = '预览已停止，酒馆恢复原样。'; } });
+        onClose: () => { disposeDock(); dock?.remove(); dock = undefined; stop.disabled = true; status.textContent = '预览已停止，酒馆恢复原样。'; } });
       stop.disabled = false; status.textContent = '已打开工作台，等待连接。';
     } catch (e) { status.textContent = e.message; }
   };

@@ -4,6 +4,7 @@ import { createThemeIsolation, createThemePresentation } from './theme-isolation
 import { resolveAssetUrls } from '../shared/assets.js';
 import { captureAnchor, createAnnotationPins } from './annotations.js';
 import { layerAsset } from '../shared/decorations.js';
+import { createDecorationEditor } from './decoration-editor.js';
 
 export const CHANNEL = 'tavern-theme-studio/v1';
 const STYLE_ID = 'tts-preview-style';
@@ -55,6 +56,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
   document.getElementById(VARS_ID)?.remove(); document.head.append(variables);
   const style = document.createElement('style'); style.id = STYLE_ID;
   document.getElementById(STYLE_ID)?.remove(); document.head.append(style);
+  let hostBlocked = new Set();
   function renderPreview(project, enabled) {
     if (!enabled) { style.textContent = ''; send('decoration-status', { issues: [] }); return; }
     // Probe authored CSS without editor decorations. Existing host extension
@@ -80,9 +82,14 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
       }
     }
     const display = { ...project, recipe: project.recipe ? { ...project.recipe, hiddenSlots: project.recipe.hiddenSlots.filter(id => !blocked.has(`hidden-${id}`)) } : null, decorations: project.decorations.filter(l => !blocked.has(l.id)) };
+    hostBlocked = blocked;
     style.textContent = resolveAssetUrls(exportTheme(display).custom_css, origin);
     send('decoration-status', { issues });
   }
+  let currentBasis;
+  const editor = createDecorationEditor({ getProject: () => currentProject, getBasis: () => currentBasis, renderPreview: project => renderPreview(project, previewEnabled), isBlocked: id => hostBlocked.has(id), send, onActive: onPickChange });
+  const viewport = () => { send('viewport', { width: innerWidth, height: innerHeight }); editor.refresh(); };
+  window.addEventListener('resize', viewport);
   const overlay = document.createElement('div'); overlay.id = OVERLAY_ID;
   Object.assign(overlay.style, { position: 'fixed', pointerEvents: 'none', zIndex: '2147483646', border: '2px solid #e6aa64', borderRadius: '4px', boxShadow: '0 0 0 1px #131517', display: 'none', boxSizing: 'border-box' });
   document.getElementById(OVERLAY_ID)?.remove(); document.body.append(overlay);
@@ -122,21 +129,26 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
     lastSeen = Date.now();
     try {
       switch (data.type) {
-        case 'hello': send('ready', { capabilities: { projectSchema: 3, stableBindings: true, decorations: 1 }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); break;
+        case 'hello': send('ready', { capabilities: { projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1 }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
         case 'ping': send('pong', { fixture: fixture?.status() }); break;
         case 'preview': {
           const project = validateProject(data.project);
-          currentProject = project; previewEnabled = data.enabled !== false;
+          currentProject = project; currentBasis = data.basis; previewEnabled = data.enabled !== false;
+          if (!previewEnabled) editor.stop();
           isolation.setEnabled(previewEnabled);
           if (previewEnabled) presentation.apply(exportTheme(project)); else presentation.restore();
           // Keep imports first in their own stylesheet. Separate variables override
           // host inline variables without mutating them; advanced CSS follows.
           variables.textContent = data.enabled === false ? '' : themeVariablesCss(project);
           renderPreview(project, data.enabled !== false);
-          requestAnimationFrame(inspect); break;
+          editor.update();
+          requestAnimationFrame(() => { if (!closed) { inspect(); requestAnimationFrame(() => { if (!closed) send('preview-applied', { basis: data.basis }); }); } }); break;
         }
         case 'select': if (!TARGETS.some(x => x.id === data.target)) throw new Error('未知部件。'); if (selected !== data.target) pickedElement = undefined; selected = data.target; inspect(); break;
-        case 'pick': annotating = false; picking = !!data.enabled; if (!picking) overlay.style.display = 'none'; onPickChange(picking); break;
+        case 'pick': editor.stop(); annotating = false; picking = !!data.enabled; if (!picking) overlay.style.display = 'none'; onPickChange(picking); break;
+        case 'decoration-edit': picking = annotating = false; overlay.style.display = 'none'; editor.start(data); break;
+        case 'decoration-edit-stop': editor.stop(); break;
+        case 'decoration-commit-result': editor.receive(data); break;
         case 'annotate': annotating = picking = !!data.enabled; if (!picking) overlay.style.display = 'none'; onPickChange(picking); break;
         case 'annotations': pins.set(Array.isArray(data.tickets) ? data.tickets : []); break;
         case 'annotation-focus': pins.focus(data.anchor); break;
@@ -163,8 +175,8 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
     } catch (e) { send('error', { error: e.message }); }
   }
   const observer = new MutationObserver(records => {
-    if (pending || !records.some(r => r.target !== style && !overlay.contains(r.target))) return;
-    pending = true; requestAnimationFrame(() => { pending = false; if (!closed) inspect(); });
+    if (pending || !records.some(r => r.target !== style && !overlay.contains(r.target) && !r.target.closest?.('[data-tts-ui]') && ![...r.addedNodes,...r.removedNodes].every(n=>n.nodeType===1&&n.hasAttribute('data-tts-ui')))) return;
+    pending = true; requestAnimationFrame(() => { pending = false; if (!closed) { inspect(); editor.refresh(); } });
   });
   observer.observe(document.body, { childList: true, subtree: true });
   window.addEventListener('message', message);
@@ -175,6 +187,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
     send('disconnected'); clearInterval(timer); observer.disconnect(); headObserver.disconnect(); isolation.dispose(); presentation.restore();
     window.removeEventListener('message', message); window.removeEventListener('pagehide', dispose);
     document.removeEventListener('pointermove', move, true); document.removeEventListener('click', click, true); document.removeEventListener('keydown', key, true);
+    window.removeEventListener('resize', viewport); editor.dispose();
     pins.dispose(); variables.remove(); style.remove(); overlay.remove(); onPickChange(false); onClose();
   }
   window.addEventListener('pagehide', dispose);

@@ -4,23 +4,26 @@ import { FIXTURE_SCENES } from '/shared/fixture.js';
 import { attachWorkflow } from '/workflow.js';
 import { attachSource } from '/source.js';
 import { attachLayers } from '/layers.js';
+import { attachLayouts } from '/layouts.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
 let peer, peerOrigin, session, ready = false, live = false, lastSeen = 0, isPicking = false, connectedTheme;
-let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, layers, detailsExpanded = false;
+let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, layers, layouts, detailsExpanded = false;
 let fixtureBusy = false, fixtureSupported = false;
+let fixtureState, awaitingFirstPreview = false;
 function updateFixture(fixture) {
+  if (fixture) fixtureState = fixture;
   fixtureSupported = fixture?.supported === true;
   $('#fixture-tools').hidden = !live;
   $('#fixture-open').disabled = !ready || !fixtureSupported || fixtureBusy;
   $('#fixture-fresh').disabled = !ready || !fixtureSupported || fixtureBusy;
   $('#fixture-scene').disabled = !ready || !fixture?.active || fixtureBusy;
-  $('#fixture-status').textContent = fixtureBusy ? '正在打开原生测试对话…' : !ready ? '酒馆连接已断开' : !fixtureSupported ? '更新连接器后可使用原生测试对话。' : fixture.active ? '当前为虚构测试对话 · 使用酒馆原生控件' : '测试对话独立保存；已有输入或编辑会阻止切换。';
+  $('#fixture-status').textContent = fixtureBusy ? '正在打开原生测试对话…' : !ready ? '酒馆连接已断开' : awaitingFirstPreview ? '正在应用主题预览…' : !fixtureSupported ? '更新连接器后可使用原生测试对话。' : fixture.active ? '当前为虚构测试对话 · 使用酒馆原生控件' : '测试对话独立保存；已有输入或编辑会阻止切换。';
 }
 function toast(text, error = false) { clearTimeout(toastTimer); $('#toast').textContent = text; $('#toast').classList.toggle('error', error); $('#toast').hidden = false; toastTimer = setTimeout(() => $('#toast').hidden = true, 5000); }
 function send(type, payload = {}) { if (peer) peer.postMessage({ channel: CHANNEL, session, type, ...payload }, peerOrigin); }
-function preview(project = previewProject || state?.project) { if (ready && project) send('preview', { project, enabled: !$('#compare').checked }); }
+function preview(project = previewProject || state?.project) { if (ready && project) send('preview', { project, basis: { projectId: state.projectId, sessionId: state.sessionId, revision: state.revision, fingerprint: state.fingerprint }, enabled: !$('#compare').checked }); }
 async function command(value) {
   $('#save-status').textContent = '保存中…';
   const run = async () => {
@@ -75,6 +78,7 @@ function renderFields() {
 }
 function render() {
   if (!state) return;
+  if (!Object.hasOwn(state.project.rules, scope)) scope = 'base';
   if (document.activeElement !== $('#project-name')) $('#project-name').value = state.project.name;
   $('#save-status').textContent = '已保存到本机'; $('#undo').disabled = !state.canUndo; $('#redo').disabled = !state.canRedo;
   for (const button of $('#target-list').children) {
@@ -88,7 +92,7 @@ function render() {
   $('#selection-breadcrumb').textContent = `${live ? '真实酒馆' : '示例场景'} / ${target.name} / ${scope === 'base' ? '所有尺寸' : '仅手机'}`;
   $('#rule-count').textContent = `${ruleCount(state.project)} 项样式修改`;
   $('#css-badge').textContent = state.project.customCss.trim() ? '●' : '';
-  renderFields(); advanced?.render(); workflow?.render(); source?.render(); layers?.render();
+  renderFields(); advanced?.render(); workflow?.render(); source?.render(); layers?.render(); layouts?.render();
 }
 function setSelected(id) { selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
 function setDevice(next) {
@@ -138,6 +142,7 @@ window.addEventListener('message', event => {
   lastSeen = Date.now();
   workflow?.receive(data);
   layers?.receive(data);
+  layouts?.receive(data);
   switch (data.type) {
     case 'ready': {
       if (data.capabilities?.projectSchema !== 3 || (state.project.recipe && data.capabilities?.decorations !== 1)) {
@@ -145,6 +150,7 @@ window.addEventListener('message', event => {
         toast('此工程使用 v3。请安装新版连接器，再刷新专用测试标签。', true); break;
       }
       const first = !ready; ready = true; clearInterval(helloTimer); connectedTheme = data.theme;
+      if (first) awaitingFirstPreview = data.capabilities?.decorationEditor === 1;
       $('#preview-label').textContent = live ? '真实酒馆' : '示例预览'; $('#connection-caption').textContent = live ? peerOrigin : '未连接酒馆';
       $('#connection-dot').classList.toggle('connected', live); $('#connect-button').textContent = live ? '已连接' : '连接酒馆';
       $('#connection-message').textContent = live ? `已连接 ${peerOrigin}` : '当前预览是示例，尚未连接真实酒馆。';
@@ -153,7 +159,7 @@ window.addEventListener('message', event => {
         if (!ruleCount(state.project) && !state.project.customCss && state.project.baseTheme.name === '新主题') act({ type: 'base-theme', theme: data.theme });
         else if (!state.sourceBound && JSON.stringify(state.project.baseTheme) !== JSON.stringify(data.theme)) $('#base-dialog').showModal();
       }
-      updateFixture(data.fixture); preview(); send('select', { target: selected }); workflow?.ready(); break;
+      layers?.capabilities(data.capabilities); updateFixture(data.fixture); preview(); send('select', { target: selected }); workflow?.ready(); break;
     }
     case 'inspection': inspection = data.inspection; if (inspection.id === selected) { $('#match-count').textContent = inspection.visible ? `匹配 ${inspection.count} 个 · ${inspection.pseudo ? '附着元素 ' : ''}${inspection.rect.width} × ${inspection.rect.height}` : `匹配 ${inspection.count} 个 · 当前不可见`; renderFields(); } break;
     case 'diagnosis': case 'audit-result': advanced?.receive(data); break;
@@ -161,6 +167,7 @@ window.addEventListener('message', event => {
     case 'pick-cancelled': setPicking(false); break;
     case 'theme': act({ type: 'base-theme', theme: data.theme }); break;
     case 'fixture-status': fixtureBusy = false; updateFixture(data.fixture); break;
+    case 'preview-applied': if (awaitingFirstPreview && data.basis?.projectId === state.projectId) { awaitingFirstPreview = false; updateFixture(fixtureState); } break;
     case 'pong': updateFixture(data.fixture); break;
     case 'error': toast(data.error, true); break;
     case 'disconnected': ready = false; fixtureBusy = false; updateFixture(); $('#connection-caption').textContent = '预览已停止'; $('#connection-dot').classList.remove('connected'); break;
@@ -246,7 +253,8 @@ try {
   advanced = attachAdvanced({ getState: () => state, command, preview, send, toast, getSelected: () => selected, isLive: () => live, isReady: () => ready, setDevice, getDevice: () => device });
   workflow = attachWorkflow({ getState: () => state, getToken: () => token, getScope: () => scope, command, send, toast, isReady: () => ready, stopPicking: () => setPicking(false), download });
   source = attachSource({ getState: () => state, getToken: () => token, toast });
-  layers = attachLayers({ getState: () => state, command, preview, toast });
+  layers = attachLayers({ getState: () => state, command, preview, toast, send });
+  layouts = attachLayouts({ getState: () => state, command, toast, getSelected: () => selected });
   render(); connect();
   const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };
   window.addEventListener('pagehide', () => { events.close(); clearInterval(helloTimer); clearInterval(heartbeat); }, { once: true });

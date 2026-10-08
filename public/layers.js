@@ -3,8 +3,8 @@ import { decorationDiagnostics, effectiveLayer, layerAsset } from '/shared/decor
 import { resolveAssetUrls } from '/shared/assets.js';
 const $ = s => document.querySelector(s);
 const node = (tag, text, cls) => { const el = document.createElement(tag); if (text !== undefined) el.textContent = text; if (cls) el.className = cls; return el; };
-export function attachLayers({ getState, command, preview, toast }) {
-  let selected, assets = [], scope = 'base', queue = Promise.resolve(), lastProjectId, hostIssues = [];
+export function attachLayers({ getState, command, preview, toast, send }) {
+  let selected, assets = [], scope = 'base', queue = Promise.resolve(), lastProjectId, hostIssues = [], canEdit = false, viewport;
   const button = node('button', '◇ 装饰图层'); button.id = 'layers-button'; $('.studio-tools').append(button);
   const dialog = node('dialog', undefined, 'wide-dialog'); dialog.id = 'layers-dialog';
   dialog.innerHTML = `<form method="dialog" class="dialog-header"><h2>装饰图层 <small id="layers-total"></small></h2><button aria-label="关闭装饰图层">×</button></form>
@@ -30,6 +30,9 @@ export function attachLayers({ getState, command, preview, toast }) {
       ['移除', () => command({ type: 'decoration-remove', id: layer.id }), layer.locked]
     ]) { const b = node('button', label); b.disabled = disabled; b.addEventListener('click', run(action)); actions.append(b); }
     panel.append(actions); const form = node('div', undefined, 'layer-fields');
+    const edit = node('button', '在真实画面定位'); edit.id = 'layer-locate'; edit.disabled = !canEdit || !slot?.geometry || layer.locked || !layer.visible;
+    edit.addEventListener('click', () => { const s = getState(); dialog.close(); send('decoration-edit', { id: layer.id, scope, basis: { projectId: s.projectId, sessionId: s.sessionId, revision: s.revision, fingerprint: s.fingerprint } }); }); panel.append(edit);
+    if (viewport) panel.append(node('p', `${viewport.width} × ${viewport.height}px · ${p.breakpoints.filter(b => matchWidth(b.condition, viewport.width)).map(b => b.name).join(' / ') || '基础尺寸'}${slot?.condition ? ' · 插槽 ' + slot.condition + (matchWidth(slot.condition, viewport.width) ? ' 已命中' : ' 未命中') : ''}`, 'panel-hint'));
     const changeProps = (k, value) => { const current = getState().project.decorations.find(l => l.id === layer.id); const next = { ...(editScope === 'base' ? current?.props : current?.overrides[editScope]) }; if (value === undefined) delete next[k]; else next[k] = value; return { props: next }; };
     const input = (label, k, value, action, type = 'text') => { const el = node('input'); el.id = 'layer-' + k; el.type = type; if (type === 'checkbox') el.checked = value; else el.value = value; el.disabled = layer.locked; el.addEventListener('change', e => { const submitted = type === 'checkbox' ? el.checked : el.value; run(() => action(submitted))(e); }); field(form, label, el); return el; };
     const select = (label, k, value, options, action, unlocked = false) => { const el = node('select'); el.id = 'layer-' + k; for (const [caption, v] of options) el.add(new Option(caption, v)); el.value = value; el.disabled = !unlocked && layer.locked; el.addEventListener('change', e => { const submitted = el.value; run(() => action(submitted))(e); }); field(form, label, el); return el; };
@@ -56,6 +59,7 @@ export function attachLayers({ getState, command, preview, toast }) {
   function render() {
     if (!dialog.open) return;
     const p = getState().project, diagnostics = decorationDiagnostics(p), search = $('#layers-search').value.trim().toLowerCase(), group = $('#layers-group').value;
+    if (!Object.hasOwn(p.rules, scope)) scope = 'base';
     $('#layers-total').textContent = p.decorations.length; $('#layers-recipe').textContent = p.recipe ? `${p.recipe.name} · ${p.recipe.version}。先选择中文用途，再调整参数；未识别 CSS 继续保留。` : '尚无配方。可新增空闲伪元素装饰，或导入作者声明的配方。';
     const groups = [...new Set((p.recipe?.slots || []).map(s => s.group))]; $('#layers-group').replaceChildren(new Option('全部用途', '')); for (const g of groups) $('#layers-group').add(new Option(g, g)); $('#layers-group').value = groups.includes(group) ? group : '';
     const list = $('#layers-list'); list.replaceChildren();
@@ -80,5 +84,11 @@ export function attachLayers({ getState, command, preview, toast }) {
   $('#recipe-import-button').addEventListener('click', () => $('#recipe-import').click());
   $('#recipe-import').addEventListener('change', run(async e => { const file = e.target.files[0]; try { if (file) { if (file.size > 1048576) throw new Error('配方超过 1 MiB。'); await command({ type: 'recipe', recipe: JSON.parse((await file.text()).replace(/^\uFEFF/, '')) }); selected = undefined; } } finally { e.target.value = ''; } }));
   dialog.addEventListener('close', () => preview());
-  return { render() { const p = getState().project; if (p.projectId !== lastProjectId) { lastProjectId = p.projectId; selected = undefined; scope = 'base'; } button.textContent = `◇ 装饰图层 (${p.decorations.length})`; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); }, receive(data) { if (data.type === 'decoration-status') { const changed = JSON.stringify(hostIssues) !== JSON.stringify(data.issues); hostIssues = data.issues || []; if (changed) render(); } else if (data.type === 'disconnected') { hostIssues = []; render(); } }, events(events) { events.addEventListener('assets', () => { if (dialog.open) assetList().then(render).catch(e => toast(e.message, true)); }); } };
+  function matchWidth(condition, width) { const m=condition.match(/\((min|max)-width: (\d+)px\)/); return m && (m[1]==='max'?width<=Number(m[2]):width>=Number(m[2])); }
+  return { capabilities(c) { canEdit=c?.decorationEditor===1;render(); }, render() { const p = getState().project; if (p.projectId !== lastProjectId) { lastProjectId = p.projectId; selected = undefined; scope = 'base'; } button.textContent = `◇ 装饰图层 (${p.decorations.length})`; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); }, receive(data) {
+    if (data.type==='viewport') { viewport=data;render(); }
+    else if (data.type==='decoration-commit') { const s=getState(); if (!['projectId','sessionId','fingerprint','revision'].every(k=>data.basis?.[k]===s[k])) { send('decoration-commit-result',{ok:false,error:'工程更新，此次拖动未保存。'});preview();toast('工程更新，请重新定位。',true);return; } command({type:'decoration-update',id:data.id,scope:data.scope,patch:{props:data.props}}).then(()=>send('decoration-commit-result',{ok:true})).catch(e=>send('decoration-commit-result',{ok:false,error:e.message})); }
+    else if (data.type==='decoration-editor-status'&&data.message) toast(data.message);
+    else if (data.type === 'decoration-status') { const changed = JSON.stringify(hostIssues) !== JSON.stringify(data.issues); hostIssues = data.issues || []; if (changed) render(); } else if (data.type === 'disconnected') { hostIssues = [];canEdit=false;render(); }
+  }, events(events) { events.addEventListener('assets', () => { if (dialog.open) assetList().then(render).catch(e => toast(e.message, true)); }); } };
 }
