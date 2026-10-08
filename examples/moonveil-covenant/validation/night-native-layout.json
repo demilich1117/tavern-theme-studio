@@ -1,0 +1,122 @@
+{
+  "widths": [
+    {
+      "left": 320,
+      "native": "55vw",
+      "setting": "55",
+      "width": 704
+    },
+    {
+      "left": 192,
+      "native": "75vw",
+      "setting": "75",
+      "width": 960
+    },
+    {
+      "left": 83.1875,
+      "native": "92vw",
+      "setting": "92",
+      "width": 1177.59375
+    }
+  ],
+  "drawers": [
+    {
+      "id": "user-settings-block",
+      "overflow": false,
+      "rect": {
+        "bottom": 696,
+        "height": 672,
+        "left": 88,
+        "right": 1108,
+        "top": 24,
+        "width": 1020,
+        "x": 88,
+        "y": 24
+      }
+    },
+    {
+      "id": "right-nav-panel",
+      "overflow": false,
+      "rect": {
+        "bottom": 696,
+        "height": 672,
+        "left": 88,
+        "right": 668,
+        "top": 24,
+        "width": 580,
+        "x": 88,
+        "y": 24
+      }
+    },
+    {
+      "id": "rm_extensions_block",
+      "overflow": false,
+      "rect": {
+        "bottom": 696,
+        "height": 672,
+        "left": 88,
+        "right": 1108,
+        "top": 24,
+        "width": 1020,
+        "x": 88,
+        "y": 24
+      }
+    },
+    {
+      "id": "AdvancedFormatting",
+      "overflow": false,
+      "rect": {
+        "bottom": 696,
+        "height": 672,
+        "left": 88,
+        "right": 1108,
+        "top": 24,
+        "width": 1020,
+        "x": 88,
+        "y": 24
+      }
+    },
+    {
+      "id": "WorldInfo",
+      "overflow": false,
+      "rect": {
+        "bottom": 308.546875,
+        "height": 284.546875,
+        "left": 88,
+        "right": 1108,
+        "top": 24,
+        "width": 1020,
+        "x": 88,
+        "y": 24
+      }
+    },
+    {
+      "id": "Backgrounds",
+      "overflow": false,
+      "rect": {
+        "bottom": 696,
+        "height": 672,
+        "left": 88,
+        "right": 1108,
+        "top": 24,
+        "width": 1020,
+        "x": 88,
+        "y": 24
+      }
+    },
+    {
+      "id": "PersonaManagement",
+      "overflow": false,
+      "rect": {
+        "bottom": 696,
+        "height": 672,
+        "left": 88,
+        "right": 1108,
+        "top": 24,
+        "width": 1020,
+        "x": 88,
+        "y": 24
+      }
+    }
+  ]
+}

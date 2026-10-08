@@ -1,0 +1,416 @@
+[
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "chat": {
+      "bottom": 730.1801910400391,
+      "height": 509.7832336425781,
+      "left": 10.895270347595217,
+      "right": 325.9712896347046,
+      "top": 220.39695739746097,
+      "width": 315.0760192871094,
+      "x": 10.895270347595217,
+      "y": 220.39695739746097
+    },
+    "dragon": {
+      "aspectRatio": "1902 / 827",
+      "backgroundCount": 1,
+      "height": "149.254px",
+      "pointerEvents": "none",
+      "width": "343.271px"
+    },
+    "independentWing": "none",
+    "overflow": false,
+    "panel": {
+      "bottom": 832.1509246826172,
+      "height": 679.5889892578125,
+      "left": 9.994369506835938,
+      "right": 326.87217712402344,
+      "top": 152.5619354248047,
+      "width": 316.8778076171875,
+      "x": 9.994369506835938,
+      "y": 152.5619354248047
+    },
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "chat": {
+      "bottom": 276.1261215209961,
+      "height": 112.27477264404295,
+      "left": 22.56475257873535,
+      "right": 797.3676700592041,
+      "top": 163.85134887695312,
+      "width": 774.8029174804688,
+      "x": 22.56475257873535,
+      "y": 163.85134887695312
+    },
+    "dragon": {
+      "aspectRatio": "1902 / 827",
+      "backgroundCount": 1,
+      "height": "94.9747px",
+      "pointerEvents": "none",
+      "width": "218.44px"
+    },
+    "independentWing": "none",
+    "overflow": false,
+    "panel": {
+      "bottom": 378.0968551635742,
+      "height": 257.74212646484375,
+      "left": 21.66385078430176,
+      "right": 798.2685871124268,
+      "top": 120.35472869873048,
+      "width": 776.604736328125,
+      "x": 21.66385078430176,
+      "y": 120.35472869873048
+    },
+    "viewport": [
+      844,
+      390
+    ]
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "chat": {
+      "bottom": 478.04052734375,
+      "height": 292.79278564453125,
+      "left": 90.8924560546875,
+      "right": 1193.5107421875,
+      "top": 185.24774169921875,
+      "width": 1102.6182861328125,
+      "x": 90.8924560546875,
+      "y": 185.24774169921875
+    },
+    "dragon": {
+      "aspectRatio": "1902 / 827",
+      "backgroundCount": 1,
+      "height": "195.65px",
+      "pointerEvents": "none",
+      "width": "450px"
+    },
+    "independentWing": "none",
+    "overflow": false,
+    "panel": {
+      "bottom": 586.0078887939453,
+      "height": 457.9110412597656,
+      "left": 89.9915542602539,
+      "right": 1194.4115982055664,
+      "top": 128.0968475341797,
+      "width": 1104.4200439453125,
+      "x": 89.9915542602539,
+      "y": 128.0968475341797
+    },
+    "viewport": [
+      1280,
+      600
+    ]
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "chat": {
+      "bottom": 786.0360412597656,
+      "height": 458.4177856445313,
+      "left": 12.89414405822754,
+      "right": 797.1846714019775,
+      "top": 327.6182556152344,
+      "width": 784.29052734375,
+      "x": 12.89414405822754,
+      "y": 327.6182556152344
+    },
+    "dragon": {
+      "aspectRatio": "1902 / 827",
+      "backgroundCount": 1,
+      "height": "252.182px",
+      "pointerEvents": "none",
+      "width": "579.997px"
+    },
+    "independentWing": "none",
+    "overflow": false,
+    "panel": {
+      "bottom": 888.0067443847656,
+      "height": 674.380615234375,
+      "left": 11.993243217468262,
+      "right": 798.0855894088745,
+      "top": 213.62612915039065,
+      "width": 786.0923461914062,
+      "x": 11.993243217468262,
+      "y": 213.62612915039065
+    },
+    "viewport": [
+      900,
+      900
+    ]
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "chat": {
+      "bottom": 832.4042663574219,
+      "height": 421.1993103027344,
+      "left": 90.8924560546875,
+      "right": 1261.5286865234375,
+      "top": 411.2049560546875,
+      "width": 1170.63623046875,
+      "x": 90.8924560546875,
+      "y": 411.2049560546875
+    },
+    "dragon": {
+      "aspectRatio": "1902 / 827",
+      "backgroundCount": 1,
+      "height": "452.182px",
+      "pointerEvents": "none",
+      "width": "1039.99px"
+    },
+    "independentWing": "none",
+    "overflow": false,
+    "panel": {
+      "bottom": 940.371612548828,
+      "height": 660.0647583007812,
+      "left": 89.9915542602539,
+      "right": 1262.4296646118164,
+      "top": 280.3068542480469,
+      "width": 1172.4381103515625,
+      "x": 89.9915542602539,
+      "y": 280.3068542480469
+    },
+    "viewport": [
+      1440,
+      960
+    ]
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "chat": {
+      "bottom": 1024.296142578125,
+      "height": 613.0911865234375,
+      "left": 90.8924560546875,
+      "right": 1869.6368408203125,
+      "top": 411.2049560546875,
+      "width": 1778.744384765625,
+      "x": 90.8924560546875,
+      "y": 411.2049560546875
+    },
+    "dragon": {
+      "aspectRatio": "1902 / 827",
+      "backgroundCount": 1,
+      "height": "452.182px",
+      "pointerEvents": "none",
+      "width": "1039.99px"
+    },
+    "independentWing": "none",
+    "overflow": false,
+    "panel": {
+      "bottom": 1132.2635192871094,
+      "height": 851.9566650390625,
+      "left": 89.9915542602539,
+      "right": 1870.537696838379,
+      "top": 280.3068542480469,
+      "width": 1780.546142578125,
+      "x": 89.9915542602539,
+      "y": 280.3068542480469
+    },
+    "viewport": [
+      2048,
+      1152
+    ]
+  }
+]

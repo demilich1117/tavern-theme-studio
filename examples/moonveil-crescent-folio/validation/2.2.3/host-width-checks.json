@@ -1,0 +1,670 @@
+{
+  "host": "SillyTavern 1.19.0 / 06bde939f",
+  "browser": "Chrome",
+  "version": "2.2.3",
+  "date": "2026-10-08",
+  "cases": [
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 70,
+        "left": 128,
+        "right": 2380.796875,
+        "top": 1119,
+        "width": 2252.796875,
+        "x": 128,
+        "y": 1119
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 160.438,
+        "imageWidth": 336.7,
+        "left": 2378,
+        "top": 1005.962,
+        "width": 182
+      },
+      "nativeWidth": "95",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 64,
+        "right": 2496,
+        "top": 100,
+        "width": 2432,
+        "x": 64,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 24,
+      "textRight": 2354,
+      "viewport": [
+        2560,
+        1215
+      ],
+      "visibleTextRight": 2354,
+      "visibleTextGap": 24
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 70,
+        "left": 320,
+        "right": 2188.796875,
+        "top": 1119,
+        "width": 1868.796875,
+        "x": 320,
+        "y": 1119
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 324.016,
+        "imageWidth": 680,
+        "left": 2186,
+        "top": 842.384,
+        "width": 374
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 256,
+        "right": 2304,
+        "top": 100,
+        "width": 2048,
+        "x": 256,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 24,
+      "textRight": 2162,
+      "viewport": [
+        2560,
+        1215
+      ],
+      "visibleTextRight": 2162,
+      "visibleTextGap": 24
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 70,
+        "left": 512,
+        "right": 1996.796875,
+        "top": 1119,
+        "width": 1484.796875,
+        "x": 512,
+        "y": 1119
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 324.016,
+        "imageWidth": 680,
+        "left": 2010.812,
+        "top": 842.384,
+        "width": 549.188
+      },
+      "nativeWidth": "65",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 448,
+        "right": 2112,
+        "top": 100,
+        "width": 1664,
+        "x": 448,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 23.999499999999895,
+      "textRight": 1986.8125,
+      "viewport": [
+        2560,
+        1215
+      ],
+      "visibleTextRight": 1986.8125,
+      "visibleTextGap": 23.999499999999898
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 90.375,
+        "left": 768,
+        "right": 1740.796875,
+        "top": 1098.625,
+        "width": 972.796875,
+        "x": 768,
+        "y": 1098.625
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 324.016,
+        "imageWidth": 680,
+        "left": 1880,
+        "top": 842.384,
+        "width": 680
+      },
+      "nativeWidth": "45",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 704,
+        "right": 1856,
+        "top": 100,
+        "width": 1152,
+        "x": 704,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 123.59375,
+      "textRight": 1756.40625,
+      "viewport": [
+        2560,
+        1215
+      ],
+      "visibleTextRight": 1756.40625,
+      "visibleTextGap": 123.59375
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 171.9375,
+        "left": 1024,
+        "right": 1484.796875,
+        "top": 1017.0625,
+        "width": 460.796875,
+        "x": 1024,
+        "y": 1017.0625
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 324.016,
+        "imageWidth": 680,
+        "left": 1880,
+        "top": 842.384,
+        "width": 680
+      },
+      "nativeWidth": "25",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 960,
+        "right": 1600,
+        "top": 100,
+        "width": 640,
+        "x": 960,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 354,
+      "textRight": 1526,
+      "viewport": [
+        2560,
+        1215
+      ],
+      "visibleTextRight": 1526,
+      "visibleTextGap": 354
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 70,
+        "left": 115.1875,
+        "right": 2393.578125,
+        "top": 1119,
+        "width": 2278.390625,
+        "x": 115.1875,
+        "y": 1119
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 149.141,
+        "imageWidth": 313.02,
+        "left": 2390.812,
+        "top": 1017.259,
+        "width": 169.188
+      },
+      "nativeWidth": "100",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 51.1875,
+        "right": 2508.78125,
+        "top": 100,
+        "width": 2457.59375,
+        "x": 51.1875,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 24.030749999999895,
+      "textRight": 2366.78125,
+      "viewport": [
+        2560,
+        1215
+      ],
+      "visibleTextRight": 2366.78125,
+      "visibleTextGap": 24.030749999999898
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 70,
+        "left": 320,
+        "right": 2188.796875,
+        "top": 1119,
+        "width": 1868.796875,
+        "x": 320,
+        "y": 1119
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 324.016,
+        "imageWidth": 680,
+        "left": 2186,
+        "top": 842.384,
+        "width": 374
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 256,
+        "right": 2304,
+        "top": 100,
+        "width": 2048,
+        "x": 256,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 24,
+      "textRight": 2162,
+      "viewport": [
+        2560,
+        1215
+      ],
+      "visibleTextRight": 2162,
+      "visibleTextGap": 24
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 874,
+        "height": 90.375,
+        "left": 180,
+        "right": 1231.1875,
+        "top": 783.625,
+        "width": 1051.1875,
+        "x": 180,
+        "y": 783.625
+      },
+      "dragon": {
+        "bottom": 36,
+        "content": "\"\"",
+        "height": 193.578,
+        "imageWidth": 406.26,
+        "left": 1220.406,
+        "top": 670.422,
+        "width": 219.594
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 874,
+        "height": 774,
+        "left": 144,
+        "right": 1296,
+        "top": 100,
+        "width": 1152,
+        "x": 144,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 23.99974999999995,
+      "textRight": 1196.40625,
+      "viewport": [
+        1440,
+        900
+      ],
+      "visibleTextRight": 1196.40625,
+      "visibleTextGap": 23.99974999999995
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 874,
+        "height": 70,
+        "left": 72,
+        "right": 1339.1875,
+        "top": 804,
+        "width": 1267.1875,
+        "x": 72,
+        "y": 804
+      },
+      "dragon": {
+        "bottom": 36,
+        "content": "\"\"",
+        "height": 107.891,
+        "imageWidth": 226.44,
+        "left": 1317.609,
+        "top": 756.109,
+        "width": 122.391
+      },
+      "nativeWidth": "95",
+      "panel": {
+        "bottom": 874,
+        "height": 774,
+        "left": 36,
+        "right": 1404,
+        "top": 100,
+        "width": 1368,
+        "x": 36,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 23.999624999999924,
+      "textRight": 1293.609375,
+      "viewport": [
+        1440,
+        900
+      ],
+      "visibleTextRight": 1293.609375,
+      "visibleTextGap": 23.999624999999924
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 874,
+        "height": 70,
+        "left": 64.796875,
+        "right": 1346.375,
+        "top": 804,
+        "width": 1281.578125,
+        "x": 64.796875,
+        "y": 804
+      },
+      "dragon": {
+        "bottom": 36,
+        "content": "\"\"",
+        "height": 102.188,
+        "imageWidth": 214.452,
+        "left": 1324.094,
+        "top": 761.812,
+        "width": 115.906
+      },
+      "nativeWidth": "100",
+      "panel": {
+        "bottom": 874,
+        "height": 774,
+        "left": 28.796875,
+        "right": 1411.1875,
+        "top": 100,
+        "width": 1382.390625,
+        "x": 28.796875,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 24.01587500000005,
+      "textRight": 1300.078125,
+      "viewport": [
+        1440,
+        900
+      ],
+      "visibleTextRight": 1300.078125,
+      "visibleTextGap": 24.01587500000005
+    },
+    {
+      "chatOverflow": true,
+      "composer": {
+        "bottom": 874,
+        "height": 220,
+        "left": 576,
+        "right": 835.1875,
+        "top": 654,
+        "width": 259.1875,
+        "x": 576,
+        "y": 654
+      },
+      "dragon": {
+        "bottom": 36,
+        "content": "\"\"",
+        "height": 257.312,
+        "imageWidth": 540,
+        "left": 900,
+        "top": 606.688,
+        "width": 540
+      },
+      "nativeWidth": "25",
+      "panel": {
+        "bottom": 874,
+        "height": 774,
+        "left": 540,
+        "right": 900,
+        "top": 100,
+        "width": 360,
+        "x": 540,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": -92.015625,
+      "textRight": 992.015625,
+      "viewport": [
+        1440,
+        900
+      ],
+      "visibleTextRight": 870,
+      "visibleTextGap": 30
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 874,
+        "height": 90.375,
+        "left": 180,
+        "right": 1231.1875,
+        "top": 783.625,
+        "width": 1051.1875,
+        "x": 180,
+        "y": 783.625
+      },
+      "dragon": {
+        "bottom": 36,
+        "content": "\"\"",
+        "height": 193.578,
+        "imageWidth": 406.26,
+        "left": 1220.406,
+        "top": 670.422,
+        "width": 219.594
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 874,
+        "height": 774,
+        "left": 144,
+        "right": 1296,
+        "top": 100,
+        "width": 1152,
+        "x": 144,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 23.99974999999995,
+      "textRight": 1196.40625,
+      "viewport": [
+        1440,
+        900
+      ],
+      "visibleTextRight": 1196.40625,
+      "visibleTextGap": 23.99974999999995
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 588,
+        "height": 90,
+        "left": 180,
+        "right": 1231.1875,
+        "top": 498,
+        "width": 1051.1875,
+        "x": 180,
+        "y": 498
+      },
+      "dragon": {
+        "bottom": 24,
+        "content": "\"\"",
+        "height": 171.531,
+        "imageWidth": 360,
+        "left": 1220.406,
+        "top": 404.469,
+        "width": 219.594
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 588,
+        "height": 511,
+        "left": 144,
+        "right": 1296,
+        "top": 77,
+        "width": 1152,
+        "x": 144,
+        "y": 77
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 23.99974999999995,
+      "textRight": 1196.40625,
+      "viewport": [
+        1440,
+        600
+      ],
+      "visibleTextRight": 1196.40625,
+      "visibleTextGap": 23.99974999999995
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 734,
+        "height": 90.375,
+        "left": 125.109375,
+        "right": 855.828125,
+        "top": 643.625,
+        "width": 730.71875,
+        "x": 125.109375,
+        "y": 643.625
+      },
+      "dragon": {
+        "bottom": 30.4,
+        "content": "\"\"",
+        "height": 139.391,
+        "imageWidth": 292.559,
+        "left": 842.875,
+        "top": 590.2090000000001,
+        "width": 158.125
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 734,
+        "height": 634,
+        "left": 100.09375,
+        "right": 900.890625,
+        "top": 100,
+        "width": 800.796875,
+        "x": 100.09375,
+        "y": 100
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 24.015625,
+      "textRight": 818.859375,
+      "viewport": [
+        1001,
+        760
+      ],
+      "visibleTextRight": 818.859375,
+      "visibleTextGap": 24.015625
+    },
+    {
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 742,
+        "height": 86.375,
+        "left": 14,
+        "right": 955,
+        "top": 655.625,
+        "width": 941,
+        "x": 14,
+        "y": 655.625
+      },
+      "dragon": {
+        "bottom": 30.4,
+        "content": "none",
+        "height": 104.831,
+        "imageWidth": 220,
+        "left": 921.2,
+        "top": 624.769,
+        "width": 78.8
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 742,
+        "height": 646,
+        "left": 12,
+        "right": 988,
+        "top": 96,
+        "width": 976,
+        "x": 12,
+        "y": 96
+      },
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textGap": 2.2000000000000455,
+      "textRight": 919,
+      "viewport": [
+        1000,
+        760
+      ],
+      "visibleTextRight": null,
+      "visibleTextGap": null
+    }
+  ],
+  "narrowReadingBaseline": {
+    "version": "2.2.2",
+    "viewport": [
+      1440,
+      900
+    ],
+    "nativeWidth": 25,
+    "chatClientWidth": 330,
+    "chatScrollWidth": 507,
+    "rootOverflow": false,
+    "note": "The same pre-existing message-header overflow occurs in both versions at a 360 px panel width. Native chat clipping keeps it out of the dragon gutter."
+  },
+  "restored": {
+    "nativeWidth": 80,
+    "originalTheme": "2.2.1",
+    "originalEditorCount": 1
+  }
+}

@@ -1,0 +1,20 @@
+Generation mode: Built-in ImageGen (image_gen.imagegen)
+transparent_background: true
+Input image: D:/RUA/sillytavern-plugins/tavern-theme-studio/examples/moonveil-covenant/concepts/reading-layout-2026-10-07/moonveil-reading-concept-02.png
+Selected output: C:/Users/gwynd/.codex/generated_images/01a116bd-78c1-76a0-8951-97a594b51ff9/exec-6c15f651-df68-43c6-b0c4-b42a04190180.png
+
+EXACT PROMPT
+Use case: stylized-concept
+Asset type: production raster transparent decorative message slip background for CSS nine-slice.
+Input image: STYLE AND SHAPE REFERENCE only. Closely recreate the purple horizontal user-message paper slip in the supplied Moonveil concept screenshot, approximately x567..1540 and y398..520. Isolate the paper itself. The screenshot is not the deliverable.
+
+Primary request: a single complete very wide narrow rectangular dark-violet fabric-paper note, approximately 1200 x 260 proportions. Cold gothic moonlit fantasy UI art, faithful to the reference. Opaque uniformly very dark desaturated purple material around color #302e46, extremely subtle fine woven paper texture, very thin silver-gray dashed stitched border close to every edge. Its central 80% should have uniform flat tone suitable for clean stretching, no painted content.
+
+Composition: straight horizontal top and bottom edges, gently natural handmade-paper edge irregularity at most 1-2 pixels; no big sagging curves. A tiny pale-silver folded corner at the bottom left, entirely confined to the leftmost 8%. A more visible folded silver-violet triangle at the top right, no wider than the rightmost 10-12%; show an elegant paper underside similar to the screenshot. The rest of the corners are tidy and slightly softened. All decorative corner details are within the outermost 8-12% horizontally. Top/bottom seam bands occupy at most 12% of note height each. The central area is visually plain and uniform, without embossing or ornaments. Complete slip entirely in frame with minimum 50px genuine transparent safety padding around the outline on every side. If canvas aspect ratio requires extra space, leave true transparent space above and below; keep the slip itself very wide and thin at about 4.6:1.
+
+Materials/style: refined hand-painted 2D dark purple linen-paper, calm desaturated violet, silver-gray hairline stitching. Subtle tactile texture visible only at full resolution. No strong gradients; no vignette; no bright halo. Matte paper with softly highlighted folded corners only. Fine sharp alpha edges.
+
+Transparency and fill: the outside background is actual fully transparent RGBA. The dark purple paper interior is opaque (alpha=255), not hollow. Every pixel outside the paper silhouette must be completely transparent, no stray dust/speckles/glow or fake checkerboard. No cast shadow outside the paper.
+
+Avoid: NO wax seal, NO ribbons, NO avatar, NO portrait, NO face, NO person, NO text, NO numbers, NO symbols, NO buttons, NO icons, NO moon, NO dragon, NO scenery, NO large ornate corners, NO jewelry, NO writing, NO torn holes, NO gold, NO high contrast filigree, NO standalone border with transparent center. Output exactly one blank purple paper slip.
+

@@ -1,0 +1,6 @@
+Use case: stylized-concept.
+Asset type: square dragon character portrait for a small chat avatar, requested 768x768.
+Input image role: identity and drawing-style reference. Portray exactly the silver moon dragon from this reference, with the same layered angular pale scales, long sharp silver horns, dark slate-blue crevices, violet reflected accents and brilliant icy-blue eye.
+Composition: tight closeup on dragon's face, fills most of square, three-quarter view facing slightly left, calm wise expression, eye and muzzle sharply legible even at small avatar size. Enough lower neck for a coherent bust but no wings or claws. Background: quiet dark slate blue and muted violet night wash with no detailed scenery.
+Style: 2D hand-drawn superhero comic illustration, clean strong silhouette, angular planes, varied-weight dark ink contours, two or three broad hard cel-shadow masses, subtle blocky painted texture, restrained silver highlights. Match reference consistently. Avoid photorealism, smooth plastic 3D, soft airbrush.
+Constraints: full-bleed square avatar artwork, NO ring, NO frame or border, NO UI, NO letters/text/logo, no decorative crest.

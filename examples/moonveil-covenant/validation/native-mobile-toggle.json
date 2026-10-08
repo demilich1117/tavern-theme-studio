@@ -1,0 +1,914 @@
+[
+  {
+    "boxes": {
+      "chat": {
+        "bottom": 724.8125,
+        "height": 503.15625,
+        "left": 9,
+        "right": 384,
+        "top": 221.65625,
+        "width": 375,
+        "x": 9,
+        "y": 221.65625
+      },
+      "extensionsMenuButton": {
+        "bottom": 829,
+        "height": 40,
+        "left": 49,
+        "right": 77,
+        "top": 789,
+        "width": 28,
+        "x": 49,
+        "y": 789
+      },
+      "form_sheld": {
+        "bottom": 839,
+        "height": 114.1875,
+        "left": 9,
+        "right": 384,
+        "top": 724.8125,
+        "width": 375,
+        "x": 9,
+        "y": 724.8125
+      },
+      "leftSendForm": {
+        "bottom": 829,
+        "height": 40,
+        "left": 19,
+        "right": 77,
+        "top": 789,
+        "width": 58,
+        "x": 19,
+        "y": 789
+      },
+      "nonQRFormItems": {
+        "bottom": 829,
+        "height": 49.1875,
+        "left": 19,
+        "right": 374,
+        "top": 779.8125,
+        "width": 355,
+        "x": 19,
+        "y": 779.8125
+      },
+      "options_button": {
+        "bottom": 829,
+        "height": 40,
+        "left": 19,
+        "right": 47,
+        "top": 789,
+        "width": 28,
+        "x": 19,
+        "y": 789
+      },
+      "send_but": {
+        "bottom": 826,
+        "height": 34,
+        "left": 340,
+        "right": 374,
+        "top": 792,
+        "width": 34,
+        "x": 340,
+        "y": 792
+      },
+      "send_form": {
+        "bottom": 839,
+        "height": 114.1875,
+        "left": 9,
+        "right": 384,
+        "top": 724.8125,
+        "width": 375,
+        "x": 9,
+        "y": 724.8125
+      },
+      "send_textarea": {
+        "bottom": 829,
+        "height": 49.1875,
+        "left": 82,
+        "right": 335,
+        "top": 779.8125,
+        "width": 253,
+        "x": 82,
+        "y": 779.8125
+      },
+      "sheld": {
+        "bottom": 840,
+        "height": 686.78125,
+        "left": 8,
+        "right": 385,
+        "top": 153.21875,
+        "width": 377,
+        "x": 8,
+        "y": 153.21875
+      }
+    },
+    "horizontalClip": "clip",
+    "iconsFontSize": "18px",
+    "rootHeight": 852,
+    "viewport": [
+      393,
+      852
+    ],
+    "visibleRightControls": [
+      "send_but"
+    ]
+  },
+  {
+    "boxes": {
+      "chat": {
+        "bottom": 573.8125,
+        "height": 381.265625,
+        "left": 9,
+        "right": 311,
+        "top": 192.546875,
+        "width": 302,
+        "x": 9,
+        "y": 192.546875
+      },
+      "extensionsMenuButton": {
+        "bottom": 717,
+        "height": 40,
+        "left": 49,
+        "right": 77,
+        "top": 677,
+        "width": 28,
+        "x": 49,
+        "y": 677
+      },
+      "form_sheld": {
+        "bottom": 727,
+        "height": 153.1875,
+        "left": 9,
+        "right": 311,
+        "top": 573.8125,
+        "width": 302,
+        "x": 9,
+        "y": 573.8125
+      },
+      "leftSendForm": {
+        "bottom": 717,
+        "height": 40,
+        "left": 19,
+        "right": 77,
+        "top": 677,
+        "width": 58,
+        "x": 19,
+        "y": 677
+      },
+      "nonQRFormItems": {
+        "bottom": 717,
+        "height": 49.1875,
+        "left": 19,
+        "right": 301,
+        "top": 667.8125,
+        "width": 282,
+        "x": 19,
+        "y": 667.8125
+      },
+      "options_button": {
+        "bottom": 717,
+        "height": 40,
+        "left": 19,
+        "right": 47,
+        "top": 677,
+        "width": 28,
+        "x": 19,
+        "y": 677
+      },
+      "send_but": {
+        "bottom": 714,
+        "height": 34,
+        "left": 267,
+        "right": 301,
+        "top": 680,
+        "width": 34,
+        "x": 267,
+        "y": 680
+      },
+      "send_form": {
+        "bottom": 727,
+        "height": 153.1875,
+        "left": 9,
+        "right": 311,
+        "top": 573.8125,
+        "width": 302,
+        "x": 9,
+        "y": 573.8125
+      },
+      "send_textarea": {
+        "bottom": 717,
+        "height": 49.1875,
+        "left": 82,
+        "right": 262,
+        "top": 667.8125,
+        "width": 180,
+        "x": 82,
+        "y": 667.8125
+      },
+      "sheld": {
+        "bottom": 728,
+        "height": 591.359375,
+        "left": 8,
+        "right": 312,
+        "top": 136.640625,
+        "width": 304,
+        "x": 8,
+        "y": 136.640625
+      }
+    },
+    "horizontalClip": "clip",
+    "iconsFontSize": "18px",
+    "rootHeight": 740,
+    "viewport": [
+      320,
+      740
+    ],
+    "visibleRightControls": [
+      "send_but"
+    ]
+  },
+  {
+    "boxes": {
+      "chat": {
+        "bottom": 265.8125,
+        "height": 101.140625,
+        "left": 13,
+        "right": 839,
+        "top": 164.671875,
+        "width": 826,
+        "x": 13,
+        "y": 164.671875
+      },
+      "extensionsMenuButton": {
+        "bottom": 370,
+        "height": 40,
+        "left": 53,
+        "right": 81,
+        "top": 330,
+        "width": 28,
+        "x": 53,
+        "y": 330
+      },
+      "form_sheld": {
+        "bottom": 380,
+        "height": 114.1875,
+        "left": 13,
+        "right": 839,
+        "top": 265.8125,
+        "width": 826,
+        "x": 13,
+        "y": 265.8125
+      },
+      "leftSendForm": {
+        "bottom": 370,
+        "height": 40,
+        "left": 23,
+        "right": 81,
+        "top": 330,
+        "width": 58,
+        "x": 23,
+        "y": 330
+      },
+      "nonQRFormItems": {
+        "bottom": 370,
+        "height": 49.1875,
+        "left": 23,
+        "right": 829,
+        "top": 320.8125,
+        "width": 806,
+        "x": 23,
+        "y": 320.8125
+      },
+      "options_button": {
+        "bottom": 370,
+        "height": 40,
+        "left": 23,
+        "right": 51,
+        "top": 330,
+        "width": 28,
+        "x": 23,
+        "y": 330
+      },
+      "send_but": {
+        "bottom": 367,
+        "height": 34,
+        "left": 795,
+        "right": 829,
+        "top": 333,
+        "width": 34,
+        "x": 795,
+        "y": 333
+      },
+      "send_form": {
+        "bottom": 380,
+        "height": 114.1875,
+        "left": 13,
+        "right": 839,
+        "top": 265.8125,
+        "width": 826,
+        "x": 13,
+        "y": 265.8125
+      },
+      "send_textarea": {
+        "bottom": 370,
+        "height": 49.1875,
+        "left": 87,
+        "right": 789,
+        "top": 320.8125,
+        "width": 702,
+        "x": 87,
+        "y": 320.8125
+      },
+      "sheld": {
+        "bottom": 381,
+        "height": 260.234375,
+        "left": 12,
+        "right": 840,
+        "top": 120.765625,
+        "width": 828,
+        "x": 12,
+        "y": 120.765625
+      }
+    },
+    "horizontalClip": "clip",
+    "iconsFontSize": "18px",
+    "rootHeight": 393,
+    "viewport": [
+      852,
+      393
+    ],
+    "visibleRightControls": [
+      "send_but"
+    ]
+  },
+  {
+    "boxes": {
+      "chat": {
+        "bottom": 772.8125,
+        "height": 445.09375,
+        "left": 13,
+        "right": 967,
+        "top": 327.71875,
+        "width": 954,
+        "x": 13,
+        "y": 327.71875
+      },
+      "extensionsMenuButton": {
+        "bottom": 877,
+        "height": 40,
+        "left": 53,
+        "right": 81,
+        "top": 837,
+        "width": 28,
+        "x": 53,
+        "y": 837
+      },
+      "form_sheld": {
+        "bottom": 887,
+        "height": 114.1875,
+        "left": 13,
+        "right": 967,
+        "top": 772.8125,
+        "width": 954,
+        "x": 13,
+        "y": 772.8125
+      },
+      "leftSendForm": {
+        "bottom": 877,
+        "height": 40,
+        "left": 23,
+        "right": 81,
+        "top": 837,
+        "width": 58,
+        "x": 23,
+        "y": 837
+      },
+      "nonQRFormItems": {
+        "bottom": 877,
+        "height": 49.1875,
+        "left": 23,
+        "right": 957,
+        "top": 827.8125,
+        "width": 934,
+        "x": 23,
+        "y": 827.8125
+      },
+      "options_button": {
+        "bottom": 877,
+        "height": 40,
+        "left": 23,
+        "right": 51,
+        "top": 837,
+        "width": 28,
+        "x": 23,
+        "y": 837
+      },
+      "send_but": {
+        "bottom": 874,
+        "height": 34,
+        "left": 923,
+        "right": 957,
+        "top": 840,
+        "width": 34,
+        "x": 923,
+        "y": 840
+      },
+      "send_form": {
+        "bottom": 887,
+        "height": 114.1875,
+        "left": 13,
+        "right": 967,
+        "top": 772.8125,
+        "width": 954,
+        "x": 13,
+        "y": 772.8125
+      },
+      "send_textarea": {
+        "bottom": 877,
+        "height": 49.1875,
+        "left": 87,
+        "right": 917,
+        "top": 827.8125,
+        "width": 830,
+        "x": 87,
+        "y": 827.8125
+      },
+      "sheld": {
+        "bottom": 888,
+        "height": 674.375,
+        "left": 12,
+        "right": 968,
+        "top": 213.625,
+        "width": 956,
+        "x": 12,
+        "y": 213.625
+      }
+    },
+    "horizontalClip": "clip",
+    "iconsFontSize": "18px",
+    "rootHeight": 900,
+    "viewport": [
+      980,
+      900
+    ],
+    "visibleRightControls": [
+      "send_but"
+    ]
+  },
+  {
+    "boxes": {
+      "chat": {
+        "bottom": 772.8125,
+        "height": 445.09375,
+        "left": 13,
+        "right": 987,
+        "top": 327.71875,
+        "width": 974,
+        "x": 13,
+        "y": 327.71875
+      },
+      "extensionsMenuButton": {
+        "bottom": 877,
+        "height": 40,
+        "left": 53,
+        "right": 81,
+        "top": 837,
+        "width": 28,
+        "x": 53,
+        "y": 837
+      },
+      "form_sheld": {
+        "bottom": 887,
+        "height": 114.1875,
+        "left": 13,
+        "right": 987,
+        "top": 772.8125,
+        "width": 974,
+        "x": 13,
+        "y": 772.8125
+      },
+      "leftSendForm": {
+        "bottom": 877,
+        "height": 40,
+        "left": 23,
+        "right": 81,
+        "top": 837,
+        "width": 58,
+        "x": 23,
+        "y": 837
+      },
+      "nonQRFormItems": {
+        "bottom": 877,
+        "height": 49.1875,
+        "left": 23,
+        "right": 977,
+        "top": 827.8125,
+        "width": 954,
+        "x": 23,
+        "y": 827.8125
+      },
+      "options_button": {
+        "bottom": 877,
+        "height": 40,
+        "left": 23,
+        "right": 51,
+        "top": 837,
+        "width": 28,
+        "x": 23,
+        "y": 837
+      },
+      "send_but": {
+        "bottom": 874,
+        "height": 34,
+        "left": 943,
+        "right": 977,
+        "top": 840,
+        "width": 34,
+        "x": 943,
+        "y": 840
+      },
+      "send_form": {
+        "bottom": 887,
+        "height": 114.1875,
+        "left": 13,
+        "right": 987,
+        "top": 772.8125,
+        "width": 974,
+        "x": 13,
+        "y": 772.8125
+      },
+      "send_textarea": {
+        "bottom": 877,
+        "height": 49.1875,
+        "left": 87,
+        "right": 937,
+        "top": 827.8125,
+        "width": 850,
+        "x": 87,
+        "y": 827.8125
+      },
+      "sheld": {
+        "bottom": 888,
+        "height": 674.375,
+        "left": 12,
+        "right": 988,
+        "top": 213.625,
+        "width": 976,
+        "x": 12,
+        "y": 213.625
+      }
+    },
+    "horizontalClip": "clip",
+    "iconsFontSize": "18px",
+    "rootHeight": 900,
+    "viewport": [
+      1000,
+      900
+    ],
+    "visibleRightControls": [
+      "send_but"
+    ]
+  },
+  {
+    "boxes": {
+      "chat": {
+        "bottom": 754.8125,
+        "height": 458.125,
+        "left": 130.4375,
+        "right": 869.171875,
+        "top": 296.6875,
+        "width": 738.734375,
+        "x": 130.4375,
+        "y": 296.6875
+      },
+      "extensionsMenuButton": {
+        "bottom": 863,
+        "height": 44,
+        "left": 192.4375,
+        "right": 228.4375,
+        "top": 819,
+        "width": 36,
+        "x": 192.4375,
+        "y": 819
+      },
+      "form_sheld": {
+        "bottom": 879,
+        "height": 124.1875,
+        "left": 130.4375,
+        "right": 869.171875,
+        "top": 754.8125,
+        "width": 738.734375,
+        "x": 130.4375,
+        "y": 754.8125
+      },
+      "leftSendForm": {
+        "bottom": 863,
+        "height": 44,
+        "left": 150.4375,
+        "right": 228.4375,
+        "top": 819,
+        "width": 78,
+        "x": 150.4375,
+        "y": 819
+      },
+      "nonQRFormItems": {
+        "bottom": 863,
+        "height": 49.1875,
+        "left": 150.4375,
+        "right": 849.171875,
+        "top": 813.8125,
+        "width": 698.734375,
+        "x": 150.4375,
+        "y": 813.8125
+      },
+      "options_button": {
+        "bottom": 863,
+        "height": 44,
+        "left": 152.4375,
+        "right": 188.4375,
+        "top": 819,
+        "width": 36,
+        "x": 152.4375,
+        "y": 819
+      },
+      "send_but": {
+        "bottom": 863,
+        "height": 44,
+        "left": 811.171875,
+        "right": 847.171875,
+        "top": 819,
+        "width": 36,
+        "x": 811.171875,
+        "y": 819
+      },
+      "send_form": {
+        "bottom": 879,
+        "height": 124.1875,
+        "left": 130.4375,
+        "right": 869.171875,
+        "top": 754.8125,
+        "width": 738.734375,
+        "x": 130.4375,
+        "y": 754.8125
+      },
+      "send_textarea": {
+        "bottom": 863,
+        "height": 49.1875,
+        "left": 238.4375,
+        "right": 801.171875,
+        "top": 813.8125,
+        "width": 562.734375,
+        "x": 238.4375,
+        "y": 813.8125
+      },
+      "sheld": {
+        "bottom": 880,
+        "height": 676.890625,
+        "left": 129.4375,
+        "right": 870.171875,
+        "top": 203.109375,
+        "width": 740.734375,
+        "x": 129.4375,
+        "y": 203.109375
+      }
+    },
+    "horizontalClip": "visible",
+    "iconsFontSize": "28.5px",
+    "rootHeight": 900,
+    "viewport": [
+      1001,
+      900
+    ],
+    "visibleRightControls": [
+      "send_but"
+    ]
+  },
+  {
+    "boxes": {
+      "chat": {
+        "bottom": 814.8125,
+        "height": 403.5,
+        "left": 198.1875,
+        "right": 1261.78125,
+        "top": 411.3125,
+        "width": 1063.59375,
+        "x": 198.1875,
+        "y": 411.3125
+      },
+      "extensionsMenuButton": {
+        "bottom": 923,
+        "height": 44,
+        "left": 260.1875,
+        "right": 296.1875,
+        "top": 879,
+        "width": 36,
+        "x": 260.1875,
+        "y": 879
+      },
+      "form_sheld": {
+        "bottom": 939,
+        "height": 124.1875,
+        "left": 198.1875,
+        "right": 1261.78125,
+        "top": 814.8125,
+        "width": 1063.59375,
+        "x": 198.1875,
+        "y": 814.8125
+      },
+      "leftSendForm": {
+        "bottom": 923,
+        "height": 44,
+        "left": 218.1875,
+        "right": 296.1875,
+        "top": 879,
+        "width": 78,
+        "x": 218.1875,
+        "y": 879
+      },
+      "nonQRFormItems": {
+        "bottom": 923,
+        "height": 49.1875,
+        "left": 218.1875,
+        "right": 1241.78125,
+        "top": 873.8125,
+        "width": 1023.59375,
+        "x": 218.1875,
+        "y": 873.8125
+      },
+      "options_button": {
+        "bottom": 923,
+        "height": 44,
+        "left": 220.1875,
+        "right": 256.1875,
+        "top": 879,
+        "width": 36,
+        "x": 220.1875,
+        "y": 879
+      },
+      "send_but": {
+        "bottom": 923,
+        "height": 44,
+        "left": 1203.78125,
+        "right": 1239.78125,
+        "top": 879,
+        "width": 36,
+        "x": 1203.78125,
+        "y": 879
+      },
+      "send_form": {
+        "bottom": 939,
+        "height": 124.1875,
+        "left": 198.1875,
+        "right": 1261.78125,
+        "top": 814.8125,
+        "width": 1063.59375,
+        "x": 198.1875,
+        "y": 814.8125
+      },
+      "send_textarea": {
+        "bottom": 923,
+        "height": 49.1875,
+        "left": 306.1875,
+        "right": 1193.78125,
+        "top": 873.8125,
+        "width": 887.59375,
+        "x": 306.1875,
+        "y": 873.8125
+      },
+      "sheld": {
+        "bottom": 940,
+        "height": 659.6875,
+        "left": 197.1875,
+        "right": 1262.78125,
+        "top": 280.3125,
+        "width": 1065.59375,
+        "x": 197.1875,
+        "y": 280.3125
+      }
+    },
+    "horizontalClip": "visible",
+    "iconsFontSize": "28.5px",
+    "rootHeight": 960,
+    "viewport": [
+      1440,
+      960
+    ],
+    "visibleRightControls": [
+      "send_but"
+    ]
+  },
+  {
+    "boxes": {
+      "chat": {
+        "bottom": 724.8125,
+        "height": 503.15625,
+        "left": 9,
+        "right": 384,
+        "top": 221.65625,
+        "width": 375,
+        "x": 9,
+        "y": 221.65625
+      },
+      "extensionsMenuButton": {
+        "bottom": 829,
+        "height": 40,
+        "left": 49,
+        "right": 77,
+        "top": 789,
+        "width": 28,
+        "x": 49,
+        "y": 789
+      },
+      "form_sheld": {
+        "bottom": 839,
+        "height": 114.1875,
+        "left": 9,
+        "right": 384,
+        "top": 724.8125,
+        "width": 375,
+        "x": 9,
+        "y": 724.8125
+      },
+      "leftSendForm": {
+        "bottom": 829,
+        "height": 40,
+        "left": 19,
+        "right": 77,
+        "top": 789,
+        "width": 58,
+        "x": 19,
+        "y": 789
+      },
+      "nonQRFormItems": {
+        "bottom": 829,
+        "height": 49.1875,
+        "left": 19,
+        "right": 374,
+        "top": 779.8125,
+        "width": 355,
+        "x": 19,
+        "y": 779.8125
+      },
+      "options_button": {
+        "bottom": 829,
+        "height": 40,
+        "left": 19,
+        "right": 47,
+        "top": 789,
+        "width": 28,
+        "x": 19,
+        "y": 789
+      },
+      "send_but": {
+        "bottom": 826,
+        "height": 34,
+        "left": 340,
+        "right": 374,
+        "top": 792,
+        "width": 34,
+        "x": 340,
+        "y": 792
+      },
+      "send_form": {
+        "bottom": 839,
+        "height": 114.1875,
+        "left": 9,
+        "right": 384,
+        "top": 724.8125,
+        "width": 375,
+        "x": 9,
+        "y": 724.8125
+      },
+      "send_textarea": {
+        "bottom": 829,
+        "height": 49.1875,
+        "left": 82,
+        "right": 335,
+        "top": 779.8125,
+        "width": 253,
+        "x": 82,
+        "y": 779.8125
+      },
+      "sheld": {
+        "bottom": 840,
+        "height": 686.78125,
+        "left": 8,
+        "right": 385,
+        "top": 153.21875,
+        "width": 377,
+        "x": 8,
+        "y": 153.21875
+      }
+    },
+    "horizontalClip": "clip",
+    "iconsFontSize": "18px",
+    "rootHeight": 852,
+    "viewport": [
+      393,
+      852
+    ],
+    "visibleRightControls": [
+      "send_but"
+    ]
+  }
+]

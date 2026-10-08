@@ -1,0 +1,158 @@
+[
+  {
+    "chat": {
+      "bottom": 831.625,
+      "height": 496.90625,
+      "left": 91,
+      "right": 1292.796875,
+      "top": 334.71875,
+      "width": 1201.796875,
+      "x": 91,
+      "y": 334.71875
+    },
+    "chatMargin": "105px",
+    "dragonWidth": "840px",
+    "form": {
+      "bottom": 939,
+      "height": 107.375,
+      "left": 91,
+      "right": 1292.796875,
+      "top": 831.625,
+      "width": 1201.796875,
+      "x": 91,
+      "y": 831.625
+    },
+    "nativeWidth": "92vw",
+    "panel": {
+      "bottom": 940,
+      "height": 711.28125,
+      "left": 90,
+      "right": 1293.796875,
+      "top": 228.71875,
+      "width": 1203.796875,
+      "x": 90,
+      "y": 228.71875
+    },
+    "viewport": [
+      1440,
+      960
+    ]
+  },
+  {
+    "chat": {
+      "bottom": 741.625,
+      "height": 576.984375,
+      "left": 9,
+      "right": 384,
+      "top": 164.640625,
+      "width": 375,
+      "x": 9,
+      "y": 164.640625
+    },
+    "chatMargin": "42.9px",
+    "dragonWidth": "220px",
+    "form": {
+      "bottom": 839,
+      "height": 97.375,
+      "left": 9,
+      "right": 384,
+      "top": 741.625,
+      "width": 375,
+      "x": 9,
+      "y": 741.625
+    },
+    "nativeWidth": "92vw",
+    "panel": {
+      "bottom": 840,
+      "height": 719.25,
+      "left": 8,
+      "right": 385,
+      "top": 120.75,
+      "width": 377,
+      "x": 8,
+      "y": 120.75
+    },
+    "viewport": [
+      393,
+      852
+    ]
+  },
+  {
+    "chat": {
+      "bottom": 771.625,
+      "height": 513.265625,
+      "left": 91,
+      "right": 884.6875,
+      "top": 258.359375,
+      "width": 793.6875,
+      "x": 91,
+      "y": 258.359375
+    },
+    "chatMargin": "80.08px",
+    "dragonWidth": "640.625px",
+    "form": {
+      "bottom": 879,
+      "height": 107.375,
+      "left": 91,
+      "right": 884.6875,
+      "top": 771.625,
+      "width": 793.6875,
+      "x": 91,
+      "y": 771.625
+    },
+    "nativeWidth": "92vw",
+    "panel": {
+      "bottom": 880,
+      "height": 702.71875,
+      "left": 90,
+      "right": 885.6875,
+      "top": 177.28125,
+      "width": 795.6875,
+      "x": 90,
+      "y": 177.28125
+    },
+    "viewport": [
+      1001,
+      900
+    ]
+  },
+  {
+    "chat": {
+      "bottom": 477.625,
+      "height": 292.28125,
+      "left": 91,
+      "right": 1193.25,
+      "top": 185.34375,
+      "width": 1102.25,
+      "x": 91,
+      "y": 185.34375
+    },
+    "chatMargin": "56.25px",
+    "dragonWidth": "450px",
+    "form": {
+      "bottom": 585,
+      "height": 107.375,
+      "left": 91,
+      "right": 1193.25,
+      "top": 477.625,
+      "width": 1102.25,
+      "x": 91,
+      "y": 477.625
+    },
+    "nativeWidth": "92vw",
+    "panel": {
+      "bottom": 586,
+      "height": 457.90625,
+      "left": 90,
+      "right": 1194.25,
+      "top": 128.09375,
+      "width": 1104.25,
+      "x": 90,
+      "y": 128.09375
+    },
+    "viewport": [
+      1280,
+      600
+    ]
+  }
+]

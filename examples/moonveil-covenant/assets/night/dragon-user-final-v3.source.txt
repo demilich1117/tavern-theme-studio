@@ -1,0 +1,9 @@
+User-provided final artwork, accepted 2026-09-30.
+Source filename: ChatGPT Image Sep 30, 2026, 08_40_07 AM.png
+Original copy: dragon-user-final-v3.original.png
+SHA256: 329DCAB82EC517093DD57AB351636E96B25312B6180A63CA353F63B75A981560
+Original: 1902 x 827 PNG, RGBA, alpha range 0-255.
+Production: dragon-user-final-v3.webp, 1040 x 452, 76344 bytes.
+Processing: proportional resize and WebP encoding only (Sharp, quality 72, alphaQuality 90, effort 6).
+No repainting, background removal, cropping, or compositing.
+The mistakenly supplied opaque 08_50_00 image is not used.

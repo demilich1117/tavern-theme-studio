@@ -1,0 +1,607 @@
+{
+  "project": "月誓 · 龙廷 — Moonveil Covenant",
+  "revision": 5,
+  "source": "Workbench rendered scene audit",
+  "reports": [
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "620 × 474 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "492 × 79 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "479 × 194 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · chat · 1000 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "620 × 474 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "492 × 79 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "479 × 1023 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · long · 1000 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "620 × 474 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "492 × 79 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "479 × 504 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "479 × 160 px",
+          "name": "代码块",
+          "status": "通过"
+        },
+        {
+          "detail": "479 × 136 px",
+          "name": "表格",
+          "status": "通过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · rich · 1000 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "620 × 474 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "492 × 79 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "479 × 194 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "473 × 73 px",
+          "name": "思考正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · reasoning · 1000 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "620 × 474 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "492 × 79 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "479 × 194 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "420 × 260 px",
+          "name": "左侧设置栏",
+          "status": "通过"
+        },
+        {
+          "detail": "400 × 402 px",
+          "name": "右侧角色栏",
+          "status": "通过"
+        }
+      ],
+      "summary": "示例 · sidebar · 1000 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "620 × 433 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "492 × 120 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "479 × 194 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · composer · 1000 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "364 × 438 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "256 × 76 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "260 × 202 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · chat · 390 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "364 × 438 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "256 × 76 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "260 × 1485 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · long · 390 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "364 × 438 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "256 × 76 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "260 × 520 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "260 × 150 px",
+          "name": "代码块",
+          "status": "通过"
+        },
+        {
+          "detail": "260 × 132 px",
+          "name": "表格",
+          "status": "通过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · rich · 390 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "364 × 438 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "256 × 76 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "260 × 202 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "254 × 96 px",
+          "name": "思考正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · reasoning · 390 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "364 × 438 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "256 × 76 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "260 × 202 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "362 × 392 px",
+          "name": "右侧角色栏",
+          "status": "通过"
+        }
+      ],
+      "summary": "示例 · sidebar · 390 × 865 · 未发现所检布局问题"
+    },
+    {
+      "checks": [
+        {
+          "detail": "未发现页面横向溢出",
+          "name": "页面横向溢出",
+          "status": "通过"
+        },
+        {
+          "detail": "364 × 395 px",
+          "name": "聊天区域",
+          "status": "通过"
+        },
+        {
+          "detail": "256 × 120 px",
+          "name": "输入框",
+          "status": "通过"
+        },
+        {
+          "detail": "260 × 202 px",
+          "name": "消息正文",
+          "status": "通过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "思考正文",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "代码块",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前场景没有此部件",
+          "name": "表格",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "左侧设置栏",
+          "status": "跳过"
+        },
+        {
+          "detail": "当前隐藏",
+          "name": "右侧角色栏",
+          "status": "跳过"
+        }
+      ],
+      "summary": "示例 · composer · 390 × 865 · 未发现所检布局问题"
+    }
+  ]
+}

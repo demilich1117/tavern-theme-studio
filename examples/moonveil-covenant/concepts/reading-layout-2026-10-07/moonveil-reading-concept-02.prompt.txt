@@ -1,0 +1,76 @@
+Generated: 2026-10-07 (Asia/Shanghai)
+Tool: built-in image_gen.imagegen
+Purpose: radical layout reconstruction concept for Moonveil Covenant 2.1.4.
+Feedback driving this iteration: previous concept retained too much of the existing layout; user requested reconstruction and more imagination.
+Reference 1: C:/Users/gwynd/AppData/Local/Temp/codex-clipboard-139e05eb-8d21-4c40-af06-ce83a5dc2715.png
+Reference 2: D:/RUA/sillytavern-plugins/tavern-theme-studio/dist/moonveil-covenant-2.1.4/assets/night/dragon-user-final-v3.webp
+Final image: moonveil-reading-concept-02.png
+Concept only; no theme implementation changes.
+
+Exact submitted prompt:
+
+Use case: ui-mockup.
+Generate ONE bold redesigned full-screen desktop native SillyTavern theme concept. Theme: silver dragon, moonlit gothic castle, lunar codex, midnight blue and restrained amethyst. This is the SECOND exploration after the user rejected a conservative design because it looked almost identical. The user explicitly asks for structural reconstruction and imagination, not extra decoration on the old boxes.
+
+Concept direction (do not print the name): 月弧浮页 / Crescent Folio.
+Create a production-quality imaginative fantasy READING INTERFACE. One focused screen, not a moodboard or collage. It must be visibly different in silhouette and layout from the screenshot even at thumbnail scale.
+
+Input references:
+Image 1 = original user screenshot. Use ONLY its world, palette, approved silver/purple illustration vocabulary, Chinese conversational purpose, and existing native actions. Its actual layout is the thing to REPLACE. Do not copy its geometry.
+Image 2 = approved complete silver dragon cutout. Preserve this dragon's recognizable identity, silhouette, pose, silver scale armor, purple wings, icy blue eye, exactly two forelimbs, anatomy and hand-drawn style. REPOSITION this SAME dragon to the BOTTOM-RIGHT, perched over the right end of the floating writing composer. It is about 14% of viewport width. No dragon at the upper right. Do not crop wings or add limbs.
+All source references are grounding materials, not a request to reproduce the old frame.
+
+Target: 2559 x 1269 pixels, wide approximately 2:1 screen matching source. Flat UI screenshot viewed straight on. App content only, no screen/device mockup, no perspective desk, no huge illustrated book object.
+Date anchor: 2026-10-07, Asia/Shanghai, if dates are used.
+
+NON-NEGOTIABLE STRUCTURAL CHANGES:
+1. NO complete outer rectangle surrounding the chat. No double-line outer frame, no centered application card, no large rounded app shell.
+2. NO vertical left toolbar. Move native toolbar icons to an elegant low shallow CRESCENT ARC along the upper-left and upper-center of the screen. Individual silver instrument tabs linked by a thin antique silver crescent; slight stepped curve of only 30–45px, nine functional icons. It occupies about 7% of screen height. The arc is ornamental lunar metalwork, not a sci-fi HUD. Do not turn it into a full circle or giant clock. The rest of the upper screen shows moonlight and atmosphere, not a banner.
+3. NO recurring avatar column and NO stacked full-width message cards. Small portraits are embedded into the first-line AUTHOR BOOKMARK for each turn: a small claw-held cameo, name, tiny native #30 / #31 / #32, quiet time, and delicate tapered silver ribbon all in a compact horizontal byline. Body prose starts beneath, spanning the broad reading field.
+4. Assistant messages are frameless typography directly on one continuous midnight manuscript field. Group with whitespace and subtly tapered silver line fragments, not rectangles. No bordered or tinted container surrounding every assistant turn.
+5. User messages are offset violet correspondence slips, right-aligned, about 64–70% screen width, as if slipped between manuscript pages. Slight asymmetry and one folded upper corner create a different silhouette; actual text baseline remains horizontal. Purple silk / vellum material, faint silver stitches along only two edges, a little wax seal attached outside the short edge. Natural height for 2–3 lines, never a bulky card.
+6. Composer is an independent thin floating WRITING SLIP near the bottom. It is visually detached from the reading surface, with exposed shaped ends, a faint crescent of moonlight below, and a tiny silver quill SEND medallion near its right. It must not reconnect to an outer chat frame. The dragon perches at its far RIGHT end, mostly in the outer margin, its wing rising beside the prose, its claws making plausible contact with the writing slip. Dragon head never covers text or controls.
+
+Composition and useful space:
+The continuous reading surface is generous, around 85% screen width. Its edges fade gently into the same indigo castle night; only a few localized overlapping paper-edge shards at far corners suggest a codex. There is NO clearly bounded rectangular stage.
+A broad safe prose area spans about 74–78% of viewport width. Main text begins around x=240 and is allowed to extend to around x=2200 in this 2559px canvas. The bottom-right dragon occupies edge space only.
+Reading begins below the low top navigation, around y=140, and continues down to around y=1090. The writing composer uses y=1130–1230, under 8% of viewport height. Preserve generous practical reading space; do not create a giant hero illustration or a narrow central text column.
+Do NOT add sidebars, stats panels, chat lists, maps, character inventories, dashboards, navigation labels, logos or titles.
+Background visible in the narrow periphery is the same hand-painted castle skyline with full moon, craggy mountain edges and tiny amethyst crystal glints. Behind prose it becomes almost-opaque and evenly dark, with a barely visible vellum grain. No busy artwork or fog through text.
+
+Screen content and hierarchy:
+Show THREE consecutive conversational turns, including long Chinese prose. First a substantial assistant passage; then the offset user slip; then the beginning of a second assistant turn.
+- First byline at the upper-left of the continuous reading field has a 48–56px claw-held portrait and “顾渡舟”, discreet “#30”, small “20:53”. Body follows with 8–10 comfortably spaced lines and one visually poetic quote inset.
+- Quote is marked by one little silver quill / moon-thread margin flourish, no block rectangle. One small decorative initial mark near the first paragraph is enough; don't make huge drop capitals.
+- User slip has its own inline cameo byline “春猫儿”, “#31”, “21:31”, and 2–3 body lines. Place the seal outside the text.
+- Next assistant “顾渡舟”, “#32”, “21:31” continues with 4–6 prose lines. Its collapsed thinking control “思考了一会” becomes a small folded lunar BOOKMARK adjacent to the byline, with a real chevron, not another full-width horizontal bar.
+- Existing ellipsis and edit actions are small silver marks at the right of each byline, recognizable and usable.
+- Far-right scroll track is a very thin silver thread with one amethyst clasp. Tiny lunar dots can mark the thread; do not invent multiple scrollbar tracks or interactive markers.
+- Composer retains actual menu/wand controls on its left, broad text input, and one send action near right with adequate clear hit area. Two discreet existing quick actions may sit immediately above the slip, “重新处理变量” and “重新获取初始变量”. No enormous bottom dock.
+- Avoid mechanical repeated moon separators. Use changes in spacing, irregular silver embroidery, and author bookmarks for rhythm.
+
+Decorative invention, concentrated at seams:
+Create fresh delicate fantasy craftsmanship: small hanging crystal-ended bookmarks; asymmetric overlapping slivers of silver-edged dark paper; stitched violet reply slip with a folded corner; tapering moon-thread connecting author cameo to the text; tiny dragon-scale fasteners on the nav arc; a quill-like send button; a single strand ending in a crescent at one edge. Decoration belongs to joints and edges and never fills blank areas just for the sake of filling them. Do not embellish every paragraph identically. No large ornamental text.
+
+Visual style:
+Same 2D illustrated / hand-inked / crisp cel-shaded silver dragon as reference. Refined antique silver relief, cool midnight manuscript, tiny amethyst accents. Avoid plasticky 3D, photorealistic props, perspective book pages, neon sci-fi dashboard, black-red-gold gothic, glitter everywhere, excessive bloom.
+Palette: #101625 backdrop; #202637 continuous reading field; #2c334a subtle ink/vellum variation; #302e46 violet user slip; #d2d5e3 main text; #a4acc4 muted; #c3c9df silver; #b5acec lavender. No white parchment. Prose must have strong, calm contrast.
+Typography: Chinese book-quality reading type, 24–26px body at this canvas size, about 1.8 line height, highly legible regular weight. Functional labels in a clean compact sans-serif, at most two font families. Not tiny low-contrast text. Around 60–70 Chinese characters per long line. Text hierarchy and comfortable grouping matter more than frames.
+
+Suggested text, render real readable Chinese:
+“顾渡舟”
+“夜色沿着城堡的高窗缓缓落下，银色月光穿过拱廊，在石阶上铺开一道安静的光。”
+“他合上手中的旧书，指尖停在那枚月牙形的银扣上。窗外的风掠过塔尖，远处传来一声悠长的钟鸣。”
+“桌上的茶还温着。细窄的缎带从书页间垂下来，末端缀着一枚小小的银月，随着烛火轻轻摇曳。”
+Quote: “如果今夜的故事还未写完，就再陪我坐一会儿。”
+“他没有催促，只将身旁的椅子拉近了一些。那封未寄出的信安静地躺在两人之间，封蜡上留着清晰的月纹。”
+“春猫儿”
+“我把书签放回书里，接过茶，在他身旁坐下。‘那就从你停下的地方，继续讲吧。’”
+“顾渡舟”
+“他笑了一下，将那本古旧的书重新翻开。页角的银色纹路在月光下亮了起来，像一条通往远方的细小河流。”
+“故事从很久以前的一个冬夜开始。那时城堡的钟还会在午夜响起，而每一个听见钟声的人，都相信明天会有好消息。”
+Composer: “我靠近一些，望向他指尖停留的那一页……”
+You may expand with similarly calm prose to fill the specified reading density naturally.
+
+FINAL CHECK: If the result still has the original screenshot's giant framed rectangle, left vertical icon rail, left portrait column, rectangular assistant cards and dragon at top right, it FAILS. The new silhouette is top lunar arc + frameless wide manuscript + inline author bookmarks + asymmetric reply slip + detached bottom writing slip guarded by the dragon. Make the difference immediately obvious while keeping reading pleasant.
+

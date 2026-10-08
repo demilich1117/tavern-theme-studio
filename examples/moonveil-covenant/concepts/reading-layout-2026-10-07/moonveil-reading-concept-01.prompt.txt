@@ -1,0 +1,61 @@
+Generated: 2026-10-07 (Asia/Shanghai)
+Tool: built-in image_gen.imagegen
+Purpose: one visual concept for Moonveil Covenant 2.1.4; no implementation changes.
+Reference 1: C:/Users/gwynd/AppData/Local/Temp/codex-clipboard-139e05eb-8d21-4c40-af06-ce83a5dc2715.png
+Reference 2: D:/RUA/sillytavern-plugins/tavern-theme-studio/dist/moonveil-covenant-2.1.4/assets/night/dragon-user-final-v3.webp
+Final image: moonveil-reading-concept-01.png
+
+Exact submitted prompt:
+
+Use case: ui-mockup.
+Create ONE realistic, production-quality, highly art-directed desktop SillyTavern native theme concept, continuing the attached Moonveil Covenant 2.1.4 UI. This is a reading-first Chinese roleplay chat surface. Single uninterrupted full-screen UI, no collage, no presentation board or explanatory callout labels.
+Concept direction: 月蚀书脊 — silver lunar codex spine. Do NOT print this concept title anywhere in the image.
+
+REFERENCE ROLES:
+Image 1 is the user's actual current UI screenshot and the existing palette, environment, materials, message functionality, and character identity reference. Deliberately redesign its layout and small ornamental details; don't merely reproduce the nested rectangles.
+Image 2 is the APPROVED silver dragon decorative asset. Preserve its very recognizable silhouette, pose, proportions, silver scale anatomy, icy blue eye, purple wing membranes, exactly two forelimbs, hand-drawn sharp shading. Place this same dragon intact at the top-right rim, independently of the page's reading area. Do not invent a different dragon, crop its wings, add limbs, or enlarge it into a hero illustration. Approximate 19% of viewport width.
+
+TARGET DIMENSIONS: 2559 x 1269 pixels, match the wide near-2:1 screenshot aspect ratio. Flat front-on digital UI view, no browser chrome, device mockup, perspective or desk scene.
+Current date anchor if dates are visible: 2026-10-07, Asia/Shanghai. Small message times may be 20:53 and 21:31.
+
+GOAL:
+The user wants more refined small decorative details and a less stock-SillyTavern composition while preserving a generously wide reading area. Make it feel like a bespoke moonlit dragon-court manuscript interface, within the existing night-fantasy direction. Remove visual dominance of complete double-lined box-within-box scaffolding. Organize the chat by alignment, spacing, light dividers, understated material variation, interrupted silver edge fragments. No arbitrary large blank card padding. No feature inventory, new analytics, character inventory, right sidebar or dashboard panels.
+
+LAYOUT:
+- A wide flowing dark reading field occupies roughly 85–88% of screen width and 80% of viewport height. Comfortable prose column still spans around 70–76% of screen width including generous line lengths; do not shrink to a narrow centered column. Narrow perimeter reveals the same indigo moonlit gothic castle and violet crystal landscape. No big hero banner or tall ornamental header.
+- Reading field starts close to the top, at about 8% of image height; asymmetric silver filigree only on selected perimeter segments. Soft dark vellum / midnight bookcloth with almost invisible grain, not reflective glass and not heavily textured behind text. It should feel grounded in the full viewport, not a rounded SaaS card centered over wallpaper.
+- On the far left, native toolbar becomes a slim separated antique silver book-spine/reliquary rail, around 56–64px wide in this viewport. Keep 8–9 recognizable functional small icons for settings, connection, text, book, characters, image, extensions and persona. Group them by modest spacing and tiny engraved joints. One selected icon has a restrained amethyst inlay. Avoid a huge circle for every icon or text labels. Tiny silver crescent pendant at rail foot, little crystal rivets at junctions.
+- A slim avatar margin inside the reading field: two matching Chinese roleplay character portraits inspired by Image 1, claw-held silver circular frames, clear faces, discreet engraved message-number plaques #30 / #31 / #32 below. Portraits do not waste horizontal space. Quiet small names and times align with body text; native edit and ellipsis actions unobtrusively align right.
+- Show an ordinary SCROLLED LONG-PROSE CHAT STATE with three stacked messages: a substantial assistant reply, a compact user reply, then another assistant reply and its slim collapsed thinking header. The white embedded third-party card in Image 1 is simply outside this scrolled state; do not redesign its internals or turn it into theme UI.
+- Assistant prose uses a wide near-continuous dark-blue codex surface, with an elegant small silver upper-left corner fitting and a fine lower edge/book-leaf impression. No complete ornate rectangle surrounding every paragraph. Tiny star or winged-moon separators between turns. One subtle quote block uses an open silver margin rule and tiny diamond anchor.
+- User reply is a low-height dark plum / purple-silk inset letter with delicately stitched partial edges and a small realistic purple moon-wax seal attached at its right OUTER edge. Seal never covers characters. User message remains wide enough for ordinary two-line prose, with no oversized empty panel.
+- Collapsed thinking header reads “思考了一会” with a tiny crescent at left, subtle moon-phase clasp at right and a real small chevron. It is a slim 36–40px seam, not a bulky standalone card.
+- A slender silver scroll track at the outer right with a small amethyst thumb and very sparse lunar engraved marks. These are decorative to the scrollbar, not new navigation or controls.
+- Bottom composer is a compact writing ledge connected by only two small silver corner brackets: wide text area with short Chinese draft, small native menu and wand at left, one 44px purple crescent-and-quill send button at right. Two subdued existing helper quick-action chips above it may read “重新处理变量” and “重新获取初始变量”. All composer parts together use less than 9% of viewport height. Keep controls usable; avoid huge footer decoration.
+- Dragon continues perched on upper right edge with its upper claw and side claw making anatomically credible contact. Its head and wing silhouette stay in the edge zone, never over body prose. No full-width vertical gap created just for the dragon. Outer wing fully visible.
+- Lower-left and lower-right margins can contain tiny violet crystal / silver thorn details at joins, but not giant crystal clusters in front of content.
+
+STYLE AND PALETTE grounded in project tokens:
+night backdrop #101625; main reading field #202637; assistant material #2c334a; user silk #302e46; body #d2d5e3; secondary #a4acc4; silver #c3c9df; lunar lavender accent #b5acec; hairline #707b9c66.
+2D illustrated, angular silver details, hand-inked silhouette and crisp cel-shaded dragon, understated carved relief. Moonlit gothic fantasy, refined cool silver and restrained amethyst. No gold, red-and-black gothic, neon sci-fi HUD, plastic 3D, excessive bloom, fog over prose, or bright white parchment.
+Preserve practical reading contrast; text fields should be almost opaque. Decorative filigree only at edges and seams, not patterned through the body.
+Typography: highly legible Chinese body, roughly 24–26px at this output size (corresponding to 20px desktop UI), about 1.8 line height. Clear body weight, no calligraphy for paragraphs, no tiny gray illegible text. At most two typefaces. Names slightly emphasized. Long-form lines about 60–70 Chinese characters where natural. Show 18–24 total meaningful prose lines, no lorem ipsum or placeholder bars.
+
+TEXT / CONTENT:
+Use these plausible snippets and continue naturally with calm descriptive Chinese prose if needed. Names “顾渡舟” and “春猫儿”.
+Assistant:
+“夜色沿着城堡的高窗缓缓落下，银色月光穿过拱廊，在石阶上铺开一道安静的光。”
+“顾渡舟合上手中的旧书，指尖停在那枚月牙形的银扣上。他没有立刻说话，只把桌边尚温的茶推近了一些。”
+“窗外的风掠过塔尖，远处传来一声悠长的钟鸣。紫水晶映出的微光，随着烛火轻轻摇曳。”
+Quote: “如果今夜的故事还未写完，就再陪我坐一会儿。”
+“他的声音很轻，像是不愿惊动这座沉睡的城。书页间夹着的细窄缎带垂在桌沿，末端缀着一枚小小的银月。”
+User:
+“我将书签放回书里，接过那杯茶，在他身旁坐了下来。‘那就从你停下的地方，继续讲吧。’”
+Assistant next:
+“他笑了一下，将那本装帧古旧的书重新翻开。页角的银色花纹在月光里亮了起来。”
+“故事从一封未曾寄出的信开始。落款已经被岁月磨淡，封蜡上的月纹却依旧清晰。”
+Composer draft: “我靠近一些，望向他指尖停留的那一页……”
+
+CONSTRAINTS:
+Only one cohesive screen. Theme concept, not a game menu. No new title, logo, slogans, English subtitle or ornamental words; only functional UI labels and roleplay content. No notification panels, tutorial overlays, percentage diagrams, annotations, before/after montage or samples outside the screen. The visual must clearly show generous useful reading space, much less boxed stock UI, and finely placed small silver/lunar details.
+

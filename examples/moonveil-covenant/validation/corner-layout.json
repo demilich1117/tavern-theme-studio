@@ -1,0 +1,90 @@
+[
+  {
+    "chatOverflow": false,
+    "composerInView": true,
+    "dragon": {
+      "bottom": "663.042px",
+      "right": "-6px",
+      "width": "312px"
+    },
+    "rootOverflow": false,
+    "stage": {
+      "bottom": 832,
+      "height": 724,
+      "left": 10,
+      "right": 380,
+      "top": 108,
+      "width": 370,
+      "x": 10,
+      "y": 108
+    },
+    "thirdPaw": "none",
+    "viewport": 390
+  },
+  {
+    "chatOverflow": false,
+    "composerInView": true,
+    "dragon": {
+      "bottom": "649.823px",
+      "right": "-6px",
+      "width": "580px"
+    },
+    "rootOverflow": false,
+    "stage": {
+      "bottom": 888,
+      "height": 762,
+      "left": 36,
+      "right": 864,
+      "top": 126,
+      "width": 828,
+      "x": 36,
+      "y": 126
+    },
+    "thirdPaw": "none",
+    "viewport": 900
+  },
+  {
+    "chatOverflow": false,
+    "composerInView": true,
+    "dragon": {
+      "bottom": "586.24px",
+      "right": "-42.394px",
+      "width": "940px"
+    },
+    "rootOverflow": false,
+    "stage": {
+      "bottom": 940.0000457763672,
+      "height": 767.2083740234375,
+      "left": 82,
+      "right": 1382,
+      "top": 172.7916717529297,
+      "width": 1300,
+      "x": 82,
+      "y": 172.7916717529297
+    },
+    "thirdPaw": "none",
+    "viewport": 1440
+  },
+  {
+    "chatOverflow": false,
+    "composerInView": true,
+    "dragon": {
+      "bottom": "767.031px",
+      "right": "-42.394px",
+      "width": "940px"
+    },
+    "rootOverflow": false,
+    "stage": {
+      "bottom": 1132,
+      "height": 948,
+      "left": 93.91667175292967,
+      "right": 1978.0729217529297,
+      "top": 184,
+      "width": 1884.15625,
+      "x": 93.91667175292967,
+      "y": 184
+    },
+    "thirdPaw": "none",
+    "viewport": 2048
+  }
+]

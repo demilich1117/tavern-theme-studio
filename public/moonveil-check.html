@@ -1,0 +1,6 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>夜幕浮雕 · 布局验收</title>
+<style>body{margin:0;background:#080f18;color:#d4dfd3;font:14px system-ui}nav{display:flex;gap:12px;padding:12px;align-items:center}button{color:inherit;background:#172933;border:1px solid #839d96;padding:8px 12px;cursor:pointer}main{padding:12px;overflow:auto}iframe{display:block;border:0;background:#101e2b}output{margin-left:auto}</style>
+<nav aria-label="验收尺寸"><button data-width="390" data-height="844">手机 390</button><button data-width="844" data-height="390">横屏 844</button><button data-width="1280" data-height="600">短屏 1280</button><button data-width="900" data-height="900">平板 900</button><button data-width="1440" data-height="960">桌面 1440</button><button data-width="2048" data-height="1152">大屏 2048</button><output id="size">390 × 844</output></nav>
+<main><iframe id="specimen" title="主题布局验收" src="/moonveil.html" width="390" height="844"></iframe></main>
+<script>const frame=document.getElementById('specimen');document.querySelectorAll('[data-width]').forEach(button=>button.addEventListener('click',()=>{frame.width=button.dataset.width;frame.height=button.dataset.height;document.getElementById('size').value=frame.width+' × '+frame.height}));</script></html>

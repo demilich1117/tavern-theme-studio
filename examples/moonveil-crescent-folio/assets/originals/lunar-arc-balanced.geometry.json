@@ -1,0 +1,49 @@
+{
+  "source": "C:/Users/gwynd/.codex/generated_images/01a11883-72e2-7dd2-b2aa-ec6843ab1154/exec-ff336762-a2fe-4fa9-ac65-4b618c8cdc13.png",
+  "original": "D:/RUA/sillytavern-plugins/tavern-theme-studio/examples/moonveil-crescent-folio/assets/originals/lunar-arc-balanced.png",
+  "production": "D:/RUA/sillytavern-plugins/tavern-theme-studio/examples/moonveil-crescent-folio/assets/production/lunar-arc-balanced.webp",
+  "originalSize": {
+    "width": 1774,
+    "height": 887
+  },
+  "crop": {
+    "left": 32,
+    "top": 298,
+    "width": 1710,
+    "height": 342
+  },
+  "productionSize": {
+    "width": 1710,
+    "height": 342
+  },
+  "geometry": {
+    "centerAxisX": 854.5,
+    "ring": {
+      "cx": 854.5,
+      "cy": 269,
+      "clearInnerDiameter": 74.00675644831357,
+      "clearInnerDiameterAlphaThreshold": 8,
+      "safeFullyTransparentDiameter": 58,
+      "alphaInsideSafeCircle": 0,
+      "alphaInsideDiameter76": 272
+    },
+    "crescentApproxBBox": {
+      "left": 800,
+      "top": 52,
+      "right": 911,
+      "bottom": 148
+    },
+    "chainCenterApprox": {
+      "x": 854.5,
+      "y": 158
+    },
+    "visibleTipYApprox": 11
+  },
+  "renderAt900": {
+    "height": 180,
+    "ringCx": 449.7368421052632,
+    "ringCy": 141.57894736842104,
+    "innerDiameter": 38.950924446480826
+  },
+  "note": "ImageGen artwork; only transparent-padding crop and WebP encode. No mirroring, painting, alpha edits, or stretching."
+}

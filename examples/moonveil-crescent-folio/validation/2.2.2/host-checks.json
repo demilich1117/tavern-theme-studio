@@ -1,0 +1,229 @@
+{
+  "host": "SillyTavern 1.19.0 / 06bde939f",
+  "browser": "Chrome",
+  "version": "2.2.2",
+  "temporaryPreview": true,
+  "checks": [
+    {
+      "editor": {
+        "bottom": 1059.34375,
+        "height": 911.25,
+        "left": 536,
+        "right": 2162,
+        "top": 148.09375,
+        "width": 1626,
+        "x": 536,
+        "y": 148.09375
+      },
+      "reasoning": {
+        "bottom": 136.09375,
+        "height": 45.75,
+        "left": 762.765625,
+        "right": 872.265625,
+        "top": 90.34375,
+        "width": 109.5,
+        "x": 762.765625,
+        "y": 90.34375
+      },
+      "scenario": "desktop-collapsed-reasoning-edit",
+      "toolbar": {
+        "bottom": 129.21875,
+        "height": 32,
+        "left": 884.265625,
+        "right": 1101.265625,
+        "top": 97.21875,
+        "width": 217,
+        "x": 884.265625,
+        "y": 97.21875
+      },
+      "toolbarAboveEditor": true,
+      "toolbarBesideReasoning": true,
+      "viewport": [
+        2560,
+        1215
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 1108,
+        "height": 1008,
+        "left": 256,
+        "right": 2304,
+        "top": 100,
+        "width": 2048,
+        "x": 256,
+        "y": 100
+      },
+      "editor": {
+        "bottom": 1063.59375,
+        "height": 911.25,
+        "left": 537,
+        "right": 2161,
+        "top": 152.34375,
+        "width": 1624,
+        "x": 537,
+        "y": 152.34375
+      },
+      "length": 1544,
+      "scenario": "desktop-reasoning-focus",
+      "scrollTop": 0,
+      "selection": [
+        0,
+        0
+      ],
+      "toolbar": {
+        "bottom": 152.34375,
+        "height": 44,
+        "left": 537,
+        "right": 2161,
+        "top": 108.34375,
+        "width": 1624,
+        "x": 537,
+        "y": 108.34375
+      }
+    },
+    {
+      "main": {
+        "bottom": 688.84375,
+        "height": 911.25,
+        "left": 536,
+        "right": 2162,
+        "top": -222.40625,
+        "width": 1626,
+        "x": 536,
+        "y": -222.40625
+      },
+      "reasoning": {
+        "bottom": -273.40625,
+        "height": 911.25,
+        "left": 537,
+        "right": 2161,
+        "top": -1184.65625,
+        "width": 1624,
+        "x": 537,
+        "y": -1184.65625
+      },
+      "scenario": "desktop-expanded-reasoning-and-message-edit",
+      "toolbar": {
+        "bottom": -1226.65625,
+        "height": 32,
+        "left": 774.765625,
+        "right": 991.765625,
+        "top": -1258.65625,
+        "width": 217,
+        "x": 774.765625,
+        "y": -1258.65625
+      },
+      "toolbarAboveBoth": true
+    },
+    {
+      "editor": {
+        "bottom": 1545.28125,
+        "height": 911.25,
+        "left": 536,
+        "right": 2162,
+        "top": 634.03125,
+        "width": 1626,
+        "x": 536,
+        "y": 634.03125
+      },
+      "rootOverflow": false,
+      "scenario": "desktop-message-without-reasoning",
+      "toolbar": {
+        "bottom": 622.03125,
+        "height": 32,
+        "left": 780.6875,
+        "right": 1034.6875,
+        "top": 590.03125,
+        "width": 254,
+        "x": 780.6875,
+        "y": 590.03125
+      },
+      "toolbarAboveEditor": true
+    },
+    {
+      "chatOverflow": false,
+      "editor": {
+        "bottom": 351.21875,
+        "height": 639,
+        "left": 36,
+        "right": 341,
+        "top": -287.78125,
+        "width": 305,
+        "x": 36,
+        "y": -287.78125
+      },
+      "scenario": "mobile-collapsed-reasoning-edit",
+      "toolbar": {
+        "bottom": -351.53125,
+        "height": 32,
+        "left": 36,
+        "right": 341,
+        "top": -383.53125,
+        "width": 305,
+        "x": 36,
+        "y": -383.53125
+      },
+      "toolbarAboveEditor": true,
+      "toolbarFits": true,
+      "viewport": [
+        393,
+        852
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 565,
+        "height": 492.015625,
+        "left": 12,
+        "right": 381,
+        "top": 72.984375,
+        "width": 369,
+        "x": 12,
+        "y": 72.984375
+      },
+      "chatOverflow": false,
+      "editor": {
+        "bottom": 504.46875,
+        "height": 380,
+        "left": 37,
+        "right": 340,
+        "top": 124.46875,
+        "width": 303,
+        "x": 37,
+        "y": 124.46875
+      },
+      "length": 1544,
+      "rootOverflow": false,
+      "scenario": "mobile-reasoning-focus",
+      "scrollTop": 0,
+      "selection": [
+        0,
+        0
+      ],
+      "toolbar": {
+        "bottom": 124.46875,
+        "height": 43,
+        "left": 37,
+        "right": 340,
+        "top": 81.46875,
+        "width": 303,
+        "x": 37,
+        "y": 81.46875
+      },
+      "viewport": [
+        393,
+        852
+      ]
+    },
+    {
+      "length": 1544,
+      "scenario": "companion-inactive-on-previous-theme",
+      "selection": [
+        1544,
+        1544
+      ],
+      "themeMarker": ""
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "通用起点 · 墨与暖砂",
+  "main_text_color": "#deded8",
+  "chat_tint_color": "#252a2d",
+  "blur_tint_color": "#23282b",
+  "font_scale": 1,
+  "custom_css": ":root {\n  --studio-accent: #caa575; /* 强调颜色 */\n  --studio-gap: 20px; /* 消息间距 */\n  --studio-radius: 12px; /* 消息圆角 */\n  --studio-font-size: 16px; /* 正文字号 */\n  --studio-avatar-ratio: 1 / 1; /* 头像比例 */\n}\n#chat .mes { border-radius: var(--studio-radius); margin-bottom: var(--studio-gap); }\n#chat .mes .name_text { color: var(--studio-accent); }\n#chat .mes .mes_text { font-size: var(--studio-font-size); }\n#chat .mes .avatar img { aspect-ratio: var(--studio-avatar-ratio); object-fit: cover; }\n@media (max-width: 767px) {\n  :root { --studio-gap: 12px; /* 手机消息间距 */ --studio-font-size: 14px; /* 手机字号 */ }\n}"
+}

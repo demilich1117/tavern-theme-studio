@@ -1,0 +1,158 @@
+{
+  "host": "SillyTavern 1.19.0 release / 06bde939f",
+  "browser": "Chrome",
+  "viewports": [
+    {
+      "viewport": [
+        393,
+        852
+      ],
+      "documentWidth": 393,
+      "chatWidth": 369,
+      "chatHeight": 540,
+      "horizontalOverflow": false,
+      "nativeMenuCenters": 9,
+      "inputHeight": 135
+    },
+    {
+      "viewport": [
+        320,
+        740
+      ],
+      "documentWidth": 320,
+      "chatWidth": 296,
+      "chatHeight": 428,
+      "horizontalOverflow": false,
+      "nativeMenuCenters": 9,
+      "inputHeight": 135
+    },
+    {
+      "viewport": [
+        844,
+        390
+      ],
+      "documentWidth": 844,
+      "chatWidth": 820,
+      "chatHeight": 133,
+      "horizontalOverflow": false,
+      "nativeMenuCenters": 9,
+      "inputHeight": 70
+    },
+    {
+      "viewport": [
+        1000,
+        768
+      ],
+      "documentWidth": 1000,
+      "chatWidth": 976,
+      "chatHeight": 497.4375,
+      "horizontalOverflow": false,
+      "nativeMenuCenters": 9,
+      "inputHeight": 97.5625
+    },
+    {
+      "viewport": [
+        1001,
+        768
+      ],
+      "documentWidth": 1001,
+      "chatWidth": 800.796875,
+      "chatHeight": 454.25,
+      "horizontalOverflow": false,
+      "nativeMenuCenters": 9,
+      "inputHeight": 124.75
+    },
+    {
+      "viewport": [
+        1366,
+        768
+      ],
+      "documentWidth": 1366,
+      "chatWidth": 1092.796875,
+      "chatHeight": 481.4375,
+      "horizontalOverflow": false,
+      "nativeMenuCenters": 9,
+      "inputHeight": 97.5625
+    }
+  ],
+  "nativeDrawers": [
+    {
+      "id": "left-nav-panel",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "rm_api_block",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "AdvancedFormatting",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "WorldInfo",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "user-settings-block",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "Backgrounds",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "rm_extensions_block",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "PersonaManagement",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "right-nav-panel",
+      "opened": true,
+      "withinViewport": true,
+      "horizontalOverflow": false
+    }
+  ],
+  "widthDrag": {
+    "viewportWidth": 1366,
+    "beforePercent": 80,
+    "testedPercent": 86,
+    "actualWidth": 1174.75,
+    "restoredPercent": 80
+  },
+  "reasoning": {
+    "nativeOpenAndClose": true,
+    "gapToBody": 12
+  },
+  "restore": {
+    "address": "http://127.0.0.1:19321",
+    "bodyClassUnchanged": true,
+    "draftUnchanged": true,
+    "previewGone": true,
+    "scrollRestored": true,
+    "viewport": [
+      2560,
+      1271
+    ],
+    "width": "80vw",
+    "originalCssMatches": true
+  }
+}

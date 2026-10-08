@@ -1,0 +1,106 @@
+{
+  "original2560": {
+    "artPointer": "none",
+    "chat": {
+      "bottom": 1086.625,
+      "height": 908.515625,
+      "left": 91,
+      "right": 2443.796875,
+      "top": 178.109375,
+      "width": 2352.796875,
+      "x": 91,
+      "y": 178.109375
+    },
+    "chatMargin": 0,
+    "chatScrollWidth": 2353,
+    "chatWidth": 2353,
+    "dragonHeight": 278.266,
+    "dragonWidth": 640,
+    "form": {
+      "bottom": 1194,
+      "height": 107.375,
+      "left": 91,
+      "right": 2443.796875,
+      "top": 1086.625,
+      "width": 2352.796875,
+      "x": 91,
+      "y": 1086.625
+    },
+    "messages": [
+      {
+        "scrollWidth": 2136,
+        "width": 2136
+      },
+      {
+        "scrollWidth": 2136,
+        "width": 2136
+      }
+    ],
+    "panel": {
+      "bottom": 1195,
+      "height": 1017.890625,
+      "left": 90,
+      "right": 2444.796875,
+      "top": 177.109375,
+      "width": 2354.796875,
+      "x": 90,
+      "y": 177.109375
+    },
+    "viewport": [
+      2560,
+      1215
+    ]
+  },
+  "original1685": {
+    "artPointer": "none",
+    "chat": {
+      "bottom": 656.625,
+      "height": 505.90625,
+      "left": 91,
+      "right": 1585.25,
+      "top": 150.71875,
+      "width": 1494.25,
+      "x": 91,
+      "y": 150.71875
+    },
+    "chatMargin": 0,
+    "chatScrollWidth": 1494,
+    "chatWidth": 1494,
+    "dragonHeight": 232.094,
+    "dragonWidth": 533.797,
+    "form": {
+      "bottom": 764,
+      "height": 107.375,
+      "left": 91,
+      "right": 1585.25,
+      "top": 656.625,
+      "width": 1494.25,
+      "x": 91,
+      "y": 656.625
+    },
+    "messages": [
+      {
+        "scrollWidth": 1294,
+        "width": 1294
+      },
+      {
+        "scrollWidth": 1294,
+        "width": 1294
+      }
+    ],
+    "panel": {
+      "bottom": 765,
+      "height": 615.28125,
+      "left": 90,
+      "right": 1586.25,
+      "top": 149.71875,
+      "width": 1496.25,
+      "x": 90,
+      "y": 149.71875
+    },
+    "viewport": [
+      1685,
+      785
+    ]
+  }
+}

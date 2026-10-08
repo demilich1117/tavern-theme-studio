@@ -1,0 +1,10 @@
+{
+  "display_name": "月誓 · 阅读细节",
+  "loading_order": 110,
+  "js": "index.js",
+  "author": "Moonveil Theme Studio",
+  "version": "1.0.0",
+  "minimum_client_version": "1.19.0",
+  "auto_update": false,
+  "hooks": {"activate": "activate", "disable": "disable", "enable": "activate", "delete": "disable"}
+}

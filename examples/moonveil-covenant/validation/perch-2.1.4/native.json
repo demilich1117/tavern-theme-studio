@@ -1,0 +1,108 @@
+{
+  "target": "SillyTavern 1.19.0 / 06bde939f",
+  "before": {
+    "chat": {
+      "bottom": 1113.8125,
+      "height": 950.015625,
+      "left": 96.796875,
+      "right": 2449.984375,
+      "top": 163.796875,
+      "width": 2353.1875,
+      "x": 96.796875,
+      "y": 163.796875
+    },
+    "classes": "drop_target no_animation charListGrid no-modelIcons no-tokenCount translate caption sd tts noShadows no-timer no-mesIDDisplay no-hotswap reduced-motion",
+    "dragon": "600px",
+    "idsEnabled": false,
+    "panel": {
+      "bottom": 1195,
+      "height": 1032.203125,
+      "left": 95.796875,
+      "right": 2450.984375,
+      "top": 162.796875,
+      "width": 2355.1875,
+      "x": 95.796875,
+      "y": 162.796875
+    },
+    "preview": false,
+    "styleLength": 460667,
+    "viewport": {
+      "h": 1215,
+      "w": 2560
+    },
+    "width": "92vw"
+  },
+  "preview": {
+    "chat": {
+      "bottom": 1113.8125,
+      "height": 950.015625,
+      "left": 96.796875,
+      "right": 2449.984375,
+      "top": 163.796875,
+      "width": 2353.1875,
+      "x": 96.796875,
+      "y": 163.796875
+    },
+    "chatClientWidth": 2353,
+    "chatScrollWidth": 2353,
+    "dragon": {
+      "height": 260.875,
+      "left": 1954.984375,
+      "mask": "none",
+      "pointerEvents": "none",
+      "top": 0.625,
+      "width": 600,
+      "z": "10"
+    },
+    "floors": [
+      {
+        "display": "block",
+        "font": "11px",
+        "mesid": "0",
+        "rect": {
+          "bottom": 300.796875,
+          "height": 19,
+          "left": 189.296875,
+          "right": 220.28125,
+          "top": 281.796875,
+          "width": 30.984375,
+          "x": 189.296875,
+          "y": 281.796875
+        },
+        "text": "#0"
+      }
+    ],
+    "frame": {
+      "pointerEvents": "none",
+      "right": "-12px",
+      "top": "-30px",
+      "z": "9"
+    },
+    "idsHidden": false,
+    "panel": {
+      "bottom": 1195,
+      "height": 1032.203125,
+      "left": 95.796875,
+      "right": 2450.984375,
+      "top": 162.796875,
+      "width": 2355.1875,
+      "x": 95.796875,
+      "y": 162.796875
+    },
+    "rearLayer": "none",
+    "viewport": {
+      "dpr": 1,
+      "height": 1215,
+      "width": 2560
+    }
+  },
+  "after": {
+    "chatHeight": 950.015625,
+    "dock": false,
+    "idsEnabled": false,
+    "preview": false,
+    "width": "92vw",
+    "cssRestored": true,
+    "workbenchUrl": "http://127.0.0.1:19321"
+  }
+}

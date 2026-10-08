@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>月誓 · 龙廷 — 原创酒馆主题</title>
+<style>__BASE_CSS__</style><style>__THEME_CSS__</style>
+<style>
+/* Demo-only scaffolding. These selectors are not exported into the theme. */
+.demo-top button{width:100%;border-radius:3px;background:transparent;padding:7px;line-height:1}.demo-top button:hover,.demo-top button[aria-pressed=true]{background:#79dfd821;color:#d9fffa}.demo-top svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.scene-label{border:1px solid #79dfd836;padding:3px 8px;font-size:9px;color:#8aded8;letter-spacing:1px;margin-left:auto;white-space:nowrap}.preview-close{float:right;font:18px/1 sans-serif}aside[hidden]{display:none!important}aside:not([hidden]){display:block!important}aside p{color:#a8bbd1}aside button{font-size:12px}aside label{font-size:12px}aside input{accent-color:#79dfd8}#sheld .chat-title{gap:10px}#chat .chapter{padding:6px 0 20px;gap:4px}#chat .chapter b{letter-spacing:6px;font-size:23px}.chapter i{font-size:8px}
+#chat .mes .mes_buttons button{font-size:15px;padding:0;color:inherit}.mes_text[contenteditable=true]{outline:1px dashed #79dfd8;outline-offset:5px}.character-swatch svg{width:54px;height:54px;stroke:#c7e6ef;fill:none;stroke-width:1.4}.preview-link{display:block;color:#9fe9e3;font-size:12px;margin-top:16px}.demo-foot{letter-spacing:1px}#chat .mes .mes_reasoning_details{display:block}
+@media(max-width:900px){.demo-top button{width:30px;min-width:0;padding:4px}.scene-label{font-size:8px;padding:2px 5px}#sheld .chat-title{padding:8px 14px}.chat-title small{display:none}.chat-title .monogram{width:26px;height:27px;font-size:19px;line-height:27px}#chat .chapter{padding:6px 0 14px}#chat .chapter b{font-size:19px}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 4h14v12H9l-4 4V4zM9 8h6m-6 4h4"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M3 4h7l2 2 2-2h7v15h-7l-2 2-2-2H3zM12 6v15"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M5 3v18m7-18v18m7-18v18M2 7h6m1 9h6m1-10h6"/></symbol>
+<symbol id="i-scroll" viewBox="0 0 24 24"><path d="M6 3h12v15H6zM3 3h3v4H3zM18 14h3v7H9v-3M9 7h6m-6 4h6"/></symbol>
+<symbol id="i-code" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></symbol>
+<symbol id="i-quill" viewBox="0 0 24 24"><path d="m4 20 9-9M7 17l2-10 10-5 3 3-5 10-10 2zM9 7l8 8"/></symbol>
+<symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 2 8M4 3v7h7"/></symbol>
+</defs></svg>
+<nav class="demo-top" aria-label="主题演示工具栏">
+<button data-scene="chat" title="龙廷对话" aria-label="龙廷对话" aria-pressed="true"><svg><use href="#i-chat"/></svg></button>
+<button data-panel="right-nav-panel" title="角色图鉴" aria-label="角色图鉴"><svg><use href="#i-book"/></svg></button>
+<button data-panel="left-nav-panel" title="主题演示设置" aria-label="主题演示设置"><svg><use href="#i-settings"/></svg></button>
+<button data-scene="long" title="长篇叙事" aria-label="长篇叙事"><svg><use href="#i-scroll"/></svg></button>
+<button data-scene="rich" title="契约、代码与表格" aria-label="契约、代码与表格"><svg><use href="#i-code"/></svg></button>
+<button data-scene="reasoning" title="思考区示例" aria-label="思考区示例"><svg><use href="#i-star"/></svg></button>
+<button data-scene="composer" title="多行输入" aria-label="多行输入"><svg><use href="#i-quill"/></svg></button>
+<button id="reset-preview" title="恢复演示初始状态" aria-label="恢复演示初始状态"><svg><use href="#i-reset"/></svg></button>
+</nav>
+<aside id="left-nav-panel" hidden><button class="preview-close" aria-label="关闭设置">×</button><h2>阅读仪式</h2><p>这些调节只影响当前演示。完整变量编辑和保存请使用主题工作台。</p><label>正文字号 <output id="size-value">16 px</output><input id="font-range" type="range" min="13" max="22" value="16" aria-label="正文字号"></label><label>立绘明暗 <output id="art-value">96%</output><input id="art-range" type="range" min="20" max="100" value="96" aria-label="立绘明暗"></label><a class="preview-link" href="./moonveil.theme.json" download>下载酒馆主题 JSON ↗</a><a class="preview-link" href="./moonveil.studio.json" download>下载可编辑工程 ↗</a></aside>
+<section id="sheld"><header class="chat-title"><div class="monogram">M</div><div><b>塞维兰 · 月冕之龙</b><small>SEVYRAN / KEEPER OF THE SILVER THRONE</small></div><span class="scene-label">龙廷会面 · 01</span></header><main id="chat" aria-label="主题示例对话"></main>
+<form id="send_form"><button type="button" id="options" aria-label="打开演示设置">＋</button><textarea id="send_textarea" aria-label="示例消息输入框" placeholder="向月冕之龙，述说你的来意…"></textarea><button type="submit" aria-label="追加示例消息">➤</button></form><footer class="demo-foot" role="status" id="preview-status">主题演示 · 发送仅追加本地示例</footer></section>
+<aside id="right-nav-panel" hidden><button class="preview-close" aria-label="关闭角色图鉴">×</button><h2>月冕图鉴</h2><div class="character-swatch"><svg viewBox="0 0 64 64"><path d="m8 44 7-20 10 10 7-26 7 26 10-10 7 20-24 12zM14 44h36M25 44l7 12 7-12"/></svg></div><b>塞维兰 · 月冕之龙</b><p>银脊山脉最后的守誓者。<br>以记忆为筹码，以真名缔结契约。</p><p>领域 / 霜息、月光、古代誓约<br>阵营 / 银廷<br>状态 / 等待你的回答</p><button id="codex-scene" type="button">查看契约文本</button></aside>
+<script>
+const chat = document.querySelector('#chat'), input = document.querySelector('#send_textarea');
+const opening = '<p>银廷的门扉在你身后合拢。</p><p>盘踞王座的巨龙垂下头颅，月白鳞甲划过一道冰青色的光。那双古老的眼睛，正注视着你。</p><blockquote>“告诉我，旅人。你带来的是誓言，还是又一个谎言？”</blockquote>';
+const closing = '<p>塞维兰将一枚冰冷的银印推到你的面前。</p><p>“那么，让月光记住你的名字。”</p>';
+function message(user, html, textOnly=false) {
+ const el=document.createElement('article'); el.className='mes'; el.setAttribute('is_user',String(user)); el.setAttribute('is_system','false');
+ el.innerHTML='<div class="mesAvatarWrapper"><div class="avatar"><span>'+(user?'契':'冕')+'</span></div></div><div class="mes_block"><div class="ch_name"><span class="name_text">'+(user?'你 · 持契者':'塞维兰 · 月冕之龙')+'</span><small class="timestamp">'+(user?'23:48':'23:47')+'</small><span class="mes_buttons"><button title="编辑这条示例消息" aria-label="编辑这条示例消息">✎</button></span></div><div class="mes_text"></div></div>';
+ const text=el.querySelector('.mes_text'); if(textOnly){const p=document.createElement('p');p.textContent=html;text.append(p);}else{text.innerHTML=html;}
+ el.querySelector('button').addEventListener('click',event=>{const editing=text.contentEditable!=='true';text.contentEditable=String(editing);event.currentTarget.textContent=editing?'✓':'✎';if(editing)text.focus();});
+ return el;
+}
+function scene(value='chat') {
+ chat.replaceChildren(); input.value='';input.style.height='';document.querySelectorAll('aside').forEach(el=>el.hidden=true);
+ document.querySelectorAll('[data-scene]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scene===value)));
+ if(value==='chat'||value==='composer'){const chapter=document.createElement('div');chapter.className='chapter';chapter.innerHTML='<span>第一卷 / 银廷</span><b>月光下的誓约</b><i>AN OATH BENEATH THE MOON</i>';chat.append(chapter);}
+ const first=message(false,opening);chat.append(first); const text=first.querySelector('.mes_text');
+ if(value==='long'){text.innerHTML=Array.from({length:12},(_,i)=>'<p>'+['雪从破碎的穹顶缓缓落下。石柱上镌刻着古老的龙语，每一道痕迹都比王国的历史更为久远。','你走过长廊，听见冰层深处低沉的回响。那不是风声，而是一座山脉在梦中呼吸。','巨龙没有催促。它折起宽阔的翼膜，月光在鳞甲上游移，像一条终于平静下来的冰河。'][i%3]+'</p>').join('');}
+ if(value==='rich'){text.innerHTML='<p>以月冕为证，双方接受以下契约。</p><blockquote>真名不可伪造，誓言不可转让。</blockquote><table><thead><tr><th>条款</th><th>持契者</th><th>守誓之龙</th></tr></thead><tbody><tr><td>代价</td><td>一段珍贵记忆</td><td>穿越银脊的庇护</td></tr><tr><td>期限</td><td>下一次满月之前</td><td>誓约解除之时</td></tr></tbody></table><pre><code>const covenant = {\n  keeper: "Sevyran",\n  seal: "moonveil",\n  condition: "A name freely given can never be taken back by another keeper."\n};</code></pre><p>表格与代码各自保留阅读空间，长代码可在块内横向滚动。</p>';}
+ if(value==='reasoning'){const details=document.createElement('details');details.open=true;details.className='mes_reasoning_details';details.innerHTML='<summary class="mes_reasoning_summary">✧ 思考区样式示例 · 点击折叠</summary><div class="mes_reasoning">这里是专门用于测试展开、折叠与配色的虚构占位内容，不是实际模型的推理。冷紫色把辅助区域与角色正文区分开来。</div>';text.before(details);}
+ chat.append(message(true,'<p>我将手中的断剑平放在石阶上。</p><p>“我为失落的名字而来，也愿意付出它应有的代价。”</p>'),message(false,closing));
+ if(value==='composer'){input.value='我摘下沾雪的斗篷，向龙廷行礼。\n“在我开口之前，请允许我问一个问题。”\n我抬起头，等待它的回应。';input.style.height='120px';}
+ chat.scrollTop=0;document.querySelector('#preview-status').textContent='主题演示 · 发送仅追加本地示例';
+}
+document.querySelectorAll('[data-scene]').forEach(button=>button.addEventListener('click',()=>scene(button.dataset.scene)));
+document.querySelectorAll('[data-panel]').forEach(button=>button.addEventListener('click',()=>{const panel=document.getElementById(button.dataset.panel),hidden=panel.hidden;document.querySelectorAll('aside').forEach(el=>el.hidden=true);panel.hidden=!hidden;}));
+document.querySelectorAll('.preview-close').forEach(button=>button.addEventListener('click',()=>button.closest('aside').hidden=true));
+document.querySelector('#options').addEventListener('click',()=>document.querySelector('#left-nav-panel').hidden=false);
+document.querySelector('#codex-scene').addEventListener('click',()=>scene('rich'));
+document.querySelector('#font-range').addEventListener('input',event=>{document.documentElement.style.setProperty('--cc-font-size',event.target.value+'px');document.querySelector('#size-value').value=event.target.value+' px';});
+document.querySelector('#art-range').addEventListener('input',event=>{document.documentElement.style.setProperty('--cc-art-opacity',event.target.value/100);document.querySelector('#art-value').value=event.target.value+'%';});
+document.querySelector('#reset-preview').addEventListener('click',()=>{document.documentElement.style.removeProperty('--cc-font-size');document.documentElement.style.removeProperty('--cc-art-opacity');document.querySelector('#font-range').value=16;document.querySelector('#size-value').value='16 px';document.querySelector('#art-range').value=96;document.querySelector('#art-value').value='96%';scene();});
+document.querySelector('#send_form').addEventListener('submit',event=>{event.preventDefault();if(!input.value.trim())return;chat.append(message(true,input.value,true));input.value='';chat.scrollTop=chat.scrollHeight;document.querySelector('#preview-status').textContent='已追加到演示画面 · 未调用模型';});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('aside').forEach(el=>el.hidden=true);});
+scene();
+</script></body></html>

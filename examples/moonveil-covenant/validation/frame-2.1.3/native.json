@@ -1,0 +1,58 @@
+{
+  "before": {
+    "chat": {
+      "height": 991.703125,
+      "top": 178.109375,
+      "z": "0"
+    },
+    "dragonWidth": "640px",
+    "frame": {
+      "bottom": "-12px",
+      "imageWidth": "78px",
+      "top": "-12px"
+    },
+    "nativeWidth": "92vw",
+    "panel": {
+      "bottom": 1251,
+      "height": 1073.890625,
+      "top": 177.109375,
+      "width": 2354.796875
+    },
+    "viewport": [
+      2560,
+      1271
+    ]
+  },
+  "temporaryPreview": {
+    "chat": {
+      "height": 1006.015625,
+      "top": 163.796875,
+      "z": "0"
+    },
+    "dragonWidth": "600px",
+    "frame": {
+      "bottom": "-12px",
+      "imageWidth": "78px",
+      "pointer": "none",
+      "top": "-30px"
+    },
+    "nativeWidth": "92vw",
+    "panel": {
+      "bottom": 1251,
+      "height": 1088.203125,
+      "top": 162.796875,
+      "width": 2355.1875
+    },
+    "viewport": [
+      2560,
+      1271
+    ]
+  },
+  "restored": {
+    "dock": false,
+    "dragonWidth": "640px",
+    "frameTop": "-12px",
+    "nativeWidth": "92vw",
+    "previewStyles": false
+  }
+}

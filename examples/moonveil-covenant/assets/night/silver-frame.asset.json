@@ -1,0 +1,17 @@
+{
+  "generator": "builtin image_gen",
+  "reference": "../../concepts/relief-study/02-night-relief.png",
+  "prompt": "silver-frame.prompt.txt",
+  "original": "silver-frame.original.png",
+  "dimensions": [1254, 1254],
+  "mode": "RGBA",
+  "alphaBoundingBox": [19, 31, 1239, 1206],
+  "fullyTransparentPercent": 78.76,
+  "centerAlpha": 0,
+  "interiorAlphaRange": [0, 1],
+  "interiorInspectionBox": [250, 250, 1004, 1004],
+  "recommendedBorderImageSlice": 400,
+  "recommendedBorderImageSlicePercent": 31.9,
+  "recommendedRenderedBorderWidthPx": [38, 58],
+  "notes": "Four intricate silver-blue dragon-scale corners with violet gems. Straight middle rails. Central alpha1 speckles are below visible opacity; generated alpha preserved without background removal. Do not use border-image fill. Original generated dimensions differ from requested1024 square; resize only as packaging needs."
+}

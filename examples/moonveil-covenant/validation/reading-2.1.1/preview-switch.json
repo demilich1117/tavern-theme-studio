@@ -1,0 +1,106 @@
+{
+  "on": {
+    "artPointer": "none",
+    "chat": {
+      "bottom": 639.625,
+      "height": 426.625,
+      "left": 190.578125,
+      "right": 1199.40625,
+      "top": 213,
+      "width": 1008.828125,
+      "x": 190.578125,
+      "y": 213
+    },
+    "chatMargin": 65.28,
+    "chatScrollWidth": 999,
+    "chatWidth": 999,
+    "dragonHeight": 227.062,
+    "dragonWidth": 522.234,
+    "form": {
+      "bottom": 747,
+      "height": 107.375,
+      "left": 190.578125,
+      "right": 1199.40625,
+      "top": 639.625,
+      "width": 1008.828125,
+      "x": 190.578125,
+      "y": 639.625
+    },
+    "messages": [
+      {
+        "scrollWidth": 807,
+        "width": 807
+      },
+      {
+        "scrollWidth": 807,
+        "width": 807
+      }
+    ],
+    "panel": {
+      "bottom": 748,
+      "height": 601.265625,
+      "left": 189.578125,
+      "right": 1200.40625,
+      "top": 146.734375,
+      "width": 1010.828125,
+      "x": 189.578125,
+      "y": 146.734375
+    },
+    "viewport": [
+      1366,
+      768
+    ]
+  },
+  "off": {
+    "artPointer": "none",
+    "chat": {
+      "bottom": 639.625,
+      "height": 491.890625,
+      "left": 190.578125,
+      "right": 1199.40625,
+      "top": 147.734375,
+      "width": 1008.828125,
+      "x": 190.578125,
+      "y": 147.734375
+    },
+    "chatMargin": 0,
+    "chatScrollWidth": 999,
+    "chatWidth": 999,
+    "dragonHeight": 227.062,
+    "dragonWidth": 522.234,
+    "form": {
+      "bottom": 747,
+      "height": 107.375,
+      "left": 190.578125,
+      "right": 1199.40625,
+      "top": 639.625,
+      "width": 1008.828125,
+      "x": 190.578125,
+      "y": 639.625
+    },
+    "messages": [
+      {
+        "scrollWidth": 807,
+        "width": 807
+      },
+      {
+        "scrollWidth": 807,
+        "width": 807
+      }
+    ],
+    "panel": {
+      "bottom": 748,
+      "height": 601.265625,
+      "left": 189.578125,
+      "right": 1200.40625,
+      "top": 146.734375,
+      "width": 1010.828125,
+      "x": 189.578125,
+      "y": 146.734375
+    },
+    "viewport": [
+      1366,
+      768
+    ]
+  }
+}

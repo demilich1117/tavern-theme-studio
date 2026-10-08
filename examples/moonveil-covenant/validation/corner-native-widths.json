@@ -1,0 +1,53 @@
+[
+  {
+    "chatOverflow": false,
+    "dragonRight": 1034.7504,
+    "dragonWidth": 704,
+    "setting": "55",
+    "stage": {
+      "bottom": 700,
+      "height": 570.40625,
+      "left": 300,
+      "right": 1004,
+      "top": 129.59375,
+      "width": 704,
+      "x": 300,
+      "y": 129.59375
+    },
+    "viewport": 1280
+  },
+  {
+    "chatOverflow": false,
+    "dragonRight": 1262.5642,
+    "dragonWidth": 921.594,
+    "setting": "99",
+    "stage": {
+      "bottom": 700,
+      "height": 570.40625,
+      "left": 82,
+      "right": 1222,
+      "top": 129.59375,
+      "width": 1140,
+      "x": 82,
+      "y": 129.59375
+    },
+    "viewport": 1280
+  },
+  {
+    "chatOverflow": false,
+    "dragonRight": 1139.4096,
+    "dragonWidth": 896,
+    "setting": "70",
+    "stage": {
+      "bottom": 700,
+      "height": 570.40625,
+      "left": 204,
+      "right": 1100,
+      "top": 129.59375,
+      "width": 896,
+      "x": 204,
+      "y": 129.59375
+    },
+    "viewport": 1280
+  }
+]

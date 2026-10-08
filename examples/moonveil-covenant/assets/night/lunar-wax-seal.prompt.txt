@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: single transparent fantasy UI wax seal ornament.
+Input image: Moonveil UI concept, style reference only.
+Primary request: standalone violet lunar wax seal with two short silk ribbon tails. Rich dark amethyst wax medallion, gently irregular scalloped circular edge, embossed silver crescent moon embracing a tiny four-point star; fine silver rim inlay. Two narrow muted indigo-violet stitched ribbon tails with swallowtail ends hang below. No letters.
+Composition: centered isolated front-facing seal, vertical overall silhouette, circular seal takes upper 60% height, short tails lower 40%, large transparent margin around. Designed to render at 42 to 60 pixels wide in the top right corner of a chat card, crisp clear crescent silhouette. No fake UI frame. Materials: delicately hand-painted wax and satin with silver highlights, gothic court fantasy illustration, same cool silver and purple style as reference.
+Constraints: genuinely transparent alpha background, holes between tails transparent, no checkerboard, no floor shadow, no glow, no extra objects, no text, no dragons. Restrained volume and high contrast readable at small sizes.

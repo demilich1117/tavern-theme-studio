@@ -1,0 +1,114 @@
+{
+  "boxes": {
+    "chat": {
+      "bottom": 724.8125,
+      "height": 503.15625,
+      "left": 9,
+      "right": 384,
+      "top": 221.65625,
+      "width": 375,
+      "x": 9,
+      "y": 221.65625
+    },
+    "extensionsMenuButton": {
+      "bottom": 829,
+      "height": 40,
+      "left": 49,
+      "right": 77,
+      "top": 789,
+      "width": 28,
+      "x": 49,
+      "y": 789
+    },
+    "form_sheld": {
+      "bottom": 839,
+      "height": 114.1875,
+      "left": 9,
+      "right": 384,
+      "top": 724.8125,
+      "width": 375,
+      "x": 9,
+      "y": 724.8125
+    },
+    "leftSendForm": {
+      "bottom": 829,
+      "height": 40,
+      "left": 19,
+      "right": 77,
+      "top": 789,
+      "width": 58,
+      "x": 19,
+      "y": 789
+    },
+    "nonQRFormItems": {
+      "bottom": 829,
+      "height": 49.1875,
+      "left": 19,
+      "right": 374,
+      "top": 779.8125,
+      "width": 355,
+      "x": 19,
+      "y": 779.8125
+    },
+    "options_button": {
+      "bottom": 829,
+      "height": 40,
+      "left": 19,
+      "right": 47,
+      "top": 789,
+      "width": 28,
+      "x": 19,
+      "y": 789
+    },
+    "send_but": {
+      "bottom": 826,
+      "height": 34,
+      "left": 340,
+      "right": 374,
+      "top": 792,
+      "width": 34,
+      "x": 340,
+      "y": 792
+    },
+    "send_form": {
+      "bottom": 839,
+      "height": 114.1875,
+      "left": 9,
+      "right": 384,
+      "top": 724.8125,
+      "width": 375,
+      "x": 9,
+      "y": 724.8125
+    },
+    "send_textarea": {
+      "bottom": 829,
+      "height": 49.1875,
+      "left": 82,
+      "right": 335,
+      "top": 779.8125,
+      "width": 253,
+      "x": 82,
+      "y": 779.8125
+    },
+    "sheld": {
+      "bottom": 840,
+      "height": 686.78125,
+      "left": 8,
+      "right": 385,
+      "top": 153.21875,
+      "width": 377,
+      "x": 8,
+      "y": 153.21875
+    }
+  },
+  "horizontalClip": "clip",
+  "iconsFontSize": "18px",
+  "rootHeight": 852,
+  "viewport": [
+    393,
+    852
+  ],
+  "visibleRightControls": [
+    "send_but"
+  ]
+}

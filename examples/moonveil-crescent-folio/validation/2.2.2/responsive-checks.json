@@ -1,0 +1,525 @@
+{
+  "browser": "Chrome",
+  "date": "2026-10-08",
+  "cases": [
+    {
+      "adult": {
+        "content": "none",
+        "height": "47.6506px",
+        "width": "16px"
+      },
+      "baby": {
+        "content": "\"\"",
+        "height": "49.8906px",
+        "width": "84px"
+      },
+      "chatWidth": [
+        276,
+        276
+      ],
+      "reading": {
+        "bottom": 614,
+        "height": 545,
+        "left": 12,
+        "right": 308,
+        "top": 69,
+        "width": 296,
+        "x": 12,
+        "y": 69
+      },
+      "rootWidth": [
+        320,
+        320
+      ],
+      "send": {
+        "bottom": 717,
+        "height": 36,
+        "left": 266,
+        "right": 302,
+        "top": 681,
+        "width": 36,
+        "x": 266,
+        "y": 681
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        320,
+        740
+      ]
+    },
+    {
+      "adult": {
+        "content": "none",
+        "height": "47.6506px",
+        "width": "19.65px"
+      },
+      "baby": {
+        "content": "\"\"",
+        "height": "49.8906px",
+        "width": "84px"
+      },
+      "chatWidth": [
+        349,
+        349
+      ],
+      "reading": {
+        "bottom": 726,
+        "height": 653.015625,
+        "left": 12,
+        "right": 381,
+        "top": 72.984375,
+        "width": 369,
+        "x": 12,
+        "y": 72.984375
+      },
+      "rootWidth": [
+        393,
+        393
+      ],
+      "send": {
+        "bottom": 829,
+        "height": 36,
+        "left": 339,
+        "right": 375,
+        "top": 793,
+        "width": 36,
+        "x": 339,
+        "y": 793
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        393,
+        852
+      ]
+    },
+    {
+      "adult": {
+        "content": "none",
+        "height": "47.6506px",
+        "width": "30px"
+      },
+      "baby": {
+        "content": "\"\"",
+        "height": "49.8906px",
+        "width": "84px"
+      },
+      "chatWidth": [
+        556,
+        556
+      ],
+      "reading": {
+        "bottom": 774,
+        "height": 693.9375,
+        "left": 12,
+        "right": 588,
+        "top": 80.0625,
+        "width": 576,
+        "x": 12,
+        "y": 80.0625
+      },
+      "rootWidth": [
+        600,
+        600
+      ],
+      "send": {
+        "bottom": 877,
+        "height": 36,
+        "left": 546,
+        "right": 582,
+        "top": 841,
+        "width": 36,
+        "x": 546,
+        "y": 841
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        600,
+        900
+      ]
+    },
+    {
+      "adult": {
+        "content": "none",
+        "height": "74.4588px",
+        "width": "30.05px"
+      },
+      "baby": {
+        "content": "\"\"",
+        "height": "52.2656px",
+        "width": "88px"
+      },
+      "chatWidth": [
+        547,
+        547
+      ],
+      "reading": {
+        "bottom": 763,
+        "height": 667,
+        "left": 12,
+        "right": 589,
+        "top": 96,
+        "width": 577,
+        "x": 12,
+        "y": 96
+      },
+      "rootWidth": [
+        601,
+        601
+      ],
+      "send": {
+        "bottom": 874,
+        "height": 44,
+        "left": 500,
+        "right": 544,
+        "top": 830,
+        "width": 44,
+        "x": 500,
+        "y": 830
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        601,
+        900
+      ]
+    },
+    {
+      "adult": {
+        "content": "none",
+        "height": "104.831px",
+        "width": "43px"
+      },
+      "baby": {
+        "content": "\"\"",
+        "height": "52.2656px",
+        "width": "88px"
+      },
+      "chatWidth": [
+        806,
+        806
+      ],
+      "reading": {
+        "bottom": 763,
+        "height": 667,
+        "left": 12,
+        "right": 848,
+        "top": 96,
+        "width": 836,
+        "x": 12,
+        "y": 96
+      },
+      "rootWidth": [
+        860,
+        860
+      ],
+      "send": {
+        "bottom": 874,
+        "height": 44,
+        "left": 759,
+        "right": 803,
+        "top": 830,
+        "width": 44,
+        "x": 759,
+        "y": 830
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        860,
+        900
+      ]
+    },
+    {
+      "adult": {
+        "content": "none",
+        "height": "104.831px",
+        "width": "43.05px"
+      },
+      "baby": {
+        "content": "\"\"",
+        "height": "52.2656px",
+        "width": "88px"
+      },
+      "chatWidth": [
+        807,
+        807
+      ],
+      "reading": {
+        "bottom": 763,
+        "height": 667,
+        "left": 12,
+        "right": 849,
+        "top": 96,
+        "width": 837,
+        "x": 12,
+        "y": 96
+      },
+      "rootWidth": [
+        861,
+        861
+      ],
+      "send": {
+        "bottom": 874,
+        "height": 44,
+        "left": 760,
+        "right": 804,
+        "top": 830,
+        "width": 44,
+        "x": 760,
+        "y": 830
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        861,
+        900
+      ]
+    },
+    {
+      "adult": {
+        "content": "none",
+        "height": "104.831px",
+        "width": "50px"
+      },
+      "baby": {
+        "content": "\"\"",
+        "height": "52.2656px",
+        "width": "88px"
+      },
+      "chatWidth": [
+        946,
+        946
+      ],
+      "reading": {
+        "bottom": 763,
+        "height": 667,
+        "left": 12,
+        "right": 988,
+        "top": 96,
+        "width": 976,
+        "x": 12,
+        "y": 96
+      },
+      "rootWidth": [
+        1000,
+        1000
+      ],
+      "send": {
+        "bottom": 874,
+        "height": 44,
+        "left": 899,
+        "right": 943,
+        "top": 830,
+        "width": 44,
+        "x": 899,
+        "y": 830
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        1000,
+        900
+      ]
+    },
+    {
+      "adult": {
+        "content": "\"\"",
+        "height": "102.031px",
+        "width": "138.141px"
+      },
+      "baby": {
+        "content": "none",
+        "height": "auto",
+        "width": "auto"
+      },
+      "chatWidth": [
+        771,
+        771
+      ],
+      "reading": {
+        "bottom": 763,
+        "height": 663,
+        "left": 100.09375,
+        "right": 900.890625,
+        "top": 100,
+        "width": 800.796875,
+        "x": 100.09375,
+        "y": 100
+      },
+      "rootWidth": [
+        1001,
+        1001
+      ],
+      "send": {
+        "bottom": 864,
+        "height": 50,
+        "left": 790.828125,
+        "right": 840.828125,
+        "top": 814,
+        "width": 50,
+        "x": 790.828125,
+        "y": 814
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        1001,
+        900
+      ]
+    },
+    {
+      "adult": {
+        "content": "none",
+        "height": "55.7512px",
+        "width": "42.2px"
+      },
+      "baby": {
+        "content": "\"\"",
+        "height": "52.2656px",
+        "width": "88px"
+      },
+      "chatWidth": [
+        790,
+        790
+      ],
+      "reading": {
+        "bottom": 259,
+        "height": 182,
+        "left": 12,
+        "right": 832,
+        "top": 77,
+        "width": 820,
+        "x": 12,
+        "y": 77
+      },
+      "rootWidth": [
+        844,
+        844
+      ],
+      "send": {
+        "bottom": 370,
+        "height": 44,
+        "left": 743,
+        "right": 787,
+        "top": 326,
+        "width": 44,
+        "x": 743,
+        "y": 326
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        844,
+        390
+      ]
+    },
+    {
+      "adult": {
+        "content": "\"\"",
+        "height": "188.328px",
+        "width": "255px"
+      },
+      "baby": {
+        "content": "none",
+        "height": "auto",
+        "width": "auto"
+      },
+      "chatWidth": [
+        1394,
+        1394
+      ],
+      "reading": {
+        "bottom": 746,
+        "height": 646,
+        "left": 178,
+        "right": 1602,
+        "top": 100,
+        "width": 1424,
+        "x": 178,
+        "y": 100
+      },
+      "rootWidth": [
+        1780,
+        1780
+      ],
+      "send": {
+        "bottom": 847,
+        "height": 50,
+        "left": 1456.890625,
+        "right": 1506.890625,
+        "top": 797,
+        "width": 50,
+        "x": 1456.890625,
+        "y": 797
+      },
+      "sendCenterHittable": true,
+      "viewport": [
+        1780,
+        883
+      ]
+    },
+    {
+      "case": "mobile main edit with collapsed reasoning",
+      "editor": {
+        "bottom": 675.640625,
+        "height": 380,
+        "left": 35,
+        "right": 342,
+        "top": 295.640625,
+        "width": 307,
+        "x": 35,
+        "y": 295.640625
+      },
+      "toolbar": {
+        "bottom": 246.640625,
+        "height": 32,
+        "left": 35,
+        "right": 342,
+        "top": 214.640625,
+        "width": 307,
+        "x": 35,
+        "y": 214.640625
+      },
+      "toolbarAboveEditor": true,
+      "toolbarWithinViewport": true,
+      "viewport": [
+        393,
+        852
+      ]
+    },
+    {
+      "case": "mobile direct reasoning edit",
+      "chat": {
+        "bottom": 726,
+        "height": 653.015625,
+        "left": 12,
+        "right": 381,
+        "top": 72.984375,
+        "width": 369,
+        "x": 12,
+        "y": 72.984375
+      },
+      "editor": {
+        "bottom": 489.640625,
+        "height": 380,
+        "left": 36,
+        "right": 341,
+        "top": 109.640625,
+        "width": 305,
+        "x": 36,
+        "y": 109.640625
+      },
+      "editorFits": true,
+      "editorScrollTop": 0,
+      "selection": [
+        0,
+        0
+      ],
+      "toolbar": {
+        "bottom": 109.640625,
+        "height": 29,
+        "left": 36,
+        "right": 341,
+        "top": 80.640625,
+        "width": 305,
+        "x": 36,
+        "y": 80.640625
+      },
+      "toolbarVisible": true
+    }
+  ]
+}

@@ -1,0 +1,1143 @@
+[
+  {
+    "viewport": [
+      2560,
+      1215
+    ],
+    "before": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 1086.625,
+        "height": 751.90625,
+        "left": 91,
+        "right": 2412.796875,
+        "top": 334.71875,
+        "width": 2321.796875,
+        "x": 91,
+        "y": 334.71875
+      },
+      "chatMargin": 105,
+      "chatScrollWidth": 2312,
+      "chatWidth": 2312,
+      "dragonHeight": 365.234,
+      "dragonWidth": 840,
+      "form": {
+        "bottom": 1194,
+        "height": 107.375,
+        "left": 91,
+        "right": 2412.796875,
+        "top": 1086.625,
+        "width": 2321.796875,
+        "x": 91,
+        "y": 1086.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 2073,
+          "width": 2073
+        },
+        {
+          "scrollWidth": 2073,
+          "width": 2073
+        }
+      ],
+      "panel": {
+        "bottom": 1195,
+        "height": 966.28125,
+        "left": 90,
+        "right": 2413.796875,
+        "top": 228.71875,
+        "width": 2323.796875,
+        "x": 90,
+        "y": 228.71875
+      },
+      "viewport": [
+        2560,
+        1215
+      ]
+    },
+    "withHeadClearance": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 1086.625,
+        "height": 828.515625,
+        "left": 91,
+        "right": 2443.796875,
+        "top": 258.109375,
+        "width": 2352.796875,
+        "x": 91,
+        "y": 258.109375
+      },
+      "chatMargin": 80,
+      "chatScrollWidth": 2343,
+      "chatWidth": 2343,
+      "dragonHeight": 278.266,
+      "dragonWidth": 640,
+      "form": {
+        "bottom": 1194,
+        "height": 107.375,
+        "left": 91,
+        "right": 2443.796875,
+        "top": 1086.625,
+        "width": 2352.796875,
+        "x": 91,
+        "y": 1086.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 2126,
+          "width": 2126
+        },
+        {
+          "scrollWidth": 2126,
+          "width": 2126
+        }
+      ],
+      "panel": {
+        "bottom": 1195,
+        "height": 1017.890625,
+        "left": 90,
+        "right": 2444.796875,
+        "top": 177.109375,
+        "width": 2354.796875,
+        "x": 90,
+        "y": 177.109375
+      },
+      "viewport": [
+        2560,
+        1215
+      ]
+    },
+    "after": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 1086.625,
+        "height": 908.515625,
+        "left": 91,
+        "right": 2443.796875,
+        "top": 178.109375,
+        "width": 2352.796875,
+        "x": 91,
+        "y": 178.109375
+      },
+      "chatMargin": 0,
+      "chatScrollWidth": 2343,
+      "chatWidth": 2343,
+      "dragonHeight": 278.266,
+      "dragonWidth": 640,
+      "form": {
+        "bottom": 1194,
+        "height": 107.375,
+        "left": 91,
+        "right": 2443.796875,
+        "top": 1086.625,
+        "width": 2352.796875,
+        "x": 91,
+        "y": 1086.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 2126,
+          "width": 2126
+        },
+        {
+          "scrollWidth": 2126,
+          "width": 2126
+        }
+      ],
+      "panel": {
+        "bottom": 1195,
+        "height": 1017.890625,
+        "left": 90,
+        "right": 2444.796875,
+        "top": 177.109375,
+        "width": 2354.796875,
+        "x": 90,
+        "y": 177.109375
+      },
+      "viewport": [
+        2560,
+        1215
+      ]
+    },
+    "heightGain": 156.609375
+  },
+  {
+    "viewport": [
+      1685,
+      785
+    ],
+    "before": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 656.625,
+        "height": 321.90625,
+        "left": 91,
+        "right": 1537.796875,
+        "top": 334.71875,
+        "width": 1446.796875,
+        "x": 91,
+        "y": 334.71875
+      },
+      "chatMargin": 105,
+      "chatScrollWidth": 1437,
+      "chatWidth": 1437,
+      "dragonHeight": 365.234,
+      "dragonWidth": 840,
+      "form": {
+        "bottom": 764,
+        "height": 107.375,
+        "left": 91,
+        "right": 1537.796875,
+        "top": 656.625,
+        "width": 1446.796875,
+        "x": 91,
+        "y": 656.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 1203,
+          "width": 1203
+        },
+        {
+          "scrollWidth": 1203,
+          "width": 1203
+        }
+      ],
+      "panel": {
+        "bottom": 765,
+        "height": 536.28125,
+        "left": 90,
+        "right": 1538.796875,
+        "top": 228.71875,
+        "width": 1448.796875,
+        "x": 90,
+        "y": 228.71875
+      },
+      "viewport": [
+        1685,
+        785
+      ]
+    },
+    "withHeadClearance": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 656.625,
+        "height": 439.1875,
+        "left": 91,
+        "right": 1585.25,
+        "top": 217.4375,
+        "width": 1494.25,
+        "x": 91,
+        "y": 217.4375
+      },
+      "chatMargin": 66.725,
+      "chatScrollWidth": 1484,
+      "chatWidth": 1484,
+      "dragonHeight": 232.094,
+      "dragonWidth": 533.797,
+      "form": {
+        "bottom": 764,
+        "height": 107.375,
+        "left": 91,
+        "right": 1585.25,
+        "top": 656.625,
+        "width": 1494.25,
+        "x": 91,
+        "y": 656.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 1284,
+          "width": 1284
+        },
+        {
+          "scrollWidth": 1284,
+          "width": 1284
+        }
+      ],
+      "panel": {
+        "bottom": 765,
+        "height": 615.28125,
+        "left": 90,
+        "right": 1586.25,
+        "top": 149.71875,
+        "width": 1496.25,
+        "x": 90,
+        "y": 149.71875
+      },
+      "viewport": [
+        1685,
+        785
+      ]
+    },
+    "after": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 656.625,
+        "height": 505.90625,
+        "left": 91,
+        "right": 1585.25,
+        "top": 150.71875,
+        "width": 1494.25,
+        "x": 91,
+        "y": 150.71875
+      },
+      "chatMargin": 0,
+      "chatScrollWidth": 1484,
+      "chatWidth": 1484,
+      "dragonHeight": 232.094,
+      "dragonWidth": 533.797,
+      "form": {
+        "bottom": 764,
+        "height": 107.375,
+        "left": 91,
+        "right": 1585.25,
+        "top": 656.625,
+        "width": 1494.25,
+        "x": 91,
+        "y": 656.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 1284,
+          "width": 1284
+        },
+        {
+          "scrollWidth": 1284,
+          "width": 1284
+        }
+      ],
+      "panel": {
+        "bottom": 765,
+        "height": 615.28125,
+        "left": 90,
+        "right": 1586.25,
+        "top": 149.71875,
+        "width": 1496.25,
+        "x": 90,
+        "y": 149.71875
+      },
+      "viewport": [
+        1685,
+        785
+      ]
+    },
+    "heightGain": 184
+  },
+  {
+    "viewport": [
+      1366,
+      768
+    ],
+    "before": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 639.625,
+        "height": 304.90625,
+        "left": 91,
+        "right": 1218.796875,
+        "top": 334.71875,
+        "width": 1127.796875,
+        "x": 91,
+        "y": 334.71875
+      },
+      "chatMargin": 105,
+      "chatScrollWidth": 1118,
+      "chatWidth": 1118,
+      "dragonHeight": 365.234,
+      "dragonWidth": 840,
+      "form": {
+        "bottom": 747,
+        "height": 107.375,
+        "left": 91,
+        "right": 1218.796875,
+        "top": 639.625,
+        "width": 1127.796875,
+        "x": 91,
+        "y": 639.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 891,
+          "width": 891
+        },
+        {
+          "scrollWidth": 891,
+          "width": 891
+        }
+      ],
+      "panel": {
+        "bottom": 748,
+        "height": 519.28125,
+        "left": 90,
+        "right": 1219.796875,
+        "top": 228.71875,
+        "width": 1129.796875,
+        "x": 90,
+        "y": 228.71875
+      },
+      "viewport": [
+        1366,
+        768
+      ]
+    },
+    "withHeadClearance": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 639.625,
+        "height": 426.625,
+        "left": 91,
+        "right": 1268.046875,
+        "top": 213,
+        "width": 1177.046875,
+        "x": 91,
+        "y": 213
+      },
+      "chatMargin": 65.28,
+      "chatScrollWidth": 1167,
+      "chatWidth": 1167,
+      "dragonHeight": 227.062,
+      "dragonWidth": 522.234,
+      "form": {
+        "bottom": 747,
+        "height": 107.375,
+        "left": 91,
+        "right": 1268.046875,
+        "top": 639.625,
+        "width": 1177.046875,
+        "x": 91,
+        "y": 639.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 976,
+          "width": 976
+        },
+        {
+          "scrollWidth": 976,
+          "width": 976
+        }
+      ],
+      "panel": {
+        "bottom": 748,
+        "height": 601.265625,
+        "left": 90,
+        "right": 1269.046875,
+        "top": 146.734375,
+        "width": 1179.046875,
+        "x": 90,
+        "y": 146.734375
+      },
+      "viewport": [
+        1366,
+        768
+      ]
+    },
+    "after": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 639.625,
+        "height": 491.890625,
+        "left": 91,
+        "right": 1268.046875,
+        "top": 147.734375,
+        "width": 1177.046875,
+        "x": 91,
+        "y": 147.734375
+      },
+      "chatMargin": 0,
+      "chatScrollWidth": 1167,
+      "chatWidth": 1167,
+      "dragonHeight": 227.062,
+      "dragonWidth": 522.234,
+      "form": {
+        "bottom": 747,
+        "height": 107.375,
+        "left": 91,
+        "right": 1268.046875,
+        "top": 639.625,
+        "width": 1177.046875,
+        "x": 91,
+        "y": 639.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 976,
+          "width": 976
+        },
+        {
+          "scrollWidth": 976,
+          "width": 976
+        }
+      ],
+      "panel": {
+        "bottom": 748,
+        "height": 601.265625,
+        "left": 90,
+        "right": 1269.046875,
+        "top": 146.734375,
+        "width": 1179.046875,
+        "x": 90,
+        "y": 146.734375
+      },
+      "viewport": [
+        1366,
+        768
+      ]
+    },
+    "heightGain": 186.984375
+  },
+  {
+    "viewport": [
+      1280,
+      680
+    ],
+    "before": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 551.625,
+        "height": 224.890625,
+        "left": 91,
+        "right": 1136.015625,
+        "top": 326.734375,
+        "width": 1045.015625,
+        "x": 91,
+        "y": 326.734375
+      },
+      "chatMargin": 102.4,
+      "chatScrollWidth": 1035,
+      "chatWidth": 1035,
+      "dragonHeight": 356.172,
+      "dragonWidth": 819.188,
+      "form": {
+        "bottom": 659,
+        "height": 107.375,
+        "left": 91,
+        "right": 1136.015625,
+        "top": 551.625,
+        "width": 1045.015625,
+        "x": 91,
+        "y": 551.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 813,
+          "width": 813
+        },
+        {
+          "scrollWidth": 813,
+          "width": 813
+        }
+      ],
+      "panel": {
+        "bottom": 660,
+        "height": 436.65625,
+        "left": 90,
+        "right": 1137.015625,
+        "top": 223.34375,
+        "width": 1047.015625,
+        "x": 90,
+        "y": 223.34375
+      },
+      "viewport": [
+        1280,
+        680
+      ]
+    },
+    "withHeadClearance": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 551.625,
+        "height": 361.53125,
+        "left": 91,
+        "right": 1191.3125,
+        "top": 190.09375,
+        "width": 1100.3125,
+        "x": 91,
+        "y": 190.09375
+      },
+      "chatMargin": 57.8,
+      "chatScrollWidth": 1090,
+      "chatWidth": 1090,
+      "dragonHeight": 201.047,
+      "dragonWidth": 462.391,
+      "form": {
+        "bottom": 659,
+        "height": 107.375,
+        "left": 91,
+        "right": 1191.3125,
+        "top": 551.625,
+        "width": 1100.3125,
+        "x": 91,
+        "y": 551.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 907,
+          "width": 907
+        },
+        {
+          "scrollWidth": 907,
+          "width": 907
+        }
+      ],
+      "panel": {
+        "bottom": 660,
+        "height": 528.703125,
+        "left": 90,
+        "right": 1192.3125,
+        "top": 131.296875,
+        "width": 1102.3125,
+        "x": 90,
+        "y": 131.296875
+      },
+      "viewport": [
+        1280,
+        680
+      ]
+    },
+    "after": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 551.625,
+        "height": 419.328125,
+        "left": 91,
+        "right": 1191.3125,
+        "top": 132.296875,
+        "width": 1100.3125,
+        "x": 91,
+        "y": 132.296875
+      },
+      "chatMargin": 0,
+      "chatScrollWidth": 1090,
+      "chatWidth": 1090,
+      "dragonHeight": 201.047,
+      "dragonWidth": 462.391,
+      "form": {
+        "bottom": 659,
+        "height": 107.375,
+        "left": 91,
+        "right": 1191.3125,
+        "top": 551.625,
+        "width": 1100.3125,
+        "x": 91,
+        "y": 551.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 907,
+          "width": 907
+        },
+        {
+          "scrollWidth": 907,
+          "width": 907
+        }
+      ],
+      "panel": {
+        "bottom": 660,
+        "height": 528.703125,
+        "left": 90,
+        "right": 1192.3125,
+        "top": 131.296875,
+        "width": 1102.3125,
+        "x": 90,
+        "y": 131.296875
+      },
+      "viewport": [
+        1280,
+        680
+      ]
+    },
+    "heightGain": 194.4375
+  },
+  {
+    "viewport": [
+      1001,
+      900
+    ],
+    "before": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 771.625,
+        "height": 513.265625,
+        "left": 91,
+        "right": 884.6875,
+        "top": 258.359375,
+        "width": 793.6875,
+        "x": 91,
+        "y": 258.359375
+      },
+      "chatMargin": 80.08,
+      "chatScrollWidth": 784,
+      "chatWidth": 784,
+      "dragonHeight": 278.547,
+      "dragonWidth": 640.625,
+      "form": {
+        "bottom": 879,
+        "height": 107.375,
+        "left": 91,
+        "right": 884.6875,
+        "top": 771.625,
+        "width": 793.6875,
+        "x": 91,
+        "y": 771.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 587,
+          "width": 587
+        },
+        {
+          "scrollWidth": 587,
+          "width": 587
+        }
+      ],
+      "panel": {
+        "bottom": 880,
+        "height": 702.71875,
+        "left": 90,
+        "right": 885.6875,
+        "top": 177.28125,
+        "width": 795.6875,
+        "x": 90,
+        "y": 177.28125
+      },
+      "viewport": [
+        1001,
+        900
+      ]
+    },
+    "withHeadClearance": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 771.625,
+        "height": 524.234375,
+        "left": 91,
+        "right": 889.125,
+        "top": 247.390625,
+        "width": 798.125,
+        "x": 91,
+        "y": 247.390625
+      },
+      "chatMargin": 76.5,
+      "chatScrollWidth": 788,
+      "chatWidth": 788,
+      "dragonHeight": 266.094,
+      "dragonWidth": 612,
+      "form": {
+        "bottom": 879,
+        "height": 107.375,
+        "left": 91,
+        "right": 889.125,
+        "top": 771.625,
+        "width": 798.125,
+        "x": 91,
+        "y": 771.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 595,
+          "width": 595
+        },
+        {
+          "scrollWidth": 595,
+          "width": 595
+        }
+      ],
+      "panel": {
+        "bottom": 880,
+        "height": 710.109375,
+        "left": 90,
+        "right": 890.125,
+        "top": 169.890625,
+        "width": 800.125,
+        "x": 90,
+        "y": 169.890625
+      },
+      "viewport": [
+        1001,
+        900
+      ]
+    },
+    "after": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 771.625,
+        "height": 600.734375,
+        "left": 91,
+        "right": 889.125,
+        "top": 170.890625,
+        "width": 798.125,
+        "x": 91,
+        "y": 170.890625
+      },
+      "chatMargin": 0,
+      "chatScrollWidth": 788,
+      "chatWidth": 788,
+      "dragonHeight": 266.094,
+      "dragonWidth": 612,
+      "form": {
+        "bottom": 879,
+        "height": 107.375,
+        "left": 91,
+        "right": 889.125,
+        "top": 771.625,
+        "width": 798.125,
+        "x": 91,
+        "y": 771.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 595,
+          "width": 595
+        },
+        {
+          "scrollWidth": 595,
+          "width": 595
+        }
+      ],
+      "panel": {
+        "bottom": 880,
+        "height": 710.109375,
+        "left": 90,
+        "right": 890.125,
+        "top": 169.890625,
+        "width": 800.125,
+        "x": 90,
+        "y": 169.890625
+      },
+      "viewport": [
+        1001,
+        900
+      ]
+    },
+    "heightGain": 87.46875
+  },
+  {
+    "viewport": [
+      1280,
+      600
+    ],
+    "before": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 477.625,
+        "height": 292.28125,
+        "left": 91,
+        "right": 1193.25,
+        "top": 185.34375,
+        "width": 1102.25,
+        "x": 91,
+        "y": 185.34375
+      },
+      "chatMargin": 56.25,
+      "chatScrollWidth": 1092,
+      "chatWidth": 1092,
+      "dragonHeight": 195.656,
+      "dragonWidth": 450,
+      "form": {
+        "bottom": 585,
+        "height": 107.375,
+        "left": 91,
+        "right": 1193.25,
+        "top": 477.625,
+        "width": 1102.25,
+        "x": 91,
+        "y": 477.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 911,
+          "width": 911
+        },
+        {
+          "scrollWidth": 911,
+          "width": 911
+        }
+      ],
+      "panel": {
+        "bottom": 586,
+        "height": 457.90625,
+        "left": 90,
+        "right": 1194.25,
+        "top": 128.09375,
+        "width": 1104.25,
+        "x": 90,
+        "y": 128.09375
+      },
+      "viewport": [
+        1280,
+        600
+      ]
+    },
+    "withHeadClearance": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 477.625,
+        "height": 308.375,
+        "left": 91,
+        "right": 1199.75,
+        "top": 169.25,
+        "width": 1108.75,
+        "x": 91,
+        "y": 169.25
+      },
+      "chatMargin": 51,
+      "chatScrollWidth": 1099,
+      "chatWidth": 1099,
+      "dragonHeight": 177.391,
+      "dragonWidth": 408,
+      "form": {
+        "bottom": 585,
+        "height": 107.375,
+        "left": 91,
+        "right": 1199.75,
+        "top": 477.625,
+        "width": 1108.75,
+        "x": 91,
+        "y": 477.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 922,
+          "width": 922
+        },
+        {
+          "scrollWidth": 922,
+          "width": 922
+        }
+      ],
+      "panel": {
+        "bottom": 586,
+        "height": 468.75,
+        "left": 90,
+        "right": 1200.75,
+        "top": 117.25,
+        "width": 1110.75,
+        "x": 90,
+        "y": 117.25
+      },
+      "viewport": [
+        1280,
+        600
+      ]
+    },
+    "after": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 477.625,
+        "height": 359.375,
+        "left": 91,
+        "right": 1199.75,
+        "top": 118.25,
+        "width": 1108.75,
+        "x": 91,
+        "y": 118.25
+      },
+      "chatMargin": 0,
+      "chatScrollWidth": 1099,
+      "chatWidth": 1099,
+      "dragonHeight": 177.391,
+      "dragonWidth": 408,
+      "form": {
+        "bottom": 585,
+        "height": 107.375,
+        "left": 91,
+        "right": 1199.75,
+        "top": 477.625,
+        "width": 1108.75,
+        "x": 91,
+        "y": 477.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 922,
+          "width": 922
+        },
+        {
+          "scrollWidth": 922,
+          "width": 922
+        }
+      ],
+      "panel": {
+        "bottom": 586,
+        "height": 468.75,
+        "left": 90,
+        "right": 1200.75,
+        "top": 117.25,
+        "width": 1110.75,
+        "x": 90,
+        "y": 117.25
+      },
+      "viewport": [
+        1280,
+        600
+      ]
+    },
+    "heightGain": 67.09375
+  },
+  {
+    "viewport": [
+      393,
+      852
+    ],
+    "before": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 741.625,
+        "height": 576.984375,
+        "left": 9,
+        "right": 384,
+        "top": 164.640625,
+        "width": 375,
+        "x": 9,
+        "y": 164.640625
+      },
+      "chatMargin": 42.9,
+      "chatScrollWidth": 365,
+      "chatWidth": 365,
+      "dragonHeight": 95.6562,
+      "dragonWidth": 220,
+      "form": {
+        "bottom": 839,
+        "height": 97.375,
+        "left": 9,
+        "right": 384,
+        "top": 741.625,
+        "width": 375,
+        "x": 9,
+        "y": 741.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 327,
+          "width": 327
+        },
+        {
+          "scrollWidth": 327,
+          "width": 327
+        }
+      ],
+      "panel": {
+        "bottom": 840,
+        "height": 719.25,
+        "left": 8,
+        "right": 385,
+        "top": 120.75,
+        "width": 377,
+        "x": 8,
+        "y": 120.75
+      },
+      "viewport": [
+        393,
+        852
+      ]
+    },
+    "withHeadClearance": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 741.625,
+        "height": 576.984375,
+        "left": 9,
+        "right": 384,
+        "top": 164.640625,
+        "width": 375,
+        "x": 9,
+        "y": 164.640625
+      },
+      "chatMargin": 42.9,
+      "chatScrollWidth": 365,
+      "chatWidth": 365,
+      "dragonHeight": 95.6562,
+      "dragonWidth": 220,
+      "form": {
+        "bottom": 839,
+        "height": 97.375,
+        "left": 9,
+        "right": 384,
+        "top": 741.625,
+        "width": 375,
+        "x": 9,
+        "y": 741.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 327,
+          "width": 327
+        },
+        {
+          "scrollWidth": 327,
+          "width": 327
+        }
+      ],
+      "panel": {
+        "bottom": 840,
+        "height": 719.25,
+        "left": 8,
+        "right": 385,
+        "top": 120.75,
+        "width": 377,
+        "x": 8,
+        "y": 120.75
+      },
+      "viewport": [
+        393,
+        852
+      ]
+    },
+    "after": {
+      "artPointer": "none",
+      "chat": {
+        "bottom": 741.625,
+        "height": 576.984375,
+        "left": 9,
+        "right": 384,
+        "top": 164.640625,
+        "width": 375,
+        "x": 9,
+        "y": 164.640625
+      },
+      "chatMargin": 42.9,
+      "chatScrollWidth": 365,
+      "chatWidth": 365,
+      "dragonHeight": 95.6562,
+      "dragonWidth": 220,
+      "form": {
+        "bottom": 839,
+        "height": 97.375,
+        "left": 9,
+        "right": 384,
+        "top": 741.625,
+        "width": 375,
+        "x": 9,
+        "y": 741.625
+      },
+      "messages": [
+        {
+          "scrollWidth": 327,
+          "width": 327
+        },
+        {
+          "scrollWidth": 327,
+          "width": 327
+        }
+      ],
+      "panel": {
+        "bottom": 840,
+        "height": 719.25,
+        "left": 8,
+        "right": 385,
+        "top": 120.75,
+        "width": 377,
+        "x": 8,
+        "y": 120.75
+      },
+      "viewport": [
+        393,
+        852
+      ]
+    },
+    "heightGain": 0
+  }
+]

@@ -1,0 +1,15 @@
+Source: Built-in image_gen.imagegen (内置 ImageGen), referenced image edit. No CLI or API fallback.
+Reference: D:/RUA/sillytavern-plugins/tavern-theme-studio/examples/moonveil-covenant/concepts/reading-layout-2026-10-07/moonveil-reading-concept-02.png
+Generated original: C:/Users/gwynd/.codex/generated_images/01a116bc-c277-72c1-80b3-5a0c15ca43c9/exec-6b6a902d-b948-4504-827b-d24a4e5f9286.png
+transparent_background: false
+
+Exact prompt:
+Use case: precise-object-edit.
+Asset type: opaque production environment wallpaper for a Gothic moonlit reading interface, no UI.
+Input image 1 is the selected design reference. Reconstruct ONLY its full-bleed illustrated landscape background as a clean standalone bitmap. Closely match the reference composition, illustration linework, colors, objects and edge framing. Target output 2560 x 1280 pixels, approximately 2:1 landscape.
+Scene: cool midnight indigo night, luminous large full moon in the upper-left around 12% width/10% height, Gothic castle with tall narrow spires on the far left around 0–18% width, mountains and cliffs hugging both outer edges, layered deep blue clouds, sparse tiny distant stars. Preserve the lower-left stack of worn dark leather books, hanging silver crescent pendant and restrained violet crystal clusters. Far-right mountain silhouettes and foreground rocks in the lower right remain an illustrated environment.
+Crucial composition: the middle roughly 75% of the image must remain a very wide, extremely dark, visually quiet continuous indigo reading zone. Keep the reference's subtly fine woven / etched indigo atmosphere through the middle, with low-contrast smooth tonal texture. The dark central zone is an organic atmospheric opening between edge scenery, NOT a bounded rectangle, NOT a UI panel; no visible panel edges. All strong detail stays at the margins, especially the far left and lower corners.
+Completely remove and naturally reconstruct every bit of interface content: all Chinese and other text, numbers, timestamps, avatars, portrait rings, buttons, icons, dangling top crescent toolbar and its cord, feather divider, purple paper/message letter, seals, input/composer bar and border, right vertical slider/scrollbar, and the entire dragon. No leftover ghost UI lines, no interface fragments. The result is pure environment, usable behind real editable text and native controls.
+Style: high-quality 2D fantasy illustration with crisp delicate linework and fine etched detail, cold silver and dark navy-indigo, very small violet accents, matching the supplied reference rather than changing to photorealism or a different art style. Sharp detail and clean edges, no blur. Opaque background.
+Avoid: dragon, creatures, people, writing, lettering, symbols resembling interface controls, logos, watermarks, rectangular panels, ornament frames crossing the center, bright haze across the central reading zone.
+

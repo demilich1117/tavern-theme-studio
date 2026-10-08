@@ -1,0 +1,210 @@
+[
+  {
+    "size": "手机 390",
+    "scene": "龙廷对话",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 390
+  },
+  {
+    "size": "手机 390",
+    "scene": "长篇叙事",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 390
+  },
+  {
+    "size": "手机 390",
+    "scene": "契约、代码与表格",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 390
+  },
+  {
+    "size": "手机 390",
+    "scene": "思考区示例",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 390
+  },
+  {
+    "size": "手机 390",
+    "scene": "多行输入",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 390
+  },
+  {
+    "size": "手机 390",
+    "scene": "角色图鉴",
+    "left": 12,
+    "overflow": false,
+    "width": 366
+  },
+  {
+    "size": "平板 900",
+    "scene": "龙廷对话",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 900
+  },
+  {
+    "size": "平板 900",
+    "scene": "长篇叙事",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 900
+  },
+  {
+    "size": "平板 900",
+    "scene": "契约、代码与表格",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 900
+  },
+  {
+    "size": "平板 900",
+    "scene": "思考区示例",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 900
+  },
+  {
+    "size": "平板 900",
+    "scene": "多行输入",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 900
+  },
+  {
+    "size": "平板 900",
+    "scene": "角色图鉴",
+    "left": 12,
+    "overflow": false,
+    "width": 876
+  },
+  {
+    "size": "桌面 1440",
+    "scene": "龙廷对话",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 1440
+  },
+  {
+    "size": "桌面 1440",
+    "scene": "长篇叙事",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 1440
+  },
+  {
+    "size": "桌面 1440",
+    "scene": "契约、代码与表格",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 1440
+  },
+  {
+    "size": "桌面 1440",
+    "scene": "思考区示例",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 1440
+  },
+  {
+    "size": "桌面 1440",
+    "scene": "多行输入",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 1440
+  },
+  {
+    "size": "桌面 1440",
+    "scene": "角色图鉴",
+    "left": 96,
+    "overflow": false,
+    "width": 600
+  },
+  {
+    "size": "大屏 2048",
+    "scene": "龙廷对话",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 2048
+  },
+  {
+    "size": "大屏 2048",
+    "scene": "长篇叙事",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 2048
+  },
+  {
+    "size": "大屏 2048",
+    "scene": "契约、代码与表格",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 2048
+  },
+  {
+    "size": "大屏 2048",
+    "scene": "思考区示例",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 2048
+  },
+  {
+    "size": "大屏 2048",
+    "scene": "多行输入",
+    "overflow": false,
+    "problems": [
+      "sheld"
+    ],
+    "viewport": 2048
+  },
+  {
+    "size": "大屏 2048",
+    "scene": "角色图鉴",
+    "left": 96,
+    "overflow": false,
+    "width": 600
+  }
+]

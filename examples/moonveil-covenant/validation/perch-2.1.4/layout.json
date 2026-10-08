@@ -1,0 +1,969 @@
+{
+  "layouts": [
+    {
+      "chat": {
+        "bottom": 1086.625,
+        "height": 922.828125,
+        "left": 96.796875,
+        "right": 2449.984375,
+        "top": 163.796875,
+        "width": 2353.1875,
+        "x": 96.796875,
+        "y": 163.796875
+      },
+      "chatClientWidth": 2353,
+      "chatScrollWidth": 2353,
+      "dragon": {
+        "height": 260.875,
+        "left": 1954.984375,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 0.625,
+        "width": 600,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 300.796875,
+            "height": 19,
+            "left": 159.296875,
+            "right": 190.28125,
+            "top": 281.796875,
+            "width": 30.984375,
+            "x": 159.296875,
+            "y": 281.796875
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 536.796875,
+            "height": 19,
+            "left": 159.296875,
+            "right": 190.28125,
+            "top": 517.796875,
+            "width": 30.984375,
+            "x": 159.296875,
+            "y": 517.796875
+          },
+          "text": "#1"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-12px",
+        "top": "-30px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 1195,
+        "height": 1032.203125,
+        "left": 95.796875,
+        "right": 2450.984375,
+        "top": 162.796875,
+        "width": 2355.1875,
+        "x": 95.796875,
+        "y": 162.796875
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 1215,
+        "width": 2560
+      }
+    },
+    {
+      "chat": {
+        "bottom": 656.625,
+        "height": 522.0625,
+        "left": 91,
+        "right": 1592.546875,
+        "top": 134.5625,
+        "width": 1501.546875,
+        "x": 91,
+        "y": 134.5625
+      },
+      "chatClientWidth": 1492,
+      "chatScrollWidth": 1492,
+      "dragon": {
+        "height": 211.609,
+        "left": 1191.031375,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 0.6100000000000421,
+        "width": 486.688,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 271.5625,
+            "height": 19,
+            "left": 148.5625,
+            "right": 179.546875,
+            "top": 252.5625,
+            "width": 30.984375,
+            "x": 148.5625,
+            "y": 252.5625
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 507.5625,
+            "height": 19,
+            "left": 148.5625,
+            "right": 179.546875,
+            "top": 488.5625,
+            "width": 30.984375,
+            "x": 148.5625,
+            "y": 488.5625
+          },
+          "text": "#1"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-12px",
+        "top": "-30px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 765,
+        "height": 631.4375,
+        "left": 90,
+        "right": 1593.546875,
+        "top": 133.5625,
+        "width": 1503.546875,
+        "x": 90,
+        "y": 133.5625
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 785,
+        "width": 1685
+      }
+    },
+    {
+      "chat": {
+        "bottom": 639.625,
+        "height": 507.78125,
+        "left": 91,
+        "right": 1275.1875,
+        "top": 131.84375,
+        "width": 1184.1875,
+        "x": 91,
+        "y": 131.84375
+      },
+      "chatClientWidth": 1174,
+      "chatScrollWidth": 1174,
+      "dragon": {
+        "height": 207.031,
+        "left": 882.3595,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 0.5939999999999941,
+        "width": 476.156,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 268.84375,
+            "height": 19,
+            "left": 141.546875,
+            "right": 172.53125,
+            "top": 249.84375,
+            "width": 30.984375,
+            "x": 141.546875,
+            "y": 249.84375
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 504.84375,
+            "height": 19,
+            "left": 141.546875,
+            "right": 172.53125,
+            "top": 485.84375,
+            "width": 30.984375,
+            "x": 141.546875,
+            "y": 485.84375
+          },
+          "text": "#1"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-12px",
+        "top": "-30px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 748,
+        "height": 617.15625,
+        "left": 90,
+        "right": 1276.1875,
+        "top": 130.84375,
+        "width": 1186.1875,
+        "x": 90,
+        "y": 130.84375
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 768,
+        "width": 1366
+      }
+    },
+    {
+      "chat": {
+        "bottom": 741.625,
+        "height": 576.984375,
+        "left": 9,
+        "right": 384,
+        "top": 164.640625,
+        "width": 375,
+        "x": 9,
+        "y": 164.640625
+      },
+      "chatClientWidth": 365,
+      "chatScrollWidth": 365,
+      "dragon": {
+        "height": 95.6562,
+        "left": 202.5,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 56.546799999999976,
+        "width": 220,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "9px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 234.640625,
+            "height": 14,
+            "left": 30,
+            "right": 50.625,
+            "top": 220.640625,
+            "width": 20.625,
+            "x": 30,
+            "y": 220.640625
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "9px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 474.953125,
+            "height": 14,
+            "left": 30,
+            "right": 50.625,
+            "top": 460.953125,
+            "width": 20.625,
+            "x": 30,
+            "y": 460.953125
+          },
+          "text": "#1"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-8px",
+        "top": "-8px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 840,
+        "height": 719.25,
+        "left": 8,
+        "right": 385,
+        "top": 120.75,
+        "width": 377,
+        "x": 8,
+        "y": 120.75
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 852,
+        "width": 393
+      }
+    },
+    {
+      "chat": {
+        "bottom": 629.625,
+        "height": 483.46875,
+        "left": 9,
+        "right": 311,
+        "top": 146.15625,
+        "width": 302,
+        "x": 9,
+        "y": 146.15625
+      },
+      "chatClientWidth": 292,
+      "chatScrollWidth": 292,
+      "dragon": {
+        "height": 77.9062,
+        "left": 163.17200000000005,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 56.53179999999999,
+        "width": 179.188,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "9px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 83.15625,
+            "height": 14,
+            "left": 30,
+            "right": 50.625,
+            "top": 69.15625,
+            "width": 20.625,
+            "x": 30,
+            "y": 69.15625
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "9px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 323.46875,
+            "height": 14,
+            "left": 30,
+            "right": 50.625,
+            "top": 309.46875,
+            "width": 20.625,
+            "x": 30,
+            "y": 309.46875
+          },
+          "text": "#1"
+        },
+        {
+          "display": "block",
+          "font": "9px",
+          "mesid": "2",
+          "rect": {
+            "bottom": 634.65625,
+            "height": 14,
+            "left": 30,
+            "right": 50.625,
+            "top": 620.65625,
+            "width": 20.625,
+            "x": 30,
+            "y": 620.65625
+          },
+          "text": "#2"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-8px",
+        "top": "-8px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 728,
+        "height": 617.78125,
+        "left": 8,
+        "right": 312,
+        "top": 110.21875,
+        "width": 304,
+        "x": 8,
+        "y": 110.21875
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 740,
+        "width": 320
+      }
+    },
+    {
+      "chat": {
+        "bottom": 279.625,
+        "height": 129.828125,
+        "left": 13,
+        "right": 831,
+        "top": 149.796875,
+        "width": 818,
+        "x": 13,
+        "y": 149.796875
+      },
+      "chatClientWidth": 808,
+      "chatScrollWidth": 808,
+      "dragon": {
+        "height": 81.375,
+        "left": 676.572,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 56.56299999999999,
+        "width": 187.188,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 133.796875,
+            "height": 19,
+            "left": 43.5,
+            "right": 74.484375,
+            "top": 114.796875,
+            "width": 30.984375,
+            "x": 43.5,
+            "y": 114.796875
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 357.796875,
+            "height": 19,
+            "left": 43.5,
+            "right": 74.484375,
+            "top": 338.796875,
+            "width": 30.984375,
+            "x": 43.5,
+            "y": 338.796875
+          },
+          "text": "#1"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "2",
+          "rect": {
+            "bottom": 589.796875,
+            "height": 19,
+            "left": 43.5,
+            "right": 74.484375,
+            "top": 570.796875,
+            "width": 30.984375,
+            "x": 43.5,
+            "y": 570.796875
+          },
+          "text": "#2"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-8px",
+        "top": "-8px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 378,
+        "height": 265.703125,
+        "left": 12,
+        "right": 832,
+        "top": 112.296875,
+        "width": 820,
+        "x": 12,
+        "y": 112.296875
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 390,
+        "width": 844
+      }
+    },
+    {
+      "chat": {
+        "bottom": 657.625,
+        "height": 329.90625,
+        "left": 13,
+        "right": 987,
+        "top": 327.71875,
+        "width": 974,
+        "x": 13,
+        "y": 327.71875
+      },
+      "chatClientWidth": 964,
+      "chatScrollWidth": 964,
+      "dragon": {
+        "height": 252.172,
+        "left": 508.5,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 56.62500000000003,
+        "width": 580,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 311.71875,
+            "height": 19,
+            "left": 43.5,
+            "right": 74.484375,
+            "top": 292.71875,
+            "width": 30.984375,
+            "x": 43.5,
+            "y": 292.71875
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 535.71875,
+            "height": 19,
+            "left": 43.5,
+            "right": 74.484375,
+            "top": 516.71875,
+            "width": 30.984375,
+            "x": 43.5,
+            "y": 516.71875
+          },
+          "text": "#1"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "2",
+          "rect": {
+            "bottom": 767.71875,
+            "height": 19,
+            "left": 43.5,
+            "right": 74.484375,
+            "top": 748.71875,
+            "width": 30.984375,
+            "x": 43.5,
+            "y": 748.71875
+          },
+          "text": "#2"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-8px",
+        "top": "-8px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 756,
+        "height": 542.375,
+        "left": 12,
+        "right": 988,
+        "top": 213.625,
+        "width": 976,
+        "x": 12,
+        "y": 213.625
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 768,
+        "width": 1000
+      }
+    },
+    {
+      "chat": {
+        "bottom": 639.625,
+        "height": 507.78125,
+        "left": 91,
+        "right": 910.1875,
+        "top": 131.84375,
+        "width": 819.1875,
+        "x": 91,
+        "y": 131.84375
+      },
+      "chatClientWidth": 809,
+      "chatScrollWidth": 809,
+      "dragon": {
+        "height": 207.031,
+        "left": 517.3595,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 0.5939999999999941,
+        "width": 476.156,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 135.84375,
+            "height": 19,
+            "left": 133.515625,
+            "right": 164.5,
+            "top": 116.84375,
+            "width": 30.984375,
+            "x": 133.515625,
+            "y": 116.84375
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 371.84375,
+            "height": 19,
+            "left": 133.515625,
+            "right": 164.5,
+            "top": 352.84375,
+            "width": 30.984375,
+            "x": 133.515625,
+            "y": 352.84375
+          },
+          "text": "#1"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "2",
+          "rect": {
+            "bottom": 653.84375,
+            "height": 19,
+            "left": 133.515625,
+            "right": 164.5,
+            "top": 634.84375,
+            "width": 30.984375,
+            "x": 133.515625,
+            "y": 634.84375
+          },
+          "text": "#2"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-12px",
+        "top": "-30px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 748,
+        "height": 617.15625,
+        "left": 90,
+        "right": 911.1875,
+        "top": 130.84375,
+        "width": 821.1875,
+        "x": 90,
+        "y": 130.84375
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 768,
+        "width": 1001
+      }
+    },
+    {
+      "chat": {
+        "bottom": 477.625,
+        "height": 372.65625,
+        "left": 91,
+        "right": 1205.328125,
+        "top": 104.96875,
+        "width": 1114.328125,
+        "x": 91,
+        "y": 104.96875
+      },
+      "chatClientWidth": 1104,
+      "chatScrollWidth": 1104,
+      "dragon": {
+        "height": 161.734,
+        "left": 898.4281249999999,
+        "mask": "none",
+        "pointerEvents": "none",
+        "top": 0.5939999999999657,
+        "width": 372,
+        "z": "10"
+      },
+      "floors": [
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "0",
+          "rect": {
+            "bottom": 104.96875,
+            "height": 19,
+            "left": 139.65625,
+            "right": 170.640625,
+            "top": 85.96875,
+            "width": 30.984375,
+            "x": 139.65625,
+            "y": 85.96875
+          },
+          "text": "#0"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "1",
+          "rect": {
+            "bottom": 340.96875,
+            "height": 19,
+            "left": 139.65625,
+            "right": 170.640625,
+            "top": 321.96875,
+            "width": 30.984375,
+            "x": 139.65625,
+            "y": 321.96875
+          },
+          "text": "#1"
+        },
+        {
+          "display": "block",
+          "font": "11px",
+          "mesid": "2",
+          "rect": {
+            "bottom": 584.96875,
+            "height": 19,
+            "left": 139.65625,
+            "right": 170.640625,
+            "top": 565.96875,
+            "width": 30.984375,
+            "x": 139.65625,
+            "y": 565.96875
+          },
+          "text": "#2"
+        }
+      ],
+      "frame": {
+        "pointerEvents": "none",
+        "right": "-12px",
+        "top": "-30px",
+        "z": "9"
+      },
+      "idsHidden": false,
+      "panel": {
+        "bottom": 586,
+        "height": 482.03125,
+        "left": 90,
+        "right": 1206.328125,
+        "top": 103.96875,
+        "width": 1116.328125,
+        "x": 90,
+        "y": 103.96875
+      },
+      "rearLayer": "none",
+      "viewport": {
+        "dpr": 1,
+        "height": 600,
+        "width": 1280
+      }
+    }
+  ],
+  "hiddenAvatars": {
+    "chat": {
+      "bottom": 741.625,
+      "height": 576.984375,
+      "left": 9,
+      "right": 384,
+      "top": 164.640625,
+      "width": 375,
+      "x": 9,
+      "y": 164.640625
+    },
+    "chatClientWidth": 365,
+    "chatScrollWidth": 365,
+    "dragon": {
+      "height": 95.6562,
+      "left": 202.5,
+      "mask": "none",
+      "pointerEvents": "none",
+      "top": 56.546799999999976,
+      "width": 220,
+      "z": "10"
+    },
+    "floors": [
+      {
+        "display": "block",
+        "font": "10px",
+        "mesid": "0",
+        "rect": {
+          "bottom": 207.640625,
+          "height": 17,
+          "left": 32,
+          "right": 53.796875,
+          "top": 190.640625,
+          "width": 21.796875,
+          "x": 32,
+          "y": 190.640625
+        },
+        "text": "#0"
+      },
+      {
+        "display": "block",
+        "font": "10px",
+        "mesid": "1",
+        "rect": {
+          "bottom": 447.953125,
+          "height": 17,
+          "left": 32,
+          "right": 53.796875,
+          "top": 430.953125,
+          "width": 21.796875,
+          "x": 32,
+          "y": 430.953125
+        },
+        "text": "#1"
+      }
+    ],
+    "frame": {
+      "pointerEvents": "none",
+      "right": "-8px",
+      "top": "-8px",
+      "z": "9"
+    },
+    "idsHidden": false,
+    "panel": {
+      "bottom": 840,
+      "height": 719.25,
+      "left": 8,
+      "right": 385,
+      "top": 120.75,
+      "width": 377,
+      "x": 8,
+      "y": 120.75
+    },
+    "rearLayer": "none",
+    "viewport": {
+      "dpr": 1,
+      "height": 852,
+      "width": 393
+    }
+  },
+  "floorsDisabled": {
+    "chat": {
+      "bottom": 741.625,
+      "height": 576.984375,
+      "left": 9,
+      "right": 384,
+      "top": 164.640625,
+      "width": 375,
+      "x": 9,
+      "y": 164.640625
+    },
+    "chatClientWidth": 365,
+    "chatScrollWidth": 365,
+    "dragon": {
+      "height": 95.6562,
+      "left": 202.5,
+      "mask": "none",
+      "pointerEvents": "none",
+      "top": 56.546799999999976,
+      "width": 220,
+      "z": "10"
+    },
+    "floors": [
+      {
+        "display": "none",
+        "font": "10px",
+        "mesid": "0",
+        "rect": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "text": "#0"
+      },
+      {
+        "display": "none",
+        "font": "10px",
+        "mesid": "1",
+        "rect": {
+          "bottom": 0,
+          "height": 0,
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        "text": "#1"
+      }
+    ],
+    "frame": {
+      "pointerEvents": "none",
+      "right": "-8px",
+      "top": "-8px",
+      "z": "9"
+    },
+    "idsHidden": true,
+    "panel": {
+      "bottom": 840,
+      "height": 719.25,
+      "left": 8,
+      "right": 385,
+      "top": 120.75,
+      "width": 377,
+      "x": 8,
+      "y": 120.75
+    },
+    "rearLayer": "none",
+    "viewport": {
+      "dpr": 1,
+      "height": 852,
+      "width": 393
+    }
+  },
+  "appendFloors": [
+    "#0",
+    "#1",
+    "#2"
+  ]
+}

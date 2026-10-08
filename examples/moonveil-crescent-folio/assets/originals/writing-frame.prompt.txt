@@ -1,0 +1,34 @@
+Generation mode: Built-in ImageGen (image_gen.imagegen); transparent_background=true.
+Final selected output: exec-4202726f-5239-413a-9edd-6731a076cd9c.png
+Source reference: D:/RUA/sillytavern-plugins/tavern-theme-studio/examples/moonveil-covenant/concepts/reading-layout-2026-10-07/moonveil-reading-concept-02.png
+
+FIRST GENERATION — EXACT PROMPT
+Use case: stylized-concept
+Asset type: production raster transparent decorative border, a nine-slice chat writing/composer frame.
+Input image: the supplied Moonveil Crescent Folio concept screenshot is a STYLE AND SHAPE REFERENCE, especially the very wide thin silver writing/composer frame along its bottom at approximately x220..1530 / y767..850. Do not reproduce the screenshot, environment, text, icons, dragon, or input contents.
+
+Primary request: create only the complete standalone ornamental frame from that lower writing field. A very wide slender horizontal silver double-outline frame, ideally 1800 x 220 pixels (aspect 8.18:1), entirely visible with a little transparent safety margin around the outermost silver. Delicate hand-painted gothic moonlit fantasy silverwork on a genuinely transparent RGBA background. The entire center is fully transparent. The frame has no fill of any kind.
+
+Composition/framing: left end contains the reference's elegant small crescent moon and slender silver leaf tendrils which transition smoothly into the top and bottom double silver hairlines. All meaningful left ornament lies inside the leftmost 12% of image width. Right end is a simpler graceful rounded silver arc with tiny leaf accents, contained in the rightmost 12% of image width; it has NO button circle and NO circular medallion. The frame outline is smoothly joined and closed. Between the end regions, the middle 76% consists ONLY of nearly straight horizontal parallel silver lines along the top and bottom, suitable for clean horizontal stretching in CSS border-image. Top ornaments and lines stay in the top 25% of image height; bottom ornaments and lines stay in the bottom 25%; at least the middle 50% of image height across the interior is completely empty transparent. No bumps, scrolls, flourishes, wave textures, or jewels in the stretchable middle. The left crescent belongs to the outside end ornament, not the central interior.
+
+Style/medium: refined 2D painted silver metal, crisp and delicate with restrained lavender blue reflections, matching the screenshot. Moonlit cold silver, desaturated indigo, extremely subtle violet highlights. Clean antialiased edges. Silver should remain visible on a dark navy UI while staying thin. Avoid gold and avoid excessive luminous glow.
+
+Constraints: transparent background requested and mandatory; actual transparent alpha, no simulated transparency pattern. No white, black, blue, gray, parchment, or other opaque background or interior fill. No dragon, no text, no letter, no glyph, no icon, no send button, no button ring, no scenery, no photograph, no UI screenshot, no shadow rectangle. Do not crop any part. Do not create a tall ornamental picture; this is a very wide low horizontal production asset.
+
+FINAL CORRECTION — EXACT PROMPT
+Use case: precise-object-edit
+Asset type: production transparent PNG border ornament for a UI writing field.
+Input 1 is the existing generated standalone silver frame to EDIT. Input 2 is the intended UI screenshot as STYLE REFERENCE only.
+
+Keep input 1's overall silver moon and filigree outline, long horizontal empty interior, and thin parallel straight top/bottom lines. Correct framing and alpha cleanliness only:
+1. The complete entire frame must fit inside the canvas. The far-left point and far-right tip must not touch or cross an image edge. Give at least 70px of completely transparent safety padding at both left and right.
+2. The top and bottom 25% of the whole image are absolutely empty transparent. Center the thin horizontal frame vertically. No speckles, dust, glow islands, noisy residue, stray colored pixels, or low-alpha artifacts anywhere outside the connected silver frame. No blue chromakey fringe.
+3. Every pixel in the empty interior must be completely transparent. Especially the long central writing area must contain zero haze, glow, texture, fill or tiny floating marks.
+4. Use actual transparent alpha, not black or white background and not checkerboard. Clean sharp antialiased silver edges, very subtle cool violet reflections inside metal only.
+5. Preserve long straight central 76% stretchable top and bottom edges. Keep all flourishes in the end 12% regions.
+6. No new text, symbols, buttons, dragon, icon, scenery, or background. Do not add an input fill. Do not change the right end into a button ring.
+Complete long narrow border graphic at 1800 x 220 visual proportions; if the canvas cannot be that wide, surround this horizontal graphic with true transparent padding, never crop it or enlarge its height.
+
+Final correction input 1: C:/Users/gwynd/.codex/generated_images/01a116bd-78c1-76a0-8951-97a594b51ff9/exec-f233feb8-1480-443a-b8af-d9906bf83ee8.png
+Final correction input 2: source reference above.
+

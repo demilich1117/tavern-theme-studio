@@ -1,0 +1,38 @@
+[
+  {
+    "file": "dragon-user-final-v3.webp",
+    "format": "webp",
+    "width": 1040,
+    "height": 452,
+    "channels": 4,
+    "hasAlpha": true,
+    "size": 76344
+  },
+  {
+    "file": "avatar-talons.webp",
+    "format": "webp",
+    "width": 200,
+    "height": 200,
+    "channels": 4,
+    "hasAlpha": true,
+    "size": 8752
+  },
+  {
+    "file": "silver-frame.webp",
+    "format": "webp",
+    "width": 400,
+    "height": 400,
+    "channels": 4,
+    "hasAlpha": true,
+    "size": 22402
+  },
+  {
+    "file": "castle-night.webp",
+    "format": "webp",
+    "width": 1536,
+    "height": 1024,
+    "channels": 3,
+    "hasAlpha": false,
+    "size": 136554
+  }
+]

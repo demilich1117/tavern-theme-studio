@@ -1,0 +1,179 @@
+[
+  {
+    "name": "castle-folio",
+    "original": {
+      "width": 1774,
+      "height": 887
+    },
+    "crop": null,
+    "width": 1774,
+    "height": 887,
+    "hasAlpha": false,
+    "bytes": 149366
+  },
+  {
+    "name": "folio-dragon",
+    "original": {
+      "width": 1536,
+      "height": 1024
+    },
+    "crop": null,
+    "width": 1050,
+    "height": 700,
+    "hasAlpha": true,
+    "bytes": 188722
+  },
+  {
+    "name": "writing-frame",
+    "original": {
+      "width": 2172,
+      "height": 724
+    },
+    "crop": {
+      "left": 41,
+      "top": 239,
+      "width": 2067,
+      "height": 242
+    },
+    "width": 1600,
+    "height": 187,
+    "hasAlpha": true,
+    "bytes": 60830
+  },
+  {
+    "name": "lunar-arc-balanced",
+    "original": {
+      "width": 1774,
+      "height": 887
+    },
+    "crop": {
+      "left": 32,
+      "top": 298,
+      "width": 1710,
+      "height": 342
+    },
+    "width": 1710,
+    "height": 342,
+    "hasAlpha": true,
+    "bytes": 80246
+  },
+  {
+    "name": "nav-pendant",
+    "original": {
+      "width": 1099,
+      "height": 1431
+    },
+    "crop": {
+      "left": 145,
+      "top": 106,
+      "width": 813,
+      "height": 1220
+    },
+    "width": 160,
+    "height": 240,
+    "hasAlpha": true,
+    "bytes": 11246
+  },
+  {
+    "name": "violet-slip",
+    "original": {
+      "width": 2172,
+      "height": 724
+    },
+    "crop": {
+      "left": 60,
+      "top": 197,
+      "width": 2075,
+      "height": 312
+    },
+    "width": 1400,
+    "height": 211,
+    "hasAlpha": true,
+    "bytes": 51428
+  },
+  {
+    "name": "quote-quill",
+    "original": {
+      "width": 1208,
+      "height": 1302
+    },
+    "crop": {
+      "left": 459,
+      "top": 55,
+      "width": 403,
+      "height": 1208
+    },
+    "width": 144,
+    "height": 432,
+    "hasAlpha": true,
+    "bytes": 16650
+  },
+  {
+    "name": "scroll-jewel",
+    "original": {
+      "width": 1254,
+      "height": 1254
+    },
+    "crop": {
+      "left": 454,
+      "top": 232,
+      "width": 345,
+      "height": 749
+    },
+    "width": 80,
+    "height": 174,
+    "hasAlpha": true,
+    "bytes": 6058
+  },
+  {
+    "name": "sleeping-dragon-desktop",
+    "original": {
+      "width": 1536,
+      "height": 1024
+    },
+    "crop": {
+      "left": 18,
+      "top": 188,
+      "width": 1511,
+      "height": 720
+    },
+    "width": 1200,
+    "height": 572,
+    "hasAlpha": true,
+    "bytes": 210836
+  },
+  {
+    "name": "sleeping-dragon-mobile",
+    "original": {
+      "width": 1774,
+      "height": 887
+    },
+    "crop": {
+      "left": 472,
+      "top": 209,
+      "width": 835,
+      "height": 496
+    },
+    "width": 400,
+    "height": 238,
+    "hasAlpha": true,
+    "bytes": 37252
+  },
+  {
+    "name": "scroll-dragon-bookmark",
+    "original": {
+      "width": 724,
+      "height": 2172
+    },
+    "crop": {
+      "left": 162,
+      "top": 66,
+      "width": 458,
+      "height": 1999
+    },
+    "width": 180,
+    "height": 786,
+    "hasAlpha": true,
+    "bytes": 58434
+  }
+]

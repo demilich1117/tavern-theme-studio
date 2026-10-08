@@ -1,0 +1,73 @@
+{
+  "elements": [
+    {
+      "bottom": "12px",
+      "height": "2px",
+      "rect": {
+        "bottom": 155.21875,
+        "height": 2,
+        "left": 0,
+        "right": 393,
+        "top": 153.21875,
+        "width": 393,
+        "x": 0,
+        "y": 153.21875
+      },
+      "sel": "#sheld",
+      "top": "153.227px"
+    },
+    {
+      "bottom": "10px",
+      "height": "27px",
+      "rect": {
+        "bottom": 248.65625,
+        "height": 27,
+        "left": 1,
+        "right": 392,
+        "top": 221.65625,
+        "width": 391,
+        "x": 1,
+        "y": 221.65625
+      },
+      "sel": "#chat",
+      "top": "auto"
+    },
+    {
+      "bottom": "auto",
+      "height": "157px",
+      "rect": {
+        "bottom": 405.65625,
+        "height": 157,
+        "left": 1,
+        "right": 392,
+        "top": 248.65625,
+        "width": 391,
+        "x": 1,
+        "y": 248.65625
+      },
+      "sel": "#form_sheld",
+      "top": "auto"
+    },
+    {
+      "bottom": "0px",
+      "height": "157px",
+      "rect": {
+        "bottom": 405.65625,
+        "height": 157,
+        "left": 1,
+        "right": 392,
+        "top": 248.65625,
+        "width": 391,
+        "x": 1,
+        "y": 248.65625
+      },
+      "sel": "#send_form",
+      "top": "0px"
+    }
+  ],
+  "rootHeight": 0,
+  "viewport": [
+    393,
+    852
+  ]
+}

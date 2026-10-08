@@ -1,0 +1,51 @@
+[
+  {
+    "panel": "#rm_extensions_block",
+    "display": "block",
+    "left": 96,
+    "overflow": false,
+    "width": 940
+  },
+  {
+    "panel": "#AdvancedFormatting",
+    "display": "block",
+    "left": 96,
+    "overflow": false,
+    "width": 940
+  },
+  {
+    "panel": "#WorldInfo",
+    "display": "block",
+    "left": 96,
+    "overflow": false,
+    "width": 940
+  },
+  {
+    "panel": "#Backgrounds",
+    "display": "flex",
+    "left": 96,
+    "overflow": false,
+    "width": 940
+  },
+  {
+    "panel": "#PersonaManagement",
+    "display": "block",
+    "left": 96,
+    "overflow": false,
+    "width": 940
+  },
+  {
+    "panel": "#right-nav-panel",
+    "display": "flex",
+    "left": 96,
+    "overflow": false,
+    "width": 600
+  },
+  {
+    "panel": "#user-settings-block",
+    "display": "block",
+    "left": 96,
+    "overflow": false,
+    "width": 940
+  }
+]

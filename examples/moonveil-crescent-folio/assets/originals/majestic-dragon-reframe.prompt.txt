@@ -1,0 +1,7 @@
+Use case: precise-object-edit
+Input image is the edit target: the existing silver/amethyst dragon cutout.
+Change ONLY the framing and complete its missing edges. Preserve this exact dragon identity, head, cyan eye, horns, S-curved neck, armor, purple membranes, painterly detail, lighting, two connected arms and two foreclaws in the SAME pose.
+The current picture unfortunately cuts off the LOWER RIGHT CLAW at the bottom and the OUTER RIGHT WING at the right edge. Reconstruct both missing edges and show ALL talon tips and ALL wing tips. Zoom the whole dragon OUT within the canvas so the complete creature occupies at most 90% canvas width and 90% canvas height with genuine transparent margin. Keep portrait 1024 x 1536. Top wing tips below y=55, both lateral wing tips inside x=45 and x=979, and all talon tips above y=1450. The torso can continue naturally toward the lower-right behind its arms, but no claw or wing may touch or cross the canvas boundary.
+Reframe the left foreclaw near (330,1220) with tips around y=1330, and the right foreclaw near (760,1350) with every tip visible above y=1460. Exactly two connected forearms and two foreclaws, no extras. Keep majestic upright adult proportions.
+Absolutely NO new objects. No UI, frames, rocks, perches, fog, glows, text, shadows on a background, labels or watermark. Claws hold an invisible support.
+Genuinely transparent RGBA background outside the dragon. Preserve solid painted purple wing membranes. Return one transparent PNG cutout.

@@ -1,0 +1,28 @@
+Source: Built-in image_gen.imagegen (内置 ImageGen), reference-based generation plus one targeted repair. No CLI/API fallback and no programmatic image editing.
+Reference: D:/RUA/sillytavern-plugins/tavern-theme-studio/examples/moonveil-covenant/concepts/reading-layout-2026-10-07/moonveil-reading-concept-02.png
+Initial generated original: C:/Users/gwynd/.codex/generated_images/01a116bc-c277-72c1-80b3-5a0c15ca43c9/exec-38b81040-3eeb-4f8e-9e7c-18357259562f.png
+Selected generated original: C:/Users/gwynd/.codex/generated_images/01a116bc-c277-72c1-80b3-5a0c15ca43c9/exec-c651b51b-89e4-4fc2-b36b-3ca5efd23a4e.png
+transparent_background: true
+Actual size: 1254 x 1254, RGBA.
+Visible bbox alpha >= 32 (left, top, right exclusive, bottom exclusive): (464, 242, 789, 971), 325 x 729 px.
+Visible bbox alpha >= 128: (464, 243, 788, 969).
+Any-nonzero alpha bbox: (97, 53, 1208, 1182). Very faint low-alpha specks outside the visible jewel mean the alpha >= 32 bounds are the useful crop bounds.
+Exact alpha-zero pixels: 1461223 / 1572516. All four corner pixels RGBA (0, 0, 0, 0).
+Inspection: clear isolated purple diamond with silver bezel and shortened silver points; no chain, crescent, text or visible backdrop. Actual visible silhouette width:height is 1:2.243; suitable for scaling into the narrow scrollbar slot. Original saved without alterations.
+
+Exact initial prompt:
+Use case: background-extraction.
+Asset type: transparent PNG scrollbar thumb jewel for a Gothic silver-and-violet reading interface.
+Input image 1 is the style reference. Focus ONLY on the very slim vertical purple diamond crystal on the right-hand scrollbar, approximately reference x1730, y315–347. Recreate this single tiny ornamental jewel as an independent, large clean sprite. No other reference content.
+Requested canvas: 1024 x 1024 square with true transparent alpha. The one jewel is vertically centered, upright and symmetrical. Its complete visible silhouette, including the two short silver tips, should be approximately 1:2.7 width-to-height, roughly 265px wide and 715px high, with plenty of transparent margin on all sides. Never crop any part.
+Subject: one slender, elongated faceted violet-amethyst diamond, pointed at top and bottom, encased in one delicate fine silver bezel following the entire diamond outline. A single short elegant silver spike extends slightly above and slightly below the diamond. Cold silver with restrained ice-lavender highlights, violet crystal center with two or three clear geometric facets and thin luminous pale lavender facet lines. Match the supplied reference's hand-drawn 2D fantasy jewelry linework and cool indigo/silver/violet palette.
+Design for tiny rendering: this sprite will appear only 18px wide by about 44px tall in its final interface. Make the diamond silhouette simple, balanced, crisp and unmistakable. Simple slender silver frame; no intricate filigree, no extra ornaments, no rings, no wings, no bead clusters. Purple gemstone should stay clearly visible inside the silver border.
+Transparency: actual fully transparent alpha everywhere outside the jewel and its two short silver tips. Clean anti-aliased edges, no colored edge contamination, no glow haze, no background shadow, no backdrop, no checkerboard pattern, no black/white rectangle.
+Exclude entirely: chain, hanging cord, moon, crescent, scrollbar track, frame, circle, text, icon, buttons, UI, other objects, castle, dragon. One standalone narrow diamond jewel only.
+
+Exact targeted repair prompt:
+Use case: precise-object-edit.
+Input image 1 is the transparent jewel sprite to repair. Preserve the violet faceted diamond itself, the slim silver bezel, the clean linework, and the true alpha transparent background.
+Change ONLY the silver extensions above and below the diamond: the current long hourglass stems and spearheads are much too long and complex. Remove both long stems and both extra spearhead shapes. Replace them with just one SHORT slender straight silver pointed tip immediately above the diamond and one matching SHORT tip immediately below. Each short tip should extend only about one quarter of the diamond's maximum width. No long necks, no extra diamond shapes, no spearheads, no decorations.
+The complete final silhouette should have width-to-height ratio around 1:2.7, simple and clean enough to remain legible at 18 x 44 screen pixels. Center it within the same transparent canvas with generous transparent margin. Keep all edges inside the canvas. No chain, no moon, no track, no text. Fully transparent alpha outside the silver-framed purple diamond and two short tips, with no colored halos or background.
+

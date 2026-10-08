@@ -1,0 +1,647 @@
+{
+  "host": "SillyTavern 1.19.0 / 06bde939f",
+  "browser": "Chrome",
+  "version": "2.2.4",
+  "cases": [
+    {
+      "chat": {
+        "bottom": 1108,
+        "height": 1008,
+        "left": 256,
+        "right": 2304,
+        "top": 100,
+        "width": 2048,
+        "x": 256,
+        "y": 100
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 81,
+        "left": 320,
+        "right": 2188.796875,
+        "top": 1108,
+        "width": 1868.796875,
+        "x": 320,
+        "y": 1108
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 495.562,
+        "imageWidth": 1040,
+        "left": 2096,
+        "pointer": "none",
+        "width": 464,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "none",
+        "width": "auto"
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 256,
+        "right": 2304,
+        "top": 100,
+        "width": 2048,
+        "x": 256,
+        "y": 100
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) clamp(12px, 9.375%, 180px), rgba(16, 22, 37, 0.96) calc(100% - 28px - clamp(22px, 5%, 100px)), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "\"\"",
+        "height": "574.156px",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        2560,
+        1215
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 1108,
+        "height": 1008,
+        "left": 64,
+        "right": 2496,
+        "top": 100,
+        "width": 2432,
+        "x": 64,
+        "y": 100
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 81,
+        "left": 128,
+        "right": 2380.796875,
+        "top": 1108,
+        "width": 2252.796875,
+        "x": 128,
+        "y": 1108
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 495.562,
+        "imageWidth": 1040,
+        "left": 2288,
+        "pointer": "none",
+        "width": 272,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "none",
+        "width": "auto"
+      },
+      "nativeWidth": "95",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 64,
+        "right": 2496,
+        "top": 100,
+        "width": 2432,
+        "x": 64,
+        "y": 100
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) clamp(12px, 9.375%, 180px), rgba(16, 22, 37, 0.96) calc(100% - 28px - clamp(22px, 5%, 100px)), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "\"\"",
+        "height": "574.156px",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        2560,
+        1215
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 1108,
+        "height": 1008,
+        "left": 51.1875,
+        "right": 2508.78125,
+        "top": 100,
+        "width": 2457.59375,
+        "x": 51.1875,
+        "y": 100
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 81,
+        "left": 115.1875,
+        "right": 2393.578125,
+        "top": 1108,
+        "width": 2278.390625,
+        "x": 115.1875,
+        "y": 1108
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 495.562,
+        "imageWidth": 1040,
+        "left": 2300.812,
+        "pointer": "none",
+        "width": 259.188,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "none",
+        "width": "auto"
+      },
+      "nativeWidth": "100",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 51.1875,
+        "right": 2508.78125,
+        "top": 100,
+        "width": 2457.59375,
+        "x": 51.1875,
+        "y": 100
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) clamp(12px, 9.375%, 180px), rgba(16, 22, 37, 0.96) calc(100% - 28px - clamp(22px, 5%, 100px)), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "\"\"",
+        "height": "574.156px",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        2560,
+        1215
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 1087.625,
+        "height": 987.625,
+        "left": 704,
+        "right": 1856,
+        "top": 100,
+        "width": 1152,
+        "x": 704,
+        "y": 100
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 1189,
+        "height": 101.375,
+        "left": 768,
+        "right": 1740.796875,
+        "top": 1087.625,
+        "width": 972.796875,
+        "x": 768,
+        "y": 1087.625
+      },
+      "dragon": {
+        "bottom": 48.6,
+        "content": "\"\"",
+        "height": 495.562,
+        "imageWidth": 1040,
+        "left": 1665.609,
+        "pointer": "none",
+        "width": 894.391,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "none",
+        "width": "auto"
+      },
+      "nativeWidth": "45",
+      "panel": {
+        "bottom": 1189,
+        "height": 1089,
+        "left": 704,
+        "right": 1856,
+        "top": 100,
+        "width": 1152,
+        "x": 704,
+        "y": 100
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) clamp(12px, 9.375%, 180px), rgba(16, 22, 37, 0.96) calc(100% - 28px - clamp(22px, 5%, 100px)), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "\"\"",
+        "height": "574.156px",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        2560,
+        1215
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 772.625,
+        "height": 672.625,
+        "left": 144,
+        "right": 1296,
+        "top": 100,
+        "width": 1152,
+        "x": 144,
+        "y": 100
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 874,
+        "height": 101.375,
+        "left": 180,
+        "right": 1231.1875,
+        "top": 772.625,
+        "width": 1051.1875,
+        "x": 180,
+        "y": 772.625
+      },
+      "dragon": {
+        "bottom": 36,
+        "content": "\"\"",
+        "height": 288.188,
+        "imageWidth": 604.8,
+        "left": 1175.047,
+        "pointer": "none",
+        "width": 264.953,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "none",
+        "width": "auto"
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 874,
+        "height": 774,
+        "left": 144,
+        "right": 1296,
+        "top": 100,
+        "width": 1152,
+        "x": 144,
+        "y": 100
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) clamp(12px, 9.375%, 180px), rgba(16, 22, 37, 0.96) calc(100% - 28px - clamp(22px, 5%, 100px)), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "\"\"",
+        "height": "354.188px",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        1440,
+        900
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 793,
+        "height": 693,
+        "left": 36,
+        "right": 1404,
+        "top": 100,
+        "width": 1368,
+        "x": 36,
+        "y": 100
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 874,
+        "height": 81,
+        "left": 72,
+        "right": 1339.1875,
+        "top": 793,
+        "width": 1267.1875,
+        "x": 72,
+        "y": 793
+      },
+      "dragon": {
+        "bottom": 36,
+        "content": "\"\"",
+        "height": 288.188,
+        "imageWidth": 604.8,
+        "left": 1283.047,
+        "pointer": "none",
+        "width": 156.953,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "none",
+        "width": "auto"
+      },
+      "nativeWidth": "95",
+      "panel": {
+        "bottom": 874,
+        "height": 774,
+        "left": 36,
+        "right": 1404,
+        "top": 100,
+        "width": 1368,
+        "x": 36,
+        "y": 100
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) clamp(12px, 9.375%, 180px), rgba(16, 22, 37, 0.96) calc(100% - 28px - clamp(22px, 5%, 100px)), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "\"\"",
+        "height": "354.188px",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        1440,
+        900
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 487,
+        "height": 410,
+        "left": 144,
+        "right": 1296,
+        "top": 77,
+        "width": 1152,
+        "x": 144,
+        "y": 77
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 588,
+        "height": 101,
+        "left": 180,
+        "right": 1231.1875,
+        "top": 487,
+        "width": 1051.1875,
+        "x": 180,
+        "y": 487
+      },
+      "dragon": {
+        "bottom": 24,
+        "content": "\"\"",
+        "height": 288.188,
+        "imageWidth": 604.8,
+        "left": 1175.047,
+        "pointer": "none",
+        "width": 264.953,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "none",
+        "width": "auto"
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 588,
+        "height": 511,
+        "left": 144,
+        "right": 1296,
+        "top": 77,
+        "width": 1152,
+        "x": 144,
+        "y": 77
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) clamp(12px, 9.375%, 180px), rgba(16, 22, 37, 0.96) calc(100% - 28px - clamp(22px, 5%, 100px)), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "\"\"",
+        "height": "356.188px",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        1440,
+        600
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 632.625,
+        "height": 532.625,
+        "left": 100.09375,
+        "right": 900.890625,
+        "top": 100,
+        "width": 800.796875,
+        "x": 100.09375,
+        "y": 100
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 734,
+        "height": 101.375,
+        "left": 125.109375,
+        "right": 855.828125,
+        "top": 632.625,
+        "width": 730.71875,
+        "x": 125.109375,
+        "y": 632.625
+      },
+      "dragon": {
+        "bottom": 30.4,
+        "content": "\"\"",
+        "height": 266.828,
+        "imageWidth": 560,
+        "left": 788.906,
+        "pointer": "none",
+        "width": 212.094,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "none",
+        "width": "auto"
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 734,
+        "height": 634,
+        "left": 100.09375,
+        "right": 900.890625,
+        "top": 100,
+        "width": 800.796875,
+        "x": 100.09375,
+        "y": 100
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) clamp(12px, 9.375%, 180px), rgba(16, 22, 37, 0.96) calc(100% - 28px - clamp(22px, 5%, 100px)), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "\"\"",
+        "height": "327.234px",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        1001,
+        760
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 548.625,
+        "height": 452.625,
+        "left": 12,
+        "right": 988,
+        "top": 96,
+        "width": 976,
+        "x": 12,
+        "y": 96
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 742,
+        "height": 193.375,
+        "left": 14,
+        "right": 955,
+        "top": 548.625,
+        "width": 941,
+        "x": 14,
+        "y": 548.625
+      },
+      "dragon": {
+        "bottom": 30.4,
+        "content": "none",
+        "height": 104.831,
+        "imageWidth": 220,
+        "left": 876,
+        "pointer": "none",
+        "width": 124,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "\"\"",
+        "width": "88px"
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 742,
+        "height": 646,
+        "left": 12,
+        "right": 988,
+        "top": 96,
+        "width": 976,
+        "x": 12,
+        "y": 96
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) 20px, rgba(16, 22, 37, 0.96) calc(100% - 54px), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "none",
+        "height": "min(100%, 173.231px)",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        1000,
+        760
+      ]
+    },
+    {
+      "chat": {
+        "bottom": 565,
+        "height": 492.015625,
+        "left": 12,
+        "right": 381,
+        "top": 72.984375,
+        "width": 369,
+        "x": 12,
+        "y": 72.984375
+      },
+      "chatOverflow": false,
+      "composer": {
+        "bottom": 801,
+        "height": 236,
+        "left": 12,
+        "right": 381,
+        "top": 565,
+        "width": 369,
+        "x": 12,
+        "y": 565
+      },
+      "dragon": {
+        "bottom": 34.08,
+        "content": "none",
+        "height": 47.6506,
+        "imageWidth": 100,
+        "left": 307,
+        "pointer": "none",
+        "width": 86,
+        "z": "12"
+      },
+      "mobileDragon": {
+        "content": "\"\"",
+        "width": "84px"
+      },
+      "nativeWidth": "80",
+      "panel": {
+        "bottom": 801,
+        "height": 728.015625,
+        "left": 12,
+        "right": 381,
+        "top": 72.984375,
+        "width": 369,
+        "x": 12,
+        "y": 72.984375
+      },
+      "panelZ": "30",
+      "rootOverflow": false,
+      "sendHittable": true,
+      "textOpacity": "1",
+      "veil": {
+        "background": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(16, 22, 37, 0.96) 6px, rgba(16, 22, 37, 0.96) calc(100% - 40px), rgba(16, 22, 37, 0.5) calc(100% - 30px), rgba(0, 0, 0, 0))",
+        "content": "none",
+        "height": "min(100%, 86.7306px)",
+        "mask": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 76px, rgb(0, 0, 0) calc(100% - 24px), rgba(0, 0, 0, 0))",
+        "pointer": "none",
+        "z": "-1"
+      },
+      "viewport": [
+        393,
+        852
+      ]
+    }
+  ]
+}

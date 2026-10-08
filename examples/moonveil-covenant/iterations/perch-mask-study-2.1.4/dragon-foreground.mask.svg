@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1902" height="827" viewBox="0 0 1902 827">
+  <!-- Geometry only: reuse the original dragon alpha; no painted replacement pixels.
+       Full artwork remains behind the panel. These regions bring the head and gripping claws forward. -->
+  <g fill="white">
+    <path d="M640 330H955V620H640Z"/>
+    <!-- The cheek turns inward at the source's flat neck base (y~492).
+         Do not bring the rectangular neck underside in front of the silver rim. -->
+    <path d="M885 785V545L910 265L1180 30H1490L1580 250L1480 355L1340 418L1280 478L1240 495L1215 540L1165 580L1150 750Z"/>
+    <path d="M1460 585L1695 530L1775 625V827H1460Z"/>
+  </g>
+</svg>

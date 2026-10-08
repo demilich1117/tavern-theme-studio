@@ -1,0 +1,276 @@
+/*
+ * MOONVEIL COVENANT / 月誓 · 龙廷 1.0
+ * Original theme, created from a blank project for SillyTavern 1.19.0.
+ * No external fonts, no script dependency, no inherited third-party theme CSS.
+ * The build script embeds the generated artwork at __DRAGON_ART__.
+ */
+:root {
+  --cc-accent: #79dfd8; /* 色彩 / 冰青主色 */
+  --cc-silver: #d5e5ee; /* 色彩 / 冷银铭文 */
+  --cc-violet: #b2a5ee; /* 色彩 / 紫罗兰与我方消息 */
+  --cc-ink: #080f1b; /* 色彩 / 深靛底色 */
+  --cc-surface: #0e1828ef; /* 色彩 / 阅读页不透明底板 */
+  --cc-message: #152234ed; /* 色彩 / 角色消息底板 */
+  --cc-user: #1c2139ee; /* 色彩 / 我方便笺底板 */
+  --cc-text: #e0e9f0; /* 色彩 / 正文颜色 */
+  --cc-muted: #97abbf; /* 色彩 / 次要文字 */
+  --cc-line: #d5e5ee38; /* 色彩 / 铭刻边线 */
+  --cc-art-opacity: 0.96; /* 图像 / 主视觉不透明度 */
+  --cc-stage-left: 42vw; /* 桌面布局 / 阅读区左侧位置 */
+  --cc-stage-right: 24px; /* 桌面布局 / 阅读区右侧留白 */
+  --cc-stage-top: 34px; /* 桌面布局 / 阅读区顶部留白 */
+  --cc-stage-bottom: 24px; /* 桌面布局 / 阅读区底部留白 */
+  --cc-chat-padding: 22px; /* 阅读布局 / 消息列表留白 */
+  --cc-message-gap: 22px; /* 阅读布局 / 消息间距 */
+  --cc-font-size: 16px; /* 阅读布局 / 正文字号 */
+  --cc-line-height: 1.85; /* 阅读布局 / 正文行高 */
+  --cc-message-padding: 20px; /* 消息造型 / 页内留白 */
+  --cc-corner: 16px; /* 消息造型 / 不对称圆角 */
+  --cc-avatar-size: 48px; /* 消息造型 / 头像尺寸 */
+  --cc-avatar-gap: 16px; /* 消息造型 / 头像与正文距离 */
+  --cc-user-inset: 30px; /* 消息造型 / 我方消息缩进 */
+  --cc-title-size: 64px; /* 装饰 / 左侧主题标题字号 */
+  --cc-header-label: "龙 廷 纪 事     /     THE MOONVEIL ARCHIVE"; /* 装饰 / 阅读区铭文 */
+  --cc-oath-label: "✦   以言为契     /     SPEAK YOUR OATH"; /* 装饰 / 输入区铭文 */
+  --cc-nav-size: 50px; /* 工具栏 / 桌面宽度 */
+  --SmartThemeBodyColor: var(--cc-text);
+  --SmartThemeEmColor: #a8bbd1;
+  --SmartThemeQuoteColor: var(--cc-silver);
+  --SmartThemeUnderlineColor: var(--cc-violet);
+  --SmartThemeBorderColor: var(--cc-line);
+  --SmartThemeBlurTintColor: #0e1828;
+  --SmartThemeChatTintColor: #0e1828;
+  --SmartThemeUserMesBlurTintColor: var(--cc-user);
+  --SmartThemeBotMesBlurTintColor: var(--cc-message);
+}
+
+/* 01 · Full-bleed artwork and typographic identity. Decoration never receives clicks. */
+html { background: var(--cc-ink); color-scheme: dark; }
+body {
+  background: var(--cc-ink); color: var(--cc-text);
+  font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  text-shadow: none;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: linear-gradient(0deg, #080b11 0%, #080b1144 24%, transparent 55%), url("__DRAGON_ART__");
+  background-position: left center; background-size: auto 100%; background-repeat: no-repeat;
+  opacity: var(--cc-art-opacity);
+}
+body::after {
+  content: "MOONVEIL\a COVENANT"; white-space: pre;
+  position: fixed; left: 94px; bottom: 70px; z-index: 1; pointer-events: none;
+  color: #e7f2f5; font: 900 var(--cc-title-size)/.9 "Bahnschrift Condensed", Impact, "Arial Narrow", sans-serif;
+  letter-spacing: -.055em; transform: skewX(-7deg); text-shadow: 0 4px 20px #0009;
+  border-left: 5px solid var(--cc-accent); padding-left: 16px;
+}
+#bg1, #bg2 { opacity: 0; pointer-events: none; }
+#top-bar { background: transparent; backdrop-filter: none; box-shadow: none; pointer-events: none; }
+
+/* 02 · Vertical tool rail. The real drawers keep their native open/close behavior. */
+#top-settings-holder, .demo-top {
+  position: fixed; z-index: 4000; top: 106px; left: 20px; right: auto; bottom: auto;
+  width: var(--cc-nav-size); height: auto; margin: 0; padding: 10px 5px;
+  display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; gap: 6px;
+  border: 1px solid var(--cc-line); border-top: 3px solid var(--cc-accent); border-radius: 3px 3px 18px 3px;
+  background: #0c1019f0; backdrop-filter: none; box-shadow: 6px 8px 0 #0003;
+}
+#top-settings-holder::before, .demo-top::before {
+  content: "⟐"; display: grid; place-items: center; color: var(--cc-silver);
+  height: 37px; margin-bottom: 5px; border-bottom: 1px solid var(--cc-line); font: 28px Georgia, serif;
+}
+#top-settings-holder::after, .demo-top::after {
+  content: "月誓 · 龙廷   /   THE SILVER THRONE";
+  position: fixed; left: 94px; bottom: 39px; color: var(--cc-silver); pointer-events: none;
+  font: 10px/1.4 "Bahnschrift", "Microsoft YaHei UI", sans-serif; letter-spacing: 2px; white-space: nowrap;
+}
+#top-settings-holder > .drawer { width: 100%; min-width: 0; height: 35px; flex: 0 0 auto; }
+#top-settings-holder .drawer-icon { font-size: 20px; padding: 7px; color: var(--cc-muted); }
+#top-settings-holder .drawer-icon.closedIcon { opacity: .8; }
+#top-settings-holder .drawer-icon:is(.openIcon, :hover, :focus-visible) { color: var(--cc-silver); opacity: 1; text-shadow: 0 0 16px #79dfd840; }
+.demo-top > :is(b, small) { display: none; }
+.demo-top > span, .demo-top > button { display: grid; place-items: center; min-height: 34px; font-size: 18px; color: var(--cc-muted); }
+
+/* 03 · Offset reading canvas. No clipping or transforms on functional panels. */
+#sheld {
+  position: fixed; z-index: 30; top: var(--cc-stage-top); left: var(--cc-stage-left); right: var(--cc-stage-right); bottom: var(--cc-stage-bottom);
+  display: flex; flex-direction: column; width: auto; max-width: none; height: auto; max-height: none; min-width: 0; min-height: 0; margin: 0;
+  overflow: visible; border: 1px solid var(--cc-line); border-top: 3px solid var(--cc-accent);
+  border-radius: 2px 18px 3px 3px; background: var(--cc-surface); box-shadow: 0 22px 90px #0008;
+}
+#sheld::before {
+  content: var(--cc-header-label); display: flex; align-items: center; min-height: 46px; flex: 0 0 46px;
+  box-sizing: border-box; padding: 0 24px; border-bottom: 1px solid var(--cc-line);
+  background: linear-gradient(110deg, #d5e5ee14, transparent 70%); color: var(--cc-silver);
+  font: 600 11px/1.5 "Bahnschrift", "Microsoft YaHei UI", sans-serif; letter-spacing: 2px; pointer-events: none;
+}
+#sheld > .chat-title { flex-shrink: 0; padding: 12px 24px; background: #080b111f; border-bottom: 1px solid var(--cc-line); }
+.chat-title .monogram { border-color: var(--cc-line); color: var(--cc-silver); background: #d5e5ee0a; }
+.chat-title b { color: var(--cc-text); }.chat-title small { color: var(--cc-muted); }
+#chat {
+  flex: 1 1 auto; min-height: 0; max-height: none; display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden; padding: var(--cc-chat-padding); padding-bottom: 8px;
+  background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; text-shadow: none;
+  scrollbar-width: thin; scrollbar-color: #99bed15c transparent; scroll-padding: 20px;
+}
+#chat .chapter { padding: 12px 0 24px; flex-shrink: 0; }
+#chat .chapter b { color: var(--cc-silver); font: 24px/1.4 Georgia, "SimSun", serif; }
+#chat .chapter span, #chat .chapter i { color: var(--cc-muted); }
+
+/* 04 · Covenant pages and inset reply slips. Avatar controls and swipe controls remain intact. */
+#chat .mes {
+  position: relative; box-sizing: border-box; display: flex; flex: 0 0 auto; flex-direction: row; align-items: flex-start;
+  gap: var(--cc-avatar-gap); width: 100%; padding: var(--cc-message-padding); margin: 0 0 var(--cc-message-gap);
+  border: 1px solid var(--cc-line); border-left: 3px solid var(--cc-silver);
+  border-radius: 0 var(--cc-corner) 0 var(--cc-corner); background: var(--cc-message); color: var(--cc-text);
+  box-shadow: 4px 6px 0 #05070c44; text-shadow: none;
+}
+#chat .mes::before {
+  content: ""; position: absolute; right: -1px; top: -1px; width: 22px; height: 22px;
+  background: linear-gradient(225deg, var(--cc-accent) 0 48%, transparent 50%); border-radius: 0 var(--cc-corner) 0 0; pointer-events: none;
+}
+#chat .mes[is_user="true"] {
+  flex-direction: row-reverse; width: calc(100% - var(--cc-user-inset)); margin-left: auto;
+  border-left: 1px solid #b2a5ee30; border-right: 3px solid var(--cc-violet);
+  border-radius: var(--cc-corner) 0 var(--cc-corner) 0; background: var(--cc-user);
+}
+#chat .mes[is_user="true"]::before { right: auto; left: -1px; background: linear-gradient(135deg, var(--cc-violet) 0 48%, transparent 50%); border-radius: var(--cc-corner) 0 0 0; }
+#chat .mes .mes_block { flex: 1 1 0; min-width: 0; width: auto; padding: 0; }
+#chat .mesAvatarWrapper { flex: 0 0 var(--cc-avatar-size); width: var(--cc-avatar-size); padding: 0; }
+#chat .mes > .avatar { flex: 0 0 var(--cc-avatar-size); }
+#chat .mes .avatar {
+  box-sizing: border-box; width: var(--cc-avatar-size); height: var(--cc-avatar-size); max-width: none;
+  padding: 3px; border: 1px solid var(--cc-silver); border-radius: 3px 3px 14px 3px;
+  background: #162f3b; box-shadow: 3px 3px 0 #d5e5ee1a; color: var(--cc-silver); font: 22px Georgia, "SimSun", serif;
+}
+#chat .mes .avatar img { width: 100%; height: 100%; max-height: none; object-fit: cover; border-radius: 0 0 9px 0; }
+#chat .mes[is_user="true"] .avatar { border-color: var(--cc-violet); background: #292c48; color: var(--cc-violet); box-shadow: 3px 3px 0 #b2a5ee1a; }
+#chat .mes .ch_name { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 12px; padding: 0 6px 10px 0; border-bottom: 1px solid #d5e5ee1a; color: var(--cc-silver); }
+#chat .mes .name_text { color: var(--cc-silver); font: 700 15px/1.4 Georgia, "SimSun", serif; letter-spacing: .04em; margin: 0; }
+#chat .mes[is_user="true"] .name_text { color: var(--cc-violet); }
+#chat .mes .timestamp { color: var(--cc-muted); font: 10px/1.4 "Bahnschrift", sans-serif; margin-left: 8px; white-space: nowrap; }
+#chat .mes .mes_buttons { color: var(--cc-muted); font-size: 12px; margin-left: auto; gap: 8px; }
+#chat .mes .mes_buttons .mes_button { min-width: 22px; min-height: 22px; padding: 4px; border-radius: 2px; }
+#chat .mes .mes_buttons .mes_button:hover { color: var(--cc-silver); background: #d5e5ee17; }
+#chat .mes .mesIDDisplay, #chat .mes .mes_timer, #chat .mes .tokenCounterDisplay { font-size: 9px; color: var(--cc-muted); opacity: .8; }
+#chat .mes .mes_text { font-size: var(--cc-font-size); line-height: var(--cc-line-height); color: var(--cc-text); padding: 0; max-width: 100%; overflow-wrap: anywhere; }
+#chat .mes .mes_text p { margin: 0 0 14px; }#chat .mes .mes_text p:last-child { margin-bottom: 0; }
+#chat .mes .mes_text :is(h1,h2,h3) { color: var(--cc-silver); font-family: Georgia, "SimSun", serif; line-height: 1.5; margin: 18px 0 12px; }
+#chat .mes .mes_text strong { color: #d9f5f5; }#chat .mes .mes_text em { color: #a6bbd0; }
+#chat .mes .mes_text :is(q, q em) { color: var(--cc-silver); }
+#chat .mes .mes_text a { color: var(--cc-violet); text-decoration-color: #b2a5ee70; text-underline-offset: 4px; }
+#chat .mes .swipeRightBlock { position: absolute; bottom: 0; right: 8px; font-size: 10px; }
+#chat .mes .swipe_left { left: 3px; }#chat .mes :is(.swipe_left,.swipe_right) { color: var(--cc-silver); }
+#chat .mes .edit_textarea, #chat .mes .reasoning_edit_textarea { width: 100%; min-height: 140px; background: #090e16; color: var(--cc-text); border: 1px solid var(--cc-silver); padding: 12px; font-size: var(--cc-font-size); }
+
+/* 05 · Secondary reading components. Horizontal content scrolls within its own block. */
+#chat .mes .mes_text blockquote {
+  position: relative; margin: 18px 0; padding: 12px 16px 12px 22px;
+  border: 1px solid #d5e5ee24; border-left: 3px solid var(--cc-accent); border-radius: 0 10px 0 0;
+  background: #d5e5ee08; color: #bcd0e0; font-family: Georgia, "SimSun", serif;
+}
+#chat .mes .mes_text pre { position: relative; box-sizing: border-box; max-width: 100%; margin: 16px 0; padding: 14px 16px; overflow-x: auto; border: 1px solid #b2a5ee38; border-top: 2px solid var(--cc-violet); border-radius: 2px 2px 10px 2px; background: #090e16; color: #c0d9dc; }
+#chat .mes .mes_text pre code { font: 12px/1.7 Consolas, "Cascadia Code", monospace; white-space: pre; word-break: normal; overflow-wrap: normal; background: transparent; }
+#chat .mes .mes_text :not(pre)>code { background: #b2a5ee13; border: 1px solid #b2a5ee23; color: #bedcdf; padding: 2px 5px; border-radius: 3px; }
+#chat .mes .mes_text table { width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; margin: 18px 0; font-size: 13px; }
+#chat .mes .mes_text :is(th,td) { padding: 10px 12px; border: 1px solid var(--cc-line); text-align: left; overflow-wrap: anywhere; }
+#chat .mes .mes_text th { color: var(--cc-silver); background: #d5e5ee14; font-weight: 600; }
+#chat .mes .mes_text tr:nth-child(even) td { background: #ffffff03; }
+#chat .mes .mes_reasoning_details { margin: 0 0 16px; border: 1px solid #b2a5ee38; border-radius: 0 10px 0 10px; background: #10202c66; }
+#chat .mes .mes_reasoning_summary { cursor: pointer; padding: 10px 12px; color: var(--cc-violet); font-size: 12px; }
+#chat .mes .mes_reasoning_details[open]>.mes_reasoning_summary { border-bottom: 1px solid #b2a5ee20; }
+#chat .mes .mes_reasoning { padding: 12px 16px; font-size: 13px; line-height: 1.75; color: #a8bfc4; }
+#chat .mes .mes_text details:not(.mes_reasoning_details) { border: 1px solid var(--cc-line); padding: 10px 12px; border-radius: 0 8px 0 8px; margin: 12px 0; }
+#chat .mes .mes_text summary { cursor: pointer; color: var(--cc-silver); }
+#chat .mes .mes_text :is(img,video) { max-width: 100%; height: auto; }
+
+/* 06 · Oath console. Native send / stop / quick replies retain their visibility logic. */
+#form_sheld { flex: 0 0 auto; width: 100%; margin: 0; }
+#send_form {
+  box-sizing: border-box; width: 100%; margin: 0; padding: 10px 18px 16px; display: flex; flex-wrap: wrap; gap: 0;
+  border: 0; border-top: 2px solid var(--cc-accent); border-radius: 0 0 3px 3px; background: #0d121bdd; backdrop-filter: blur(12px);
+}
+#send_form::before { content: var(--cc-oath-label); flex: 0 0 100%; display: block; padding: 1px 0 9px 2px; color: var(--cc-silver); font: 10px/1.5 "Bahnschrift", "Microsoft YaHei UI", sans-serif; letter-spacing: 1.7px; pointer-events: none; }
+#nonQRFormItems { align-items: flex-end; gap: 8px; min-width: 0; width: 100%; }
+#send_textarea { box-sizing: border-box; flex: 1 1 0; min-width: 0; width: auto; min-height: 50px; max-height: 180px; height: auto; padding: 12px; background: #080d155e; color: var(--cc-text); border: 1px solid #d5e5ee1c; border-radius: 4px 4px 10px 4px; font: 15px/1.7 "Segoe UI", "Microsoft YaHei UI", sans-serif; resize: vertical; box-shadow: none; }
+#send_textarea:focus-visible { outline: 1px solid var(--cc-silver); outline-offset: 2px; }
+#send_textarea::placeholder { color: #99aabe; opacity: .8; }
+#leftSendForm, #rightSendForm { flex: 0 0 auto; gap: 3px; }
+#leftSendForm>div, #rightSendForm>div:not(.mes_stop) { width: 34px; min-height: 44px; height: auto; color: var(--cc-muted); }
+#send_but { color: #0b1822; background: var(--cc-accent); border: 1px solid #b3f4ed; border-radius: 2px 10px 2px 2px; opacity: 1; }
+#send_but:hover { background: var(--cc-silver); }
+#send_form .mes_stop { color: var(--cc-accent); }
+#send_form>button { flex: 0 0 36px; align-self: flex-end; min-height: 50px; font-size: 20px; color: var(--cc-silver); }
+#send_form>button:last-child { background: var(--cc-accent); color: #101015; border-radius: 2px 10px 2px 2px; }
+.demo-foot { flex: 0 0 auto; background: #0d121b; padding: 5px; color: var(--cc-muted); font-size: 9px; }
+
+/* 07 · Character codex, settings drawers and native controls. No forced display on drawers. */
+#top-settings-holder .drawer-content, #left-nav-panel, #right-nav-panel {
+  box-sizing: border-box; position: fixed; left: 88px; right: auto; top: 24px; bottom: auto;
+  width: min(420px, calc(100vw - 112px)); min-width: min(320px, calc(100vw - 112px));
+  max-height: calc(100dvh - 48px); margin: 0; padding: 18px; overflow-y: auto;
+  border: 1px solid var(--cc-line); border-top: 3px solid var(--cc-accent); border-radius: 2px 18px 2px 2px;
+  background: #101620f7; color: var(--cc-text); box-shadow: 12px 18px 60px #0008; backdrop-filter: blur(12px); z-index: 4100;
+}
+#top-settings-holder #right-nav-panel, #right-nav-panel { left: auto; right: 24px; width: min(400px, calc(100vw - 112px)); }
+.drawer-content :is(h2,h3,h4), #left-nav-panel h2, #right-nav-panel h2 { color: var(--cc-silver); letter-spacing: .03em; }
+.drawer-content :is(.inline-drawer-header,.standoutHeader) { padding: 12px 8px; border-bottom: 1px solid var(--cc-line); background: #d5e5ee09; color: var(--cc-silver); }
+.drawer-content :is(input[type=text],input[type=number],input[type=search],input[type=url],input[type=password],select,textarea) { background-color: #090e16; color: var(--cc-text); border: 1px solid #d5e5ee33; border-radius: 3px; }
+.drawer-content :is(input,select,textarea,button):focus-visible { outline: 2px solid var(--cc-violet); outline-offset: 2px; }
+.drawer-content :is(input[type=range],input[type=checkbox]) { accent-color: var(--cc-accent); }
+.drawer-content .menu_button, #right-nav-panel>button { border: 1px solid var(--cc-line); border-radius: 2px 8px 2px 2px; color: var(--cc-text); background: #d5e5ee0b; }
+.drawer-content .menu_button:hover { background: #79dfd821; border-color: var(--cc-accent); }
+#right-nav-panel :is(.character_select,.group_select) { padding: 8px; margin: 5px 0; border: 1px solid #d5e5ee20; border-radius: 0 10px 0 10px; background: #090e1655; }
+#right-nav-panel :is(.character_select,.group_select):hover { border-color: var(--cc-silver); background: #d5e5ee10; }
+#right-nav-panel .character-swatch { background: linear-gradient(135deg, #243044, #101a25); border: 1px solid var(--cc-line); color: var(--cc-silver); }
+.popup { border: 1px solid var(--cc-line); background: #10151ef5; color: var(--cc-text); }
+:is(#sheld,#top-settings-holder) :is(button,a,[tabindex]):focus-visible { outline: 2px solid var(--cc-violet); outline-offset: 3px; }
+
+/* 08 · Compact and mobile arrangements. The artwork becomes a shallow header, not a reading overlay. */
+@media (min-width: 1600px) {
+  :root { --cc-stage-left: 44vw; --cc-stage-right: 48px; --cc-chat-padding: 32px; --cc-title-size: 84px; }
+}
+@media (max-width: 1099px) and (min-width: 901px) {
+  :root { --cc-stage-left: 34vw; --cc-stage-right: 16px; --cc-title-size: 46px; --cc-chat-padding: 16px; --cc-avatar-size: 40px; --cc-message-padding: 16px; }
+  body::after { left: 82px; bottom: 60px; }
+}
+@media (max-width: 900px) {
+  :root { --cc-stage-left: 12px; --cc-stage-right: 12px; --cc-stage-top: 140px; --cc-stage-bottom: 12px; --cc-chat-padding: 14px; --cc-title-size: 27px; --cc-message-padding: 15px; --cc-avatar-size: 38px; --cc-avatar-gap: 12px; --cc-user-inset: 14px; }
+  body::before { background-size: auto 540px; background-position: -30px -35px; opacity: calc(var(--cc-art-opacity) * .82); }
+  body::after { left: 24px; top: 79px; bottom: auto; font-size: var(--cc-title-size); border-left-width: 3px; padding-left: 10px; line-height: .9; }
+  #top-settings-holder, .demo-top { flex-direction: row; align-items: center; top: 8px; left: 12px; right: 12px; width: auto; min-height: 46px; height: auto; padding: 3px 6px; gap: 2px; border-top-width: 2px; border-radius: 2px 10px 2px 2px; }
+  #top-settings-holder > .drawer { width: auto; height: 36px; flex: 1 1 0; }
+  #top-settings-holder .drawer-icon { font-size: 18px; padding: 6px 4px; }
+  #top-settings-holder::before, .demo-top::before { display: none; }
+  #top-settings-holder::after, .demo-top::after { top: 92px; bottom: auto; right: 26px; left: auto; content: "月 誓 · 龙 廷\a VOL. 01 / THE SILVER THRONE"; font-size: 8px; line-height: 1.8; white-space: pre; text-align: right; letter-spacing: 1px; }
+  .demo-top > span, .demo-top > button { flex: 1 1 0; min-width: 0; }
+  #top-settings-holder .drawer-content, #top-settings-holder #right-nav-panel, #left-nav-panel, #right-nav-panel { left: 12px; right: 12px; top: 64px; width: auto; min-width: 0; max-height: calc(100dvh - 80px); padding: 14px; }
+  #sheld::before { min-height: 36px; flex-basis: 36px; padding: 0 16px; font-size: 9px; letter-spacing: 1px; }
+  #sheld > .chat-title { padding: 10px 16px; }
+  #chat .mes .name_text { font-size: 14px; }
+  #chat .mes .timestamp { font-size: 9px; }
+  #send_form { padding: 8px 10px 10px; }
+  #send_form::before { font-size: 9px; padding-bottom: 7px; letter-spacing: 1px; }
+  #send_textarea { min-height: 44px; font-size: 16px; padding: 8px; }
+  #leftSendForm>div, #rightSendForm>div:not(.mes_stop) { width: 28px; min-height: 40px; }
+}
+@media (max-width: 767px) {
+  :root { --cc-font-size: 15px; --cc-line-height: 1.8; --cc-message-gap: 16px; --cc-corner: 12px; }
+  #chat .mes .ch_name { flex-wrap: wrap; gap: 4px; }
+  #chat .mes .mes_buttons { font-size: 10px; gap: 4px; }
+  #chat .mes .mes_text :is(th,td) { padding: 7px; font-size: 12px; }
+}
+@media (max-width: 480px) {
+  :root { --cc-chat-padding: 10px; --cc-message-padding: 12px; --cc-avatar-size: 30px; --cc-avatar-gap: 10px; --cc-user-inset: 10px; --cc-stage-left: 8px; --cc-stage-right: 8px; }
+  #chat .mes .mes_buttons { flex: 0 0 auto; margin-left: auto; justify-content: flex-end; }
+  #chat .mes .mes_text pre { padding: 10px; }
+}
+@media (max-height: 560px) and (min-width: 901px) {
+  #top-settings-holder, .demo-top { top: 16px; gap: 1px; padding-top: 3px; padding-bottom: 3px; }
+  #top-settings-holder::before, .demo-top::before { display: none; }
+  body::after { bottom: 36px; font-size: 40px; }
+  #top-settings-holder::after, .demo-top::after { bottom: 15px; font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #chat .mes, #top-settings-holder .drawer-icon { transition: none; }
+}

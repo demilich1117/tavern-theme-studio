@@ -1,0 +1,20 @@
+{
+  "name": "tavern-theme-studio",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "本地酒馆主题可视化工作台",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.js",
+    "lab": "node scripts/start-native-lab.js",
+    "test": "node --test",
+    "check": "node scripts/check.js",
+    "cli": "node scripts/cli.js",
+    "package:connector": "node scripts/package-connector.js",
+    "build:example": "node scripts/build-moonveil-theme.js",
+    "build:folio": "node scripts/build-moonveil-crescent.js",
+    "package:folio": "node scripts/package-moonveil-crescent.js"
+  }
+}
+

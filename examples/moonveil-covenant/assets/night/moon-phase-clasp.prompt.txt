@@ -1,0 +1,7 @@
+Use case: stylized-concept
+Asset type: transparent compact moon-phase clasp for collapsible reasoning header.
+Input: Moonveil UI concept as visual style reference only.
+Primary request: ONE horizontal silver moon-phase ornamental clasp, symmetrical slender jewelry relief, seven small lunar phases connected by delicate engraved wire: tiny waning crescent, half moon, gibbous, central luminous-but-not-glowing full moon amethyst cabochon, gibbous, half moon, waxing crescent. A small diamond finial at each end. A cool violet moonstone centerpiece embraced by a small silver crescent underneath, integrated as the center. Thin, exquisite, readable at 110px width.
+Style: hand-painted fantasy graphic novel silver metal, cool tarnished silver with lavender reflection; no gold, no sci-fi hologram.
+Composition: single isolated ornament across the horizontal center, approximately 5:1 silhouette, generous empty transparent margin; visually simple and clearly separated lunar shapes; no frame or panel, no text or UI.
+Constraints: actual transparent alpha background everywhere outside metal and stones. No dark backing, no gradient background, absolutely no glow aura or shadow haze, no smoke, no stars scattered in background, no drop shadow. Crisp painted edges.

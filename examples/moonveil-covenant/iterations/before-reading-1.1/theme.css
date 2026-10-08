@@ -1,0 +1,192 @@
+/* MOONVEIL COVENANT / 月誓 · 龙廷 1.0
+   Original SillyTavern 1.19 theme, authored from a blank project.
+   Illustrated silver dragon + illuminated manuscript + carved court regalia.
+   The build embeds the artwork and original SVG ornaments; no external assets. */
+:root {
+  --cc-accent: #9ccbc6; /* 色彩 / 月石与龙息 */
+  --cc-silver: #d4dfd3; /* 色彩 / 古银铭文 */
+  --cc-violet: #b5acd0; /* 色彩 / 紫灰缎带 */
+  --cc-ink: #0a111b; /* 色彩 / 夜幕 */
+  --cc-surface: #121c24f5; /* 色彩 / 典籍封皮 */
+  --cc-message: #d9dfdc; /* 色彩 / 霜色羊皮纸 */
+  --cc-paper-ink: #293a40; /* 色彩 / 纸上墨迹 */
+  --cc-user: #303043; /* 色彩 / 我方誓约缎带 */
+  --cc-text: #e2e7da; /* 色彩 / 深色区域正文 */
+  --cc-muted: #a8b9b6; /* 色彩 / 次要铭文 */
+  --cc-line: #a6b9b66b; /* 色彩 / 雕刻边线 */
+  --cc-art-opacity: .96; /* 立绘 / 不透明度 */
+  --cc-ornament-opacity: .9; /* 装饰 / 雕花强度 */
+  --cc-stage-left: 44vw; /* 桌面布局 / 典籍左侧位置 */
+  --cc-stage-right: 34px; /* 桌面布局 / 右侧留白 */
+  --cc-stage-top: 30px; /* 桌面布局 / 顶部留白 */
+  --cc-stage-bottom: 26px; /* 桌面布局 / 底部留白 */
+  --cc-chat-padding: 26px; /* 阅读 / 消息列表留白 */
+  --cc-message-gap: 28px; /* 阅读 / 消息间距 */
+  --cc-font-size: 16px; /* 阅读 / 正文字号 */
+  --cc-line-height: 1.85; /* 阅读 / 正文行高 */
+  --cc-message-padding: 22px; /* 阅读 / 纸页内边距 */
+  --cc-avatar-size: 46px; /* 消息 / 印玺头像大小 */
+  --cc-avatar-gap: 15px; /* 消息 / 印玺与正文距离 */
+  --cc-user-inset: 28px; /* 消息 / 缎带缩进 */
+  --cc-title-size: 66px; /* 装饰 / 王庭标题字号 */
+  --cc-header-label: "银龙王庭 · 誓约之书"; /* 装饰 / 典籍题名 */
+  --cc-oath-label: "以真名为印，以月光为证"; /* 装饰 / 输入区誓言 */
+  --cc-nav-size: 54px; /* 工具栏 / 王庭权杖宽度 */
+  --SmartThemeBodyColor: var(--cc-text);
+  --SmartThemeEmColor: #b2c4c0;
+  --SmartThemeQuoteColor: var(--cc-silver);
+  --SmartThemeUnderlineColor: var(--cc-violet);
+  --SmartThemeBorderColor: var(--cc-line);
+  --SmartThemeBlurTintColor: #162128;
+  --SmartThemeChatTintColor: #162128;
+  --SmartThemeUserMesBlurTintColor: var(--cc-user);
+  --SmartThemeBotMesBlurTintColor: var(--cc-message);
+}
+html { background: var(--cc-ink); color-scheme: dark; }
+body { background: var(--cc-ink); color: var(--cc-text); font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif; text-shadow: none; }
+body::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; background-image:linear-gradient(0deg,#080f1a 0%,#080f1a6b 20%,transparent 56%),url("__DRAGON_ART__"); background-position:left center; background-size:auto 100%; background-repeat:no-repeat; opacity:var(--cc-art-opacity); }
+body::after { content:"月 誓\a 龙 廷"; white-space:pre; position:fixed; left:112px; bottom:72px; z-index:1; pointer-events:none; color:#e3eadc; font:600 var(--cc-title-size)/1.12 "Palatino Linotype","SimSun",serif; letter-spacing:.1em; text-shadow:2px 3px 0 #172e37,0 5px 30px #06111b; padding:18px 22px 18px 32px; border-left:3px double #b9d1c4; background:linear-gradient(90deg,#0a172768,transparent); }
+#bg1,#bg2 { opacity:0; pointer-events:none; }
+#top-bar { background:transparent; backdrop-filter:none; box-shadow:none; pointer-events:none; }
+
+/* I · A carved silver tool scepter. No transformed/filtered ancestor for native drawers. */
+#top-settings-holder,.demo-top { position:fixed; z-index:4000; top:114px; left:26px; right:auto; bottom:auto; width:var(--cc-nav-size); height:auto; margin:0; padding:20px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:stretch; gap:8px; border:3px double #a3b4ac; border-radius:30px 30px 22px 22px; background:linear-gradient(90deg,#14232c,#2c3b3d 45%,#15242b); box-shadow:inset 0 0 0 3px #0b1921,inset 0 0 0 4px #647d7c,6px 8px 15px #0005; backdrop-filter:none; }
+#top-settings-holder::before,.demo-top::before { content:"♜"; display:grid; place-items:center; height:40px; color:var(--cc-silver); border-bottom:3px double #78918d; margin-bottom:6px; padding-bottom:12px; font:30px Georgia,serif; }
+#top-settings-holder::after,.demo-top::after { content:"MOONVEIL COVENANT  ·  银廷守誓者"; position:fixed; left:116px; bottom:45px; color:#c3d7ce; pointer-events:none; font:11px/1.5 "Palatino Linotype","SimSun",serif; letter-spacing:2px; white-space:nowrap; }
+#top-settings-holder>.drawer { width:100%; min-width:0; height:32px; flex:0 0 auto; }
+#top-settings-holder .drawer-icon { color:var(--cc-silver); font-size:19px; padding:6px; }
+#top-settings-holder .drawer-icon.closedIcon { opacity:.8; }
+#top-settings-holder .drawer-icon:is(.openIcon,:hover,:focus-visible) { color:#edfae3; opacity:1; text-shadow:0 0 8px #a6d4c64d; }
+.demo-top>:is(b,small) { display:none; }
+.demo-top>span,.demo-top>button { display:grid; place-items:center; min-height:32px; font-size:18px; color:var(--cc-silver); }
+
+/* II · An illuminated book, framed in dragon-bone silver. */
+#sheld { position:fixed; z-index:30; top:var(--cc-stage-top); left:var(--cc-stage-left); right:var(--cc-stage-right); bottom:var(--cc-stage-bottom); display:flex; flex-direction:column; width:auto; max-width:none; height:auto; max-height:none; min-width:0; min-height:0; margin:0; overflow:visible; border:4px double #829793; border-radius:42px 42px 6px 6px; background:var(--cc-surface); box-shadow:inset 0 0 0 5px #080f1755,0 25px 90px #0009; }
+#sheld::before { content:var(--cc-header-label); flex:0 0 100px; min-height:100px; box-sizing:border-box; padding:69px 18px 13px; text-align:center; color:var(--cc-silver); font:600 17px/1.4 "Palatino Linotype","SimSun",serif; letter-spacing:4px; background-image:url("__CREST_ART__"),linear-gradient(#24363a,#12202a); background-repeat:no-repeat; background-position:center -5px,center; background-size:230px 84px,100% 100%; border-radius:36px 36px 0 0; border-bottom:3px double #657f80; pointer-events:none; }
+#sheld::after { content:""; position:absolute; inset:-15px; border:55px solid transparent; border-image:url("__FRAME_ART__") 100 stretch; z-index:8; opacity:var(--cc-ornament-opacity); pointer-events:none; }
+#sheld>.chat-title { flex-shrink:0; padding:10px 24px; background:#0e1821; border-bottom:1px solid #748d8852; }
+.chat-title .monogram { background:#263b3e; color:#cadbc9; border:3px double #819b90; border-radius:50%; font-family:"Palatino Linotype",serif; }
+.chat-title b { color:var(--cc-silver); font-family:"SimSun",serif; }.chat-title small { color:var(--cc-muted); }
+#chat { flex:1 1 auto; min-height:0; max-height:none; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; padding:var(--cc-chat-padding); padding-bottom:10px; background:repeating-linear-gradient(90deg,#080e1400 0 7px,#74958b05 7px 8px),linear-gradient(90deg,#0a111a70,transparent 12%,transparent 88%,#0a111a70); backdrop-filter:none; text-shadow:none; scrollbar-width:thin; scrollbar-color:#8a9f8c66 transparent; scroll-padding:20px; }
+#chat .chapter { flex-shrink:0; padding:0 0 22px; gap:5px; }
+#chat .chapter b { font:24px/1.4 "Palatino Linotype","SimSun",serif; color:var(--cc-silver); letter-spacing:5px; }
+#chat .chapter span,#chat .chapter i { color:var(--cc-muted); }
+
+/* III · Frost parchment, a wax seal, and a folded velvet reply. */
+#chat .mes { position:relative; box-sizing:border-box; display:flex; flex:0 0 auto; flex-direction:row; align-items:flex-start; gap:var(--cc-avatar-gap); width:100%; padding:var(--cc-message-padding); padding-bottom:30px; margin:0 0 var(--cc-message-gap); border:1px solid #9aadae; border-left:5px double #82999e; border-radius:3px 18px 4px 22px; color:var(--cc-paper-ink); background-color:var(--cc-message); background-image:radial-gradient(ellipse at 0 0,#78909326,transparent 58%),repeating-linear-gradient(0deg,transparent 0 3px,#50636b08 3px 4px); box-shadow:3px 4px 0 #a6b7b733,6px 8px 0 #08131c88,inset 0 0 30px #60788520; text-shadow:none; }
+#chat .mes::before { content:"❧"; position:absolute; right:8px; top:3px; font:34px/1 Georgia,serif; color:#536d59; opacity:var(--cc-ornament-opacity); pointer-events:none; }
+#chat .mes::after { content:""; position:absolute; left:26%; right:26%; bottom:4px; height:23px; background:url("__FLOURISH_ART__") center/contain no-repeat; opacity:var(--cc-ornament-opacity); pointer-events:none; }
+#chat .mes[is_user="true"] { flex-direction:row-reverse; width:calc(100% - var(--cc-user-inset)); margin-left:auto; padding-top:19px; padding-bottom:21px; border:3px double #9d91b5; border-left:1px solid #6d6683; border-radius:20px 3px 24px 3px; background:linear-gradient(100deg,#24273740,transparent 70%),repeating-linear-gradient(45deg,transparent 0 3px,#b7a7c408 3px 4px),var(--cc-user); color:var(--cc-text); box-shadow:4px 5px 0 #101323,9px 10px 0 #060c1544,inset 0 0 15px #080e2122; }
+#chat .mes[is_user="true"]::before { content:""; left:-11px; right:auto; top:16px; width:12px; height:30px; background:linear-gradient(135deg,#9b8fae 0 50%,#3b334d 51%); border:1px solid #a69ab8; }
+#chat .mes[is_user="true"]::after { content:"✥"; background:none; left:auto; right:14px; bottom:-14px; height:27px; color:#c9bad8; font:26px Georgia,serif; }
+#chat .mes .mes_block { flex:1 1 0; min-width:0; width:auto; padding:0; }
+#chat .mesAvatarWrapper { flex:0 0 var(--cc-avatar-size); width:var(--cc-avatar-size); padding:0; }
+#chat .mes>.avatar { flex:0 0 var(--cc-avatar-size); }
+#chat .mes .avatar { box-sizing:border-box; width:var(--cc-avatar-size); height:var(--cc-avatar-size); max-width:none; padding:4px; border:3px double #738e86; border-radius:50%; background:radial-gradient(circle at 35% 20%,#526d63,#183c37); color:#dce7cd; box-shadow:0 0 0 2px #a1b5a5,2px 4px 0 #6578575c,inset 0 0 0 1px #d0dec07a; font:22px "SimSun",serif; }
+#chat .mes .avatar img { width:100%; height:100%; max-height:none; border-radius:50%; object-fit:cover; }
+#chat .mes[is_user="true"] .avatar { border-color:#b4a6c3; background:radial-gradient(circle at 35% 20%,#756a83,#433454); color:#e6ddec; box-shadow:0 0 0 2px #756788,2px 4px 0 #0c102a66; }
+#chat .mes .ch_name { display:flex; align-items:center; justify-content:space-between; gap:7px; margin:0 0 12px; padding:1px 18px 11px 0; border-bottom:3px double #61795b55; color:#365647; }
+#chat .mes .name_text { margin:0; color:#2c4c56; font:700 15px/1.45 "Palatino Linotype","SimSun",serif; letter-spacing:.04em; }
+#chat .mes .timestamp { color:#5c7060; font:10px/1.4 Georgia,serif; white-space:nowrap; margin-left:4px; }
+#chat .mes .mes_buttons { color:#4f6b58; font-size:12px; margin-left:auto; gap:7px; }
+#chat .mes .mes_buttons .mes_button { min-width:22px; min-height:22px; padding:3px; }
+#chat .mes .mes_buttons .mes_button:hover { background:#506a5520; color:#142e22; }
+#chat .mes[is_user="true"] .ch_name { border-bottom-color:#b2a0c54f; }
+#chat .mes[is_user="true"] :is(.name_text,.timestamp,.mes_buttons) { color:#d0c3df; }
+#chat .mes :is(.mesIDDisplay,.mes_timer,.tokenCounterDisplay) { font-size:9px; color:#789080; }
+#chat .mes .mes_text { padding:0; font-size:var(--cc-font-size); line-height:var(--cc-line-height); color:var(--cc-paper-ink); max-width:100%; overflow-wrap:anywhere; }
+#chat .mes[is_user="true"] .mes_text { color:var(--cc-text); }
+#chat .mes .mes_text p { margin:0 0 15px; }#chat .mes .mes_text p:last-child { margin-bottom:0; }
+#chat .mes[is_user="false"] .mes_text>p:first-child::first-letter { float:left; font:38px/1.12 "Palatino Linotype","SimSun",serif; padding:3px 7px 0 0; color:#375b66; }
+#chat .mes .mes_text :is(h1,h2,h3) { color:#315441; font-family:"Palatino Linotype","SimSun",serif; line-height:1.4; margin:18px 0 12px; }
+#chat .mes .mes_text strong { color:#2d505e; }#chat .mes .mes_text em { color:#546e77; }
+#chat .mes .mes_text :is(q,q em) { color:#375b66; }
+#chat .mes .mes_text a { color:#2b6665; text-decoration-color:#6c9a89; text-underline-offset:4px; }
+#chat .mes[is_user="true"] .mes_text :is(strong,em,q,h1,h2,h3) { color:#d5c4e1; }
+#chat .mes[is_user="true"] .mes_text a { color:#b6dcd0; }
+#chat .mes .swipeRightBlock { position:absolute; bottom:1px; right:9px; font-size:10px; }
+#chat .mes .swipe_left { left:1px; }#chat .mes :is(.swipe_left,.swipe_right) { color:#587459; }
+#chat .mes .edit_textarea,#chat .mes .reasoning_edit_textarea { width:100%; min-height:140px; background:#e0e6d6; color:#273b30; border:1px solid #698571; padding:12px; font-size:var(--cc-font-size); }
+
+/* IV · Quotations as oaths, annotated parchment, and a violet marginal commentary. */
+#chat .mes .mes_text blockquote { position:relative; margin:19px 0 6px; padding:15px 16px 15px 24px; border:0; border-left:4px double #607b65; border-radius:0 18px 0 18px; background:linear-gradient(100deg,#66856020,transparent); color:#3b5763; font-family:"Palatino Linotype","SimSun",serif; }
+#chat .mes .mes_text blockquote::before { content:"“"; position:absolute; left:6px; top:-15px; color:#769573; font:44px Georgia,serif; pointer-events:none; }
+#chat .mes[is_user="true"] .mes_text blockquote { color:#d1c4df; border-color:#a699ba; background:#c9b1e50b; }
+#chat .mes .mes_text pre { box-sizing:border-box; max-width:100%; margin:18px 0; padding:16px; overflow-x:auto; background:#263c37; color:#d6e5cb; border:4px double #849780; border-radius:3px; box-shadow:inset 0 0 16px #091e2366; }
+#chat .mes .mes_text pre code { background:transparent; color:inherit; font:12px/1.75 Consolas,monospace; white-space:pre; word-break:normal; overflow-wrap:normal; }
+#chat .mes .mes_text :not(pre)>code { background:#56794a17; border:1px solid #617f5552; color:#284c36; padding:2px 5px; border-radius:2px; }
+#chat .mes .mes_text table { width:100%; max-width:100%; table-layout:fixed; border-collapse:collapse; margin:18px 0; font-size:13px; }
+#chat .mes .mes_text :is(th,td) { padding:10px; border:1px solid #7387697a; text-align:left; overflow-wrap:anywhere; }
+#chat .mes .mes_text th { color:#294c38; background:#607f5522; font-family:"SimSun",serif; font-weight:700; }
+#chat .mes .mes_text tr:nth-child(even) td { background:#59744c0c; }
+#chat .mes .mes_reasoning_details { margin:0 0 19px; border:3px double #888294; border-radius:15px 2px 15px 2px; background:#303242; }
+#chat .mes .mes_reasoning_summary { padding:11px 13px; color:#d0c3de; font:13px/1.5 "SimSun",serif; cursor:pointer; }
+#chat .mes .mes_reasoning_details[open]>.mes_reasoning_summary { border-bottom:1px solid #a9a0bd4a; }
+#chat .mes .mes_reasoning { padding:13px 16px; color:#c3c5d1; font-size:13px; line-height:1.8; }
+#chat .mes .mes_text details:not(.mes_reasoning_details) { border:3px double #8ba081; padding:11px 13px; margin:14px 0; border-radius:12px 2px; }
+#chat .mes .mes_text summary { cursor:pointer; color:#456044; }
+#chat .mes .mes_text :is(img,video) { max-width:100%; height:auto; }
+
+/* V · A writing lectern. Native quick replies, send/stop visibility are untouched. */
+#form_sheld { flex:0 0 auto; width:100%; margin:0; }
+#send_form { box-sizing:border-box; flex:0 0 auto; width:100%; margin:0; padding:11px 20px 16px; display:flex; flex-wrap:wrap; gap:0; border:0; border-top:4px double #9db0a2; border-radius:0 0 4px 4px; background:linear-gradient(90deg,#162831,#2d3e3b 50%,#162831); backdrop-filter:none; box-shadow:inset 0 4px 0 #0e1a21; }
+#send_form::before { content:var(--cc-oath-label); flex:0 0 100%; display:block; padding:0 0 10px; color:#c6d8c1; text-align:center; font:12px/1.5 "Palatino Linotype","SimSun",serif; letter-spacing:3px; pointer-events:none; }
+#nonQRFormItems { align-items:flex-end; gap:8px; width:100%; min-width:0; }
+#send_textarea { box-sizing:border-box; flex:1 1 0; min-width:0; width:auto; min-height:50px; max-height:170px; height:auto; padding:11px 14px; background:linear-gradient(90deg,#b3c3a649,transparent 20%),#d8e0db; color:#2d4048; border:3px double #7b947e; border-radius:12px 3px 12px 3px; font:15px/1.7 "Segoe UI","Microsoft YaHei UI",sans-serif; resize:vertical; box-shadow:inset 0 1px 10px #48604030; }
+#send_textarea::placeholder { color:#607479; opacity:1; }
+#send_textarea:focus-visible { outline:2px solid #c0d4b3; outline-offset:2px; }
+#leftSendForm,#rightSendForm { flex:0 0 auto; gap:3px; }
+#leftSendForm>div,#rightSendForm>div:not(.mes_stop) { width:34px; min-height:44px; height:auto; color:#d8e4cc; }
+#send_but { color:#e4e8d5; background:radial-gradient(circle at 35% 20%,#769287,#36564d); border:3px double #c1d1b6; border-radius:50%; opacity:1; box-shadow:0 3px 0 #10272c; }
+#send_but:hover { background:#668376; }#send_form .mes_stop { color:#d1bedc; }
+#send_form>button { flex:0 0 40px; align-self:flex-end; min-height:48px; font-size:21px; color:#d4e1c9; }
+#send_form>button:last-child { margin-left:8px; min-height:42px; margin-bottom:4px; border:3px double #bdcdb2; border-radius:50%; background:radial-gradient(circle at 35% 20%,#708b7c,#37584b); color:#e5e9d8; }
+.demo-foot { flex:0 0 auto; text-align:center; color:#b2c4b2; background:#182c30; padding:4px; font:9px/1.5 "SimSun",serif; }
+
+/* VI · The codex and native drawers use the same carved material. */
+#top-settings-holder .drawer-content,#left-nav-panel,#right-nav-panel { box-sizing:border-box; position:fixed; left:100px; right:auto; top:24px; bottom:auto; width:min(420px,calc(100vw - 130px)); min-width:min(320px,calc(100vw - 130px)); max-height:calc(100dvh - 48px); margin:0; padding:22px; overflow-y:auto; border:5px double #9fb3a7; border-radius:28px 4px 20px 4px; background:repeating-linear-gradient(90deg,transparent 0 6px,#c9d6bc04 6px 7px),#19282bf7; color:var(--cc-text); box-shadow:inset 0 0 0 4px #152126,12px 18px 50px #0008; backdrop-filter:none; z-index:4100; }
+#top-settings-holder #right-nav-panel,#right-nav-panel { left:auto; right:30px; width:min(400px,calc(100vw - 130px)); }
+.drawer-content :is(h2,h3,h4),#left-nav-panel h2,#right-nav-panel h2 { color:var(--cc-silver); font-family:"Palatino Linotype","SimSun",serif; letter-spacing:2px; }
+.drawer-content :is(.inline-drawer-header,.standoutHeader) { padding:12px 8px; border-bottom:3px double #78917c; background:#bdd2ae09; color:#d6e5cc; }
+.drawer-content :is(input[type=text],input[type=number],input[type=search],input[type=url],input[type=password],select,textarea) { color:#dce5d8; background:#102529; border:1px solid #7d9c8a; border-radius:3px; }
+.drawer-content :is(input[type=range],input[type=checkbox]) { accent-color:#a8c4ab; }
+.drawer-content .menu_button,#right-nav-panel>button { border:3px double #7c9685; background:#425f4929; color:#d6e0cc; border-radius:4px 12px 4px 12px; }
+.drawer-content .menu_button:hover { background:#86ae7733; border-color:#c0d2af; }
+#right-nav-panel :is(.character_select,.group_select) { padding:8px; margin:7px 0; border:1px solid #8aa1814a; border-radius:14px 3px; background:#10222b66; }
+#right-nav-panel :is(.character_select,.group_select):hover { border-color:#b7c8a8; background:#bdd3ad15; }
+#right-nav-panel .character-swatch { background-image:url("__CREST_ART__"),radial-gradient(ellipse,#405850,#172830); background-size:95% auto,100%; background-position:center; background-repeat:no-repeat; border:4px double #9aae97; color:#d6e3c7; }
+.popup { border:4px double #90a891; background:#16282bf7; color:#e2e7d7; }
+:is(#sheld,#top-settings-holder,.drawer-content) :is(button,a,input,select,textarea,[tabindex]):focus-visible { outline:2px solid #c0d6ad; outline-offset:3px; }
+
+/* VII · A small screen keeps the same heraldry in a shallower book cover. */
+@media(min-width:1600px) { :root { --cc-stage-left:45vw; --cc-stage-right:50px; --cc-title-size:88px; --cc-chat-padding:34px; } }
+@media(max-width:1099px) and (min-width:901px) { :root { --cc-stage-left:35vw; --cc-stage-right:22px; --cc-title-size:47px; --cc-chat-padding:19px; --cc-avatar-size:38px; --cc-message-padding:17px; } body::after { left:99px; padding-left:17px; } #top-settings-holder::after,.demo-top::after { left:100px; font-size:8px; } }
+@media(max-width:900px) {
+ :root { --cc-stage-left:14px; --cc-stage-right:14px; --cc-stage-top:132px; --cc-stage-bottom:12px; --cc-chat-padding:15px; --cc-message-padding:15px; --cc-avatar-size:35px; --cc-avatar-gap:11px; --cc-user-inset:15px; --cc-title-size:28px; }
+ body::before { background-size:auto 540px; background-position:-30px -40px; opacity:calc(var(--cc-art-opacity) * .83); }
+ body::after { left:24px; top:67px; bottom:auto; font-size:var(--cc-title-size); line-height:1.06; border-left:0; padding:2px 8px; background:#101f282e; }
+ #top-settings-holder,.demo-top { flex-direction:row; align-items:center; top:8px; left:14px; right:14px; width:auto; height:auto; min-height:43px; padding:3px 8px; gap:2px; border:3px double #9bae9b; border-radius:18px 4px 18px 4px; }
+ #top-settings-holder>.drawer { width:auto; min-width:0; height:30px; flex:1 1 0; }
+ #top-settings-holder .drawer-icon { font-size:17px; padding:5px 3px; }
+ #top-settings-holder::before,.demo-top::before { display:none; }
+ #top-settings-holder::after,.demo-top::after { content:"银廷守誓者\a MOONVEIL COVENANT"; top:93px; bottom:auto; right:25px; left:auto; font-size:8px; line-height:1.6; letter-spacing:1px; white-space:pre; text-align:right; }
+ .demo-top>span,.demo-top>button { flex:1 1 0; min-width:0; }
+ #sheld { border-radius:27px 27px 3px 3px; border-width:3px; }
+ #sheld::before { min-height:75px; flex-basis:75px; padding:49px 8px 8px; background-size:175px 64px,100%; font-size:13px; letter-spacing:2px; border-radius:23px 23px 0 0; }
+ #sheld::after { inset:-9px; border-width:36px; }
+ #sheld>.chat-title { padding:8px 14px; }
+ #chat .mes .ch_name { flex-wrap:wrap; gap:4px; margin-bottom:10px; padding-right:12px; }
+ #chat .mes .name_text { font-size:14px; }#chat .mes .timestamp { font-size:9px; }
+ #chat .mes .mes_buttons { flex:0 0 auto; font-size:10px; gap:4px; margin-left:auto; }
+ #send_form { padding:8px 10px 10px; }
+ #send_form::before { font-size:10px; padding-bottom:7px; letter-spacing:2px; }
+ #send_textarea { min-height:45px; font-size:16px; padding:8px; }
+ #leftSendForm>div,#rightSendForm>div:not(.mes_stop) { width:28px; min-height:40px; }
+ #top-settings-holder .drawer-content,#top-settings-holder #right-nav-panel,#left-nav-panel,#right-nav-panel { left:14px; right:14px; top:62px; width:auto; min-width:0; max-height:calc(100dvh - 78px); padding:17px; }
+}
+@media(max-width:767px) { :root { --cc-font-size:15px; --cc-line-height:1.8; --cc-message-gap:22px; } #chat .mes .mes_text :is(th,td) { padding:7px; font-size:12px; } }
+@media(max-width:480px) { :root { --cc-chat-padding:11px; --cc-message-padding:13px; --cc-avatar-size:30px; --cc-avatar-gap:10px; --cc-user-inset:10px; --cc-stage-left:10px; --cc-stage-right:10px; --cc-stage-top:128px; } #chat .mes .mes_text pre { padding:11px; } #chat .mes[is_user="false"] .mes_text>p:first-child::first-letter { font-size:30px; padding-right:5px; } #chat .mes { padding-bottom:26px; } #chat .mes::before { font-size:27px; } }
+@media(max-height:600px) and (min-width:901px) { #top-settings-holder,.demo-top { top:22px; padding-top:9px; padding-bottom:9px; gap:2px; } #top-settings-holder::before,.demo-top::before { display:none; } body::after { bottom:48px; font-size:40px; } #top-settings-holder::after,.demo-top::after { bottom:23px; } }
+@media(prefers-reduced-motion:reduce) { #chat .mes,#top-settings-holder .drawer-icon { transition:none; } }
+
+#chat .mes[is_user=false] .mes_text>p:first-child { display:flow-root; }

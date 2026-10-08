@@ -1,0 +1,30 @@
+Source: Built-in image_gen.imagegen (内置 ImageGen). No CLI or API fallback.
+Reference: D:/RUA/sillytavern-plugins/tavern-theme-studio/examples/moonveil-covenant/concepts/reading-layout-2026-10-07/moonveil-reading-concept-02.png
+Initial generated original: C:/Users/gwynd/.codex/generated_images/01a116bc-c277-72c1-80b3-5a0c15ca43c9/exec-a6ea168c-65f6-4f73-b60d-e5b0d04b5a85.png
+Selected generated original: C:/Users/gwynd/.codex/generated_images/01a116bc-c277-72c1-80b3-5a0c15ca43c9/exec-4ccfb6ff-76c1-4332-8bd4-b3dc0acfa8f2.png
+transparent_background: true
+Actual dimensions: 2141 x 734 px
+Alpha > 0 bbox (left, top, right exclusive, bottom exclusive): (23, 21, 2118, 408)
+Alpha >= 32 bbox: (26, 57, 2115, 401)
+Alpha >= 128 bbox: (27, 57, 2114, 400)
+Suggested center arc anchor: x 50%; y approximately 36.5% of canvas height (268 / 734).
+Exact-alpha-zero pixels: 1511128 / 1571494.
+Review note: all background areas are real transparency. After one ImageGen edge-repair pass, a small number of saturated blue/magenta edge pixels remain near the center ornament; inspect at final rendered scale before deciding whether another iteration is needed.
+
+Exact initial prompt:
+Use case: background-extraction.
+Asset type: independent transparent PNG decorative silver lunar arc for a Gothic fantasy reading interface.
+Input image 1 is the exact style and shape reference. Focus only on its thin, very shallow silver arc across the top (approximately original reference x510–1270, y0–112). Recreate just that metal arc and the central crescent-and-violet-crystal ornament as a standalone cutout. Keep the design extremely faithful in silhouette, line weight, cold silver metal shading, small delicate joints and sparse violet color.
+Output: true alpha transparency. Requested canvas approximately 1400 x 480, around 3:1 landscape. Artwork is very shallow in the upper half of this transparent canvas, with comfortable transparent edge padding and an otherwise empty lower half.
+Composition: a slender double-strand cold-silver metal chain or fine curved metal cord stretches almost the full width. Both endpoints sit near the top edge, with about 30px padding; the line smoothly dips to its lowest point at the center, approximately 90px below the endpoints. Preserve a continuous elegant smooth symmetrical catenary arc, never a deep U. Tiny tasteful angular silver joints are integrated into the line. At the exact center attach a small upright silver crescent crest above the arc, and a very short delicate vertical hanging silver stem with one small faceted amethyst-purple diamond drop below the arc. The central crest and drop are small, refined, about the size of the reference. The entire center ornament is inside the canvas, away from all edges.
+Use high-quality 2D fantasy illustration / delicate engraved cold-silver metal detail from the reference; crisp and clean at small screen size. Slight purple reflected highlights only on metal and crystal.
+Critical removal: no circular toolbar medallions, no circular buttons, no icon disks, no face, no chat bubble, no image/book/gear symbols, no toolbar icons, no text or numbers. Keep only the simple continuous silver arc and its one central small crescent/crystal detail. Do NOT include any of the surrounding castle wallpaper, dragon, parchment, UI panels or borders.
+All space around and inside the arc must be fully transparent actual alpha, including the huge empty middle and lower canvas. No solid background, no checkerboard drawn into the image, no gray matte, no rectangular shadow, no glow fog. Fine isolated ornament only; the entire artwork remains within the canvas.
+
+Exact targeted repair prompt:
+Use case: precise-object-edit.
+Input image 1 is the edit target: a transparent silver lunar arc decoration.
+Make a strictly local quality repair. Preserve its exact overall silhouette, very shallow arc curvature, dimensions and all object positions, the silver crescent, center diamond pendant, the dark cool silver material, the empty transparent lower canvas and transparent background.
+Fix only the abnormal highly saturated blue and magenta pixel fringes / stray patches along the central ornament and the arc edges. Remove every detached colored speck and weird pixel halo. Edges must be clean, smooth neutral silver or natural muted violet where the actual amethyst crystal is. The crystal should retain its restrained natural violet surface, with no glow cloud, no neon edge noise, no colored matte. Fully transparent gaps must remain true alpha. Do not change the shape of the silver moon or add detail.
+This is an isolated production metal ornament cutout: true transparent alpha everywhere outside the solid silver and crystal subjects, including the crescent opening. No black background, no checkerboard pixels, no gray matte, no shadow backdrop. No text, no icons, no buttons.
+

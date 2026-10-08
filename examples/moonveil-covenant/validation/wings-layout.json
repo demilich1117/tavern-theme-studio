@@ -1,0 +1,352 @@
+[
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "overflow": false,
+    "panel": {
+      "bottom": 940,
+      "height": 767.203125,
+      "left": 228,
+      "right": 1236,
+      "top": 172.796875,
+      "width": 1008,
+      "x": 228,
+      "y": 172.796875
+    },
+    "rail": {
+      "ornament": "none",
+      "rect": {
+        "bottom": 569.796875,
+        "height": 397,
+        "left": 18,
+        "right": 72,
+        "top": 172.796875,
+        "width": 54,
+        "x": 18,
+        "y": 172.796875
+      }
+    },
+    "viewport": [
+      1440,
+      960
+    ],
+    "wing": {
+      "display": "block",
+      "pointerEvents": "none",
+      "right": "16px",
+      "width": "423px"
+    }
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "overflow": false,
+    "panel": {
+      "bottom": 940,
+      "height": 767.203125,
+      "left": 82,
+      "right": 1382,
+      "top": 172.796875,
+      "width": 1300,
+      "x": 82,
+      "y": 172.796875
+    },
+    "rail": {
+      "ornament": "none",
+      "rect": {
+        "bottom": 569.796875,
+        "height": 397,
+        "left": 18,
+        "right": 72,
+        "top": 172.796875,
+        "width": 54,
+        "x": 18,
+        "y": 172.796875
+      }
+    },
+    "viewport": [
+      1440,
+      960
+    ],
+    "wing": {
+      "display": "block",
+      "pointerEvents": "none",
+      "right": "16px",
+      "width": "277px"
+    }
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "overflow": false,
+    "panel": {
+      "bottom": 832,
+      "height": 724,
+      "left": 10,
+      "right": 380,
+      "top": 108,
+      "width": 370,
+      "x": 10,
+      "y": 108
+    },
+    "rail": {
+      "ornament": "none",
+      "rect": {
+        "bottom": 52,
+        "height": 44,
+        "left": 12,
+        "right": 378,
+        "top": 8,
+        "width": 366,
+        "x": 12,
+        "y": 8
+      }
+    },
+    "viewport": [
+      390,
+      844
+    ],
+    "wing": {
+      "display": "none",
+      "pointerEvents": "none",
+      "right": "16px",
+      "width": "120px"
+    }
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "overflow": false,
+    "panel": {
+      "bottom": 888,
+      "height": 762,
+      "left": 36,
+      "right": 864,
+      "top": 126,
+      "width": 828,
+      "x": 36,
+      "y": 126
+    },
+    "rail": {
+      "ornament": "none",
+      "rect": {
+        "bottom": 52,
+        "height": 44,
+        "left": 12,
+        "right": 888,
+        "top": 8,
+        "width": 876,
+        "x": 12,
+        "y": 8
+      }
+    },
+    "viewport": [
+      900,
+      900
+    ],
+    "wing": {
+      "display": "none",
+      "pointerEvents": "none",
+      "right": "16px",
+      "width": "187px"
+    }
+  },
+  {
+    "buttons": [
+      {
+        "clickable": true,
+        "label": "对话"
+      },
+      {
+        "clickable": true,
+        "label": "角色"
+      },
+      {
+        "clickable": true,
+        "label": "长篇阅读"
+      },
+      {
+        "clickable": true,
+        "label": "代码与表格"
+      },
+      {
+        "clickable": true,
+        "label": "思考区"
+      },
+      {
+        "clickable": true,
+        "label": "多行输入"
+      },
+      {
+        "clickable": true,
+        "label": "阅读设置"
+      },
+      {
+        "clickable": true,
+        "label": "重置演示"
+      }
+    ],
+    "overflow": false,
+    "panel": {
+      "bottom": 1132,
+      "height": 948,
+      "left": 319.1875,
+      "right": 1752.78125,
+      "top": 184,
+      "width": 1433.59375,
+      "x": 319.1875,
+      "y": 184
+    },
+    "rail": {
+      "ornament": "none",
+      "rect": {
+        "bottom": 581,
+        "height": 397,
+        "left": 18,
+        "right": 72,
+        "top": 184,
+        "width": 54,
+        "x": 18,
+        "y": 184
+      }
+    },
+    "viewport": [
+      2048,
+      1152
+    ],
+    "wing": {
+      "display": "block",
+      "pointerEvents": "none",
+      "right": "16px",
+      "width": "514.188px"
+    }
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "name": "codex-message-frame",
+    "original": {
+      "width": 1254,
+      "height": 1254,
+      "hasAlpha": true,
+      "transparentFraction": 0.847017772792137,
+      "opaqueFraction": 0.0005793263788730925,
+      "centerMaxAlpha": 1
+    },
+    "production": {
+      "format": "webp",
+      "width": 640,
+      "height": 640,
+      "channels": 4,
+      "premultiplied": true,
+      "hasAlpha": true,
+      "size": 53252
+    }
+  },
+  {
+    "name": "lunar-wax-seal",
+    "original": {
+      "width": 1024,
+      "height": 1536,
+      "hasAlpha": true,
+      "transparentFraction": 0.6511980692545573,
+      "opaqueFraction": 0,
+      "centerMaxAlpha": 254
+    },
+    "production": {
+      "format": "webp",
+      "width": 144,
+      "height": 219,
+      "channels": 4,
+      "premultiplied": true,
+      "trimOffsetLeft": -142,
+      "trimOffsetTop": -208,
+      "hasAlpha": true,
+      "size": 14070
+    }
+  },
+  {
+    "name": "moon-phase-clasp",
+    "original": {
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "transparentFraction": 0.8942383342505869,
+      "opaqueFraction": 0.00008325188206449415,
+      "centerMaxAlpha": 255
+    },
+    "production": {
+      "format": "webp",
+      "width": 420,
+      "height": 70,
+      "channels": 4,
+      "premultiplied": true,
+      "trimOffsetLeft": -51,
+      "trimOffsetTop": -320,
+      "hasAlpha": true,
+      "size": 13230
+    }
+  }
+]

@@ -1,0 +1,22 @@
+import {readFile,readdir} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import {fileURLToPath} from 'node:url';
+const root=new URL('../dist/moonveil-covenant-2.2.4/',import.meta.url);
+const files=['moonveil.theme.json','moonveil.studio.json','theme.css','preview.html'];
+const hash=b=>createHash('sha256').update(b).digest('hex');
+const before=await Promise.all(files.map(async f=>hash(await readFile(new URL(f,root)))));
+execFileSync(process.execPath,[fileURLToPath(new URL('source/build.mjs',root))],{stdio:'inherit',windowsHide:true});
+const after=await Promise.all(files.map(async f=>hash(await readFile(new URL(f,root)))));
+assert.deepEqual(before,after,'Portable builder diverges from project builder');
+const theme=JSON.parse(await readFile(new URL(files[0],root),'utf8'));
+assert.equal((theme.custom_css.match(/data:image\/webp;base64,/g)||[]).length,12);
+assert(!/__\w+__|127\.0\.0\.1|#tts-dock/.test(theme.custom_css));
+const manifest=(await readFile(new URL('SHA256SUMS.txt',root),'utf8')).trim().split('\n');
+for(const line of manifest){const [expected,file]=line.split('  ');assert.equal(hash(await readFile(new URL(file,root))),expected,file);}
+const rootFiles=await readdir(root);assert(!rootFiles.includes('.local'));
+const companion=JSON.parse(await readFile(new URL('companion/manifest.json',root),'utf8'));
+assert.equal(companion.version,'1.0.0');
+execFileSync(process.execPath,['--check',fileURLToPath(new URL('companion/'+companion.js,root))],{stdio:'inherit',windowsHide:true});
+console.log(JSON.stringify({portableRoundTrip:true,embeddedArtwork:12,companionVersion:companion.version,verifiedFiles:manifest.length,themeBytes:(await readFile(new URL(files[0],root))).length,cssSha256:after[2]}));

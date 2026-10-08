@@ -1,0 +1,5 @@
+Use case: precise-object-edit.
+Edit only a VERY SMALL LOCAL DEFECT in this transparent dragon illustration.
+The right-side paw gripping the vertical panel edge has ONE EXTRA CLAW. Remove the extra lowest little claw/talon at the very bottom of that paw, merging its tiny base naturally into the side of the hand. The finished right paw must have exactly FOUR distinct visible claw tips total, matching the four-clawed left forepaw. Keep the other four talons and their inward, left-facing curling grip. Do not add a new thumb, finger, claw, spike, or horn to the wrist.
+Change NOTHING ELSE: same prone shoulder/chest position, same head, face, eye, both wing shapes, color and painted detail, same left hand, exact canvas dimensions and whole silhouette placement. Preserve the horizontal and vertical rim-contact cutout geometry exactly. This is a tiny anatomy cleanup, NOT a restyling, pose redesign, or whole-body repaint. Preserve the rest of the image as closely as possible.
+Maintain real transparent alpha everywhere it already exists; no background, UI, frame, guide lines or text.

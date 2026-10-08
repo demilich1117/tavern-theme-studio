@@ -1,0 +1,70 @@
+{
+  "visibilityChecks": [
+    {
+      "display": "none",
+      "selector": ".avatar"
+    },
+    {
+      "display": "none",
+      "selector": ".mesIDDisplay"
+    },
+    {
+      "display": "none",
+      "selector": ".timestamp"
+    }
+  ],
+  "sceneChecks": [
+    {
+      "body": 393,
+      "chatScrollWidth": 353,
+      "chatWidth": 353,
+      "count": 3,
+      "kind": "rich",
+      "textWidths": [
+        {
+          "client": 311,
+          "scroll": 311
+        },
+        {
+          "client": 279,
+          "scroll": 279
+        },
+        {
+          "client": 311,
+          "scroll": 311
+        }
+      ]
+    },
+    {
+      "body": 393,
+      "chatScrollWidth": 353,
+      "chatWidth": 353,
+      "count": 3,
+      "kind": "long",
+      "textWidths": [
+        {
+          "client": 311,
+          "scroll": 311
+        },
+        {
+          "client": 279,
+          "scroll": 279
+        },
+        {
+          "client": 311,
+          "scroll": 311
+        }
+      ]
+    },
+    {
+      "body": 393,
+      "chatScrollWidth": 369,
+      "chatWidth": 369,
+      "count": 0,
+      "kind": "empty",
+      "textWidths": []
+    }
+  ],
+  "consoleErrors": [],
+  "nativeVersion": "1.19.0 / 06bde939f"
+}
