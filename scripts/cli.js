@@ -1,4 +1,6 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, realpath } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { referenceIndex } from '../export-service.js';
 import path from 'node:path';
 import { TARGETS, FIELDS } from '../shared/core.js';
 import { formatAgentHandoff } from '../shared/handoff.js';
@@ -24,6 +26,47 @@ try {
   if (commandName === 'ticket-copy') {
     const ticket = await request(`/api/tickets/${encodeURIComponent(args[0] || '')}`), context = await request('/api/handoff-context');
     console.log(formatAgentHandoff([ticket], context)); process.exit(0);
+  }
+  if (['hub-status', 'hub-refresh', 'hub-verify', 'runner-status', 'runner-config', 'runner-start', 'runner-cancel', 'runner-retry', 'export-audit', 'asset-references'].includes(commandName)) {
+    let result;
+    if (commandName === 'hub-status') result = await request('/api/hub');
+    if (commandName === 'hub-refresh') result = await request('/api/hub', { action: 'refresh', source: args[0] });
+    if (commandName === 'hub-verify') result = await request('/api/hub', { action: 'verify', id: args[0] });
+    if (commandName === 'runner-status') result = await request('/api/runner');
+    if (commandName === 'runner-config') result = await request('/api/runner', { action: 'configure', version: (await request('/api/runner')).version, config: await json(args[0]) });
+    if (commandName === 'runner-start') result = await request('/api/runner', { action: 'start', ids: args });
+    if (['runner-cancel', 'runner-retry'].includes(commandName)) result = await request('/api/runner', { action: commandName.split('-')[1], id: args[0] });
+    if (commandName === 'export-audit') result = await request('/api/export/audit');
+    if (commandName === 'asset-references') result = await request('/api/assets/references');
+    console.log(JSON.stringify(result, null, 2)); process.exit(0);
+  }
+  if (commandName === 'export-offline' || commandName === 'export-external') {
+    const result = await request('/api/export?mode=' + commandName.split('-')[1]);
+    await writeFile(args[0], JSON.stringify(result.theme, null, 2)); console.log(JSON.stringify(result.report, null, 2)); process.exit(0);
+  }
+  if (commandName === 'backup-files') {
+    const manifest = await request('/api/backup/manifest'), directory = path.resolve(args[0]);
+    await mkdir(directory, { recursive: false }); await mkdir(path.join(directory, 'assets'));
+    for (const entry of manifest.assets) {
+      const response = await fetch(address + '/assets/' + entry.id); if (!response.ok) throw new Error('备份素材读取失败：' + entry.id);
+      const bytes = Buffer.from(await response.arrayBuffer()); if (bytes.length !== entry.bytes || createHash('sha256').update(bytes).digest('hex') !== entry.sha256) throw new Error('备份素材校验失败');
+      await writeFile(path.join(directory, entry.path), bytes, { flag: 'wx' });
+    }
+    await writeFile(path.join(directory, 'manifest.json'), JSON.stringify(manifest, null, 2), { flag: 'wx' }); console.log('分文件备份完成：' + directory); process.exit(0);
+  }
+  if (commandName === 'restore-files') {
+    const directory = await realpath(path.resolve(args[0])), manifest = await json(path.join(directory, 'manifest.json'));
+    if (manifest.format !== 'tavern-theme-studio-files' || manifest.version !== 1 || !Array.isArray(manifest.assets)) throw new Error('不支持的备份清单');
+    const ids = new Set(manifest.assets.map(a => a.id));
+    if (ids.size !== manifest.assets.length || referenceIndex(manifest.project).filter(r => r.reference.startsWith('tts-asset://')).some(r => !ids.has(r.reference.slice(12)))) throw new Error('备份清单有重复条目或缺少工程引用的素材。');
+    // Validate all bytes before uploading anything. Project changes only after all uploads succeed.
+    for (const entry of manifest.assets) {
+      if (!/^[a-f0-9]{64}\.(png|jpg|webp|gif)$/.test(entry.id) || entry.path !== `assets/${entry.id}`) throw new Error('备份素材路径无效');
+      if (!(await realpath(path.join(directory, entry.path))).startsWith(directory + path.sep)) throw new Error('备份素材链接越出备份目录');
+      const bytes = await readFile(path.join(directory, entry.path)); if (bytes.length !== entry.bytes || createHash('sha256').update(bytes).digest('hex') !== entry.sha256 || !entry.id.startsWith(entry.sha256 + '.')) throw new Error('备份素材校验失败：' + entry.id);
+    }
+    for (const entry of manifest.assets) await request('/api/assets?name=' + entry.id, await readFile(path.join(directory, entry.path)), true);
+    await request('/api/commands', { command: { type: 'restore-files', project: manifest.project } }); console.log('分文件工程已恢复，可撤销；源码自动同步暂停，核对后明确恢复。'); process.exit(0);
   }
   if (commandName.startsWith('build-')) {
     const info = await request('/api/build'); let result;

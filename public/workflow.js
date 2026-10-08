@@ -3,17 +3,23 @@ import { scanVariables } from '/shared/variables.js';
 import { TICKET_STATES } from '/shared/tickets.js';
 import { resolveAssetUrls, cssImage } from '/shared/assets.js';
 import { formatAgentHandoff } from '/shared/handoff.js';
+import { attachHub } from '/hub.js';
+import { attachRunner } from '/runner.js';
+import { createImageVariant } from '/asset-optimize.js';
+import { locationStatus } from '/shared/ticket-location.js';
 
 const $ = s => document.querySelector(s);
 const node = (tag, text, cls) => { const el = document.createElement(tag); if (text !== undefined) el.textContent = text; if (cls) el.className = cls; return el; };
 const size = bytes => bytes >= 1048576 ? `${(bytes / 1048576).toFixed(2)} MiB` : `${(bytes / 1024).toFixed(1)} KiB`;
 export function attachWorkflow({ getState, getToken, getScope, command, send, toast, isReady, stopPicking, download }) {
-  let tickets = [], assets = [], draft, marking = false, busy = false, lastProjectId;
+  let tickets = [], assets = [], variants = [], draft, marking = false, busy = false, lastProjectId;
   const layerTargetLabel = node('label', '选择目标图层（也可使用下方图片变量）', 'panel-hint'), layerTarget = node('select');
   layerTarget.id = 'asset-layer'; layerTarget.setAttribute('aria-label', '选择素材替换图层'); layerTargetLabel.append(layerTarget); $('#assets-dialog .dialog-body').prepend(layerTargetLabel);
   layerTarget.addEventListener('change', () => { if (layerTarget.value) $('#asset-variable').value = ''; });
   $('#asset-variable').addEventListener('change', () => { if ($('#asset-variable').value) layerTarget.value = ''; });
   const selectedTickets = new Set();
+  const locationTarget = node('select'), locationScope = node('select');
+  for (const [input, text] of [[locationTarget, '小票关联目标'], [locationScope, '小票关联断点']]) { const label = node('label', text); input.setAttribute('aria-label', text); label.append(input); $('#annotation-comment').before(label); }
   async function copyClipboard(text, message) {
     try { await navigator.clipboard.writeText(text); toast(message); return true; }
     catch {
@@ -44,8 +50,13 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
     message.textContent = error.message; message.scrollIntoView({ block: 'nearest' });
   }
   const run = action => async event => { event?.preventDefault(); document.querySelectorAll('.workflow-error').forEach(el => el.remove()); try { await action(event); } catch (e) { reportError(e); } };
+  attachHub({ api, command, getState, reportError, layerTarget, download });
+  attachRunner({ api, getIds: () => [...selectedTickets], reportError });
+  const assetScope = node('select'); assetScope.setAttribute('aria-label', '素材范围');
+  assetScope.add(new Option('全部本地素材', 'local')); assetScope.add(new Option('当前工程引用', 'project')); assetScope.add(new Option('已归档（可恢复）', 'archived'));
+  $('#assets-list').before(assetScope); assetScope.addEventListener('change', renderAssets);
   const relevant = () => tickets.filter(t => t.basis.projectId === getState().project.projectId);
-  function sendPins() { if (isReady()) send('annotations', { tickets: relevant().map(({ id, number, state, anchor }) => ({ id, number, state, anchor })) }); }
+  function sendPins() { if (isReady()) send('annotations', { tickets: relevant().filter(t => t.locationStatus?.valid !== false).map(({ id, number, state, anchor }) => ({ id, number, state, anchor })) }); }
   function mark(value) {
     marking = value; $('#annotate-button').setAttribute('aria-pressed', String(value)); $('#annotate-button').classList.toggle('active', value);
     $('#annotate-button').textContent = value ? '点击画面 · Esc 取消' : '＋ 标点评论';
@@ -71,11 +82,16 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
       const head = node('div', undefined, 'ticket-heading'); head.append(node('b', `#${ticket.number}`), node('span', TICKET_STATES[ticket.state], `ticket-state ${ticket.state}`));
       const selectLabel = node('label', undefined, 'ticket-select'), select = node('input'); select.type = 'checkbox'; select.checked = selectedTickets.has(ticket.id); select.setAttribute('aria-label', `选择小票 #${ticket.number}`);
       select.addEventListener('change', () => { if (select.checked) selectedTickets.add(ticket.id); else selectedTickets.delete(ticket.id); updateSelection(); }); selectLabel.append(select, node('span', '选择')); head.append(selectLabel);
-      const meta = node('small', `${describe(ticket.anchor)} · ${ticket.scope === 'mobile' ? '仅手机' : '所有尺寸'} · ${ticket.basis.name}`, 'ticket-meta');
+      const meta = node('small', `${describe(ticket.anchor)} · ${ticket.location?.condition || (ticket.scope === 'mobile' ? '仅手机' : '所有尺寸')} · ${ticket.basis.name}`, 'ticket-meta');
       const comment = node('p', ticket.comment, 'ticket-comment');
       const actions = node('div', undefined, 'ticket-actions');
       const locate = node('button', '定位标点'); locate.disabled = !isReady() || ticket.basis.projectId !== getState().project.projectId;
-      locate.addEventListener('click', () => { $('#tickets-dialog').close(); send('annotation-focus', { anchor: ticket.anchor }); });
+      if (ticket.locationStatus?.valid === false) locate.disabled = true;
+      locate.addEventListener('click', () => {
+        $('#tickets-dialog').close(); const s = getState();
+        if (ticket.location?.kind === 'layer') send('decoration-edit', { id: ticket.location.id, scope: ticket.location.scope, basis: { projectId: s.projectId, sessionId: s.sessionId, fingerprint: s.fingerprint, revision: s.revision } });
+        else send('annotation-focus', { anchor: ticket.location?.kind === 'container' ? { ...ticket.anchor, target: ticket.location.id, occurrence: 0, messageIndex: undefined, point: { x: .5, y: .5 } } : ticket.anchor });
+      });
       const copy = node('button', '复制 JSON'); copy.addEventListener('click', run(async () => { await copyClipboard(JSON.stringify(await api(`/api/tickets/${ticket.id}`), null, 2), '纯 JSON 已复制。'); }));
       const agent = node('button', '复制给 Agent'); agent.addEventListener('click', run(() => copyAgent([ticket.id])));
       actions.append(locate, agent, copy);
@@ -86,6 +102,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
         const reopen = node('button', '重新待办'); reopen.addEventListener('click', run(async () => { await api(`/api/tickets/${ticket.id}`, { action: 'reopen', version: ticket.version }); await loadTickets(); })); actions.append(reopen);
       }
       row.append(head, comment, meta);
+      if (ticket.location) row.append(node('p', `${ticket.location.kind} · ${ticket.location.name} · ${ticket.location.condition || '所有尺寸'} · ${ticket.locationStatus?.reason || '请核对快照'}`, ticket.locationStatus?.valid === false ? 'workflow-error' : 'ticket-meta'));
       if (ticket.basis.projectId !== getState().project.projectId) row.append(node('p', '工程身份不同或旧票归属待核实；请对照快照重新定位。', 'workflow-error'));
       if (ticket.owner) row.append(node('small', `处理者：${ticket.owner}`, 'ticket-meta'));
       if (ticket.result) {
@@ -103,7 +120,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
     }
     updateSelection();
   }
-  async function loadAssets() { assets = await api('/api/assets'); renderAssets(); }
+  async function loadAssets() { [assets, variants] = await Promise.all([api('/api/assets'), api('/api/assets/variants')]); renderAssets(); }
   function renderAssetVariables() {
     const previousLayer = layerTarget.value; layerTarget.replaceChildren(new Option('选择图层', ''));
     for (const layer of getState().project.decorations) { const option = new Option(layer.name + (layer.locked ? ' · 已锁定' : ''), layer.id); option.disabled = layer.locked; layerTarget.add(option); }
@@ -122,12 +139,19 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
     renderAssetVariables(); const list = $('#assets-list'); list.replaceChildren();
     if (!assets.length) { list.append(node('p', '还没有素材。上传图片、添加外链，或提取主题中已有的装饰。', 'empty-state')); return; }
     for (const asset of assets.toReversed()) {
+      if ((assetScope.value === 'archived') !== (asset.archived === true)) continue;
+      if (variants.some(v => v.kind === 'thumbnail' && v.variantId === asset.id && v.originalId !== asset.id)) continue;
+      if (assetScope.value === 'project' && !JSON.stringify(getState().project).includes(asset.reference)) continue;
       const row = node('article', undefined, 'asset-row'), image = node('img'); image.alt = asset.name; image.loading = 'lazy'; image.referrerPolicy = 'no-referrer';
-      image.src = resolveAssetUrls(asset.reference, location.origin);
+      const thumbnail = variants.find(v => v.originalId === asset.id && v.kind === 'thumbnail');
+      if (thumbnail) image.src = resolveAssetUrls(thumbnail.reference, location.origin);
+      image.alt = asset.name + ' · 点击预览原图'; image.tabIndex = 0;
+      const showOriginal = () => { image.src = resolveAssetUrls(asset.reference, location.origin); };
+      image.addEventListener('click', showOriginal); image.addEventListener('keydown', e => { if (e.key === 'Enter') showOriginal(); });
       const usedBy = scanVariables(getState().project.baseTheme.custom_css || '').filter(v => v.value.includes(asset.reference)).map(v => v.name);
       if (asset.name === '导入的装饰' && usedBy.length) image.alt = usedBy.join(' · ');
       const info = node('div', undefined, 'asset-info'), caption = node('small', asset.kind === 'local' ? `${size(asset.size)} · 本地素材` : '外链 · 导出保留 URL');
-      image.addEventListener('load', () => { caption.textContent += ` · ${image.naturalWidth} × ${image.naturalHeight}`; }, { once: true });
+      image.addEventListener('load', () => { caption.textContent += ` · 预览 ${image.naturalWidth} × ${image.naturalHeight}`; }, { once: true });
       image.addEventListener('error', () => { caption.textContent = '图片暂时无法加载，请检查直链或网络'; image.classList.add('asset-broken'); }, { once: true });
       info.append(node('b', image.alt), caption);
       const actions = node('div', undefined, 'asset-actions');
@@ -138,6 +162,12 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
       }));
       const copy = node('button', '复制 CSS'); copy.addEventListener('click', run(async () => { await copyClipboard(cssImage(asset.reference), '已复制，可粘贴到主题变量或高级 CSS。导出时会处理本地引用。'); }));
       actions.append(replace, copy); row.append(image, info, actions); list.append(row);
+      const archive = node('button', asset.archived ? '恢复到素材库' : '归档未引用素材'); archive.addEventListener('click', run(async () => { await api('/api/assets/archive', { ids: [asset.id], archived: !asset.archived }); await loadAssets(); })); actions.append(archive);
+      if (asset.kind === 'local') {
+        const thumb = node('button', '生成缩略图'); thumb.addEventListener('click', run(async () => { await createImageVariant(asset, { api }); await loadAssets(); }));
+        const width = node('input'); width.type = 'number'; width.min = '16'; width.max = '8192'; width.value = '800'; width.setAttribute('aria-label', asset.name + ' 优化宽度 px');
+        const optimize = node('button', '等比 WebP 变体'); optimize.addEventListener('click', run(async () => { const saved = await createImageVariant(asset, { api, width: Number(width.value), kind: 'optimized' }); toast(`变体 ${size(saved.size)}；原图保留。预览透明边缘后再选择替换。`); await loadAssets(); })); actions.append(thumb, width, optimize);
+      }
     }
   }
   $('#annotate-button').addEventListener('click', () => {
@@ -148,7 +178,8 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
     if (!draft || busy) return;
     busy = true; const button = $('#annotation-form button[type=submit]'); button.disabled = true;
     try {
-      await api('/api/tickets', { ...draft, comment: $('#annotation-comment').value });
+      const [kind, id] = locationTarget.value.split(':');
+      await api('/api/tickets', { ...draft, location: { kind, id, scope: locationScope.value }, comment: $('#annotation-comment').value });
       draft = null; $('#annotation-dialog').close(); await loadTickets(); $('#tickets-dialog').showModal(); toast('小票已进入本机待办队列。');
     } finally { busy = false; button.disabled = false; }
   }));
@@ -177,13 +208,17 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
   $('#asset-link-form').addEventListener('submit', run(async () => { await api('/api/assets/link', { url: $('#asset-url').value }); $('#asset-url').value = ''; await loadAssets(); toast('外链已添加，选择图片变量后可替换。'); }));
   loadTickets().catch(e => toast(e.message, true));
   return {
-    render() { $('#ticket-count').textContent = relevant().filter(t => t.state !== 'done').length; if (lastProjectId !== getState().project.projectId) { lastProjectId = getState().project.projectId; sendPins(); } if ($('#assets-dialog').open) renderAssetVariables(); },
+    render() { tickets = tickets.map(t => ({ ...t, locationStatus: locationStatus(t, getState().project) })); $('#ticket-count').textContent = relevant().filter(t => t.state !== 'done').length; if (lastProjectId !== getState().project.projectId) lastProjectId = getState().project.projectId; sendPins(); if ($('#tickets-dialog').open) renderTickets(); if ($('#assets-dialog').open) renderAssetVariables(); },
     ready() { sendPins(); },
     events(events) { events.addEventListener('tickets', () => loadTickets().catch(e => toast(e.message, true))); events.addEventListener('assets', () => { if ($('#assets-dialog').open) loadAssets().catch(e => toast(e.message, true)); }); },
     receive(data) {
       if (data.type === 'annotation') {
         const state = getState();
         mark(false); draft = { anchor: data.anchor, scope: getScope(), revision: state.revision, sessionId: state.sessionId, projectId: state.projectId, fingerprint: state.fingerprint };
+        locationTarget.replaceChildren(new Option('画面部件 · ' + data.anchor.target, 'component:' + data.anchor.target));
+        for (const layer of state.project.decorations) locationTarget.add(new Option('图层 · ' + layer.name, 'layer:' + layer.id));
+        for (const target of TARGETS.filter(t => ['stage', 'chat', 'composer', 'left', 'right', 'message-text'].includes(t.id))) locationTarget.add(new Option('容器 · ' + target.name, 'container:' + target.id));
+        locationScope.replaceChildren(new Option('所有尺寸', 'base')); for (const b of state.project.breakpoints) locationScope.add(new Option(b.name + ' · ' + b.condition, b.id)); locationScope.value = getScope();
         $('#annotation-context').textContent = describe(data.anchor); $('#annotation-comment').value = ''; $('#annotation-dialog').showModal(); $('#annotation-comment').focus();
       } else if (data.type === 'annotation-ticket') { $('#ticket-filter').value = 'all'; renderTickets(); $('#tickets-dialog').showModal(); document.querySelector(`[data-ticket="${data.id}"]`)?.scrollIntoView({ block: 'center' }); }
       else if (data.type === 'pick-cancelled' || data.type === 'disconnected') mark(false);

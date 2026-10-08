@@ -13,6 +13,12 @@ import { validateAnchor, ticketText } from './shared/tickets.js';
 import { migrateStorage, projectFingerprint, atomicJson } from './storage-migrations.js';
 import { createBuildService, sourceFingerprint } from './build-service.js';
 import { validateProject } from './shared/core.js';
+import { createHubClient } from './hub-client.js';
+import { captureLocation, locationStatus } from './shared/ticket-location.js';
+import { createRunner } from './runner-service.js';
+import { publicReceipt, formatAgentHandoff } from './shared/handoff.js';
+import { createExportService, referenceIndex } from './export-service.js';
+import { createVariants } from './asset-variants.js';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.json': 'application/json; charset=utf-8', '.zip': 'application/zip' };
@@ -28,6 +34,9 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
     if (input.sessionId !== sessionId || input.projectId !== history.project.projectId || input.fingerprint !== projectFingerprint(history.project) || input.revision !== history.revision) throw Object.assign(new Error('工程或服务会话已更新，请重新读取后核对修改。'), { status: 409 });
   }
   const assets = await createAssetStore(dataDir), tickets = await createTicketStore(dataDir);
+  const hub = await createHubClient(dataDir, assets);
+  const exports = createExportService(assets, hub);
+  const variants = await createVariants(dataDir, assets);
   const snapshotDir = path.join(dataDir, 'snapshots');
   const snapshotPattern = /^[a-f0-9]{32}$/;
   async function readSnapshot(id) {
@@ -92,6 +101,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       broadcast('assets', { changed: true }); return result;
     }),
   });
+  const runner = await createRunner({ dataDir, getProjectId: () => history.project.projectId, publish: value => broadcast('runner', value) });
   const server = http.createServer(async (req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
@@ -115,6 +125,24 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       }
       if (req.method === 'GET' && url.pathname === '/api/session') return send(res, 200, { token, ...view() });
       if (req.method === 'GET' && url.pathname === '/api/project') return send(res, 200, view());
+      if (req.method === 'GET' && url.pathname === '/api/runner') return send(res, 200, runner.status());
+      if (req.method === 'POST' && url.pathname === '/api/runner') {
+        const input = JSON.parse((await body(req, 32768)).toString('utf8'));
+        const result = await enqueue(async () => {
+          checkBasis(input);
+          if (input.action === 'configure') return runner.configure(input.config, input.version);
+          if (input.action === 'cancel') return runner.cancel(input.id);
+          if (input.action !== 'start' && input.action !== 'retry') throw new Error('未知 CLI 任务操作。');
+          const previous = input.action === 'retry' ? runner.status().tasks.find(t => t.id === input.id) : null;
+          if (input.action === 'retry' && !['failed', 'cancelled', 'interrupted'].includes(previous?.state)) throw new Error('只能显式重试失败、取消或中断的任务。');
+          const ids = previous ? previous.input.tickets.map(t => t.id) : input.ids;
+          if (!Array.isArray(ids) || !ids.length || ids.length > 20 || new Set(ids).size !== ids.length) throw new Error('明确选择 1–20 张小票。');
+          const selected = ids.map(id => { const t = tickets.list().find(t => t.id === id); if (!t || t.basis.projectId !== history.project.projectId || !['open', 'working'].includes(t.state)) throw new Error('小票不存在、不属当前工程或已待验收。'); if (!locationStatus(t, history.project).valid) throw new Error('小票需要重新定位。'); return t; });
+          const context = { current: basis(), address: origin, studioPath: root, projectPath: builds.status().config?.root || root, version: '0.8.0' };
+          return runner.enqueue({ schemaVersion: 1, projectId: history.project.projectId, basis: basis(), address: origin, tickets: selected.map(publicReceipt), handoff: formatAgentHandoff(selected, context) });
+        });
+        return send(res, 200, result);
+      }
       if (req.method === 'GET' && url.pathname === '/api/handoff-context') return send(res, 200, { current: basis(), address: origin, studioPath: root, projectPath: builds.status().config?.root || root, version: JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8')).version });
       if (req.method === 'GET' && url.pathname === '/api/build') return send(res, 200, builds.status());
       if (req.method === 'GET' && url.pathname === '/api/build/presets') {
@@ -142,12 +170,52 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
         theme.custom_css = url.searchParams.get('mode') === 'linked' ? resolveAssetUrls(theme.custom_css, origin) : await assets.embed(theme.custom_css);
         return send(res, 200, theme);
       }
+      if (req.method === 'GET' && url.pathname === '/api/export/audit') return send(res, 200, await exports.audit(history.project));
+      if (req.method === 'GET' && url.pathname === '/api/export') return send(res, 200, await exports.theme(history.project, url.searchParams.get('mode')));
+      if (req.method === 'GET' && url.pathname === '/api/backup/manifest') return send(res, 200, await exports.manifest(history.project));
+      if (req.method === 'GET' && url.pathname === '/api/assets/references') {
+        const saved = await Promise.all((await snapshots()).map(s => readSnapshot(s.id).then(s => s.project)));
+        return send(res, 200, { references: referenceIndex(history.project, [...history.past, ...history.future, ...saved]), cleanup: '素材不自动删除；所有历史引用保留。' });
+      }
+      if (req.method === 'POST' && url.pathname === '/api/assets/archive') {
+        const input = JSON.parse((await body(req, 32768)).toString('utf8'));
+        const result = await enqueue(async () => {
+          checkBasis(input);
+          if (input.archived !== false) {
+            const saved = await Promise.all((await snapshots()).map(s => readSnapshot(s.id).then(s => s.project)));
+            const refs = referenceIndex(history.project, [...history.past, ...history.future, ...saved]);
+            if (!Array.isArray(input.ids) || input.ids.some(id => refs.some(r => r.reference === assets.list().find(a => a.id === id)?.reference) || variants.list().some(v => v.originalId === id || v.variantId === id))) throw new Error('素材仍被工程、撤销历史、快照或变体引用，不能归档。');
+          }
+          return assets.archive(input.ids, input.archived !== false);
+        });
+        broadcast('assets', { changed: true }); return send(res, 200, result);
+      }
       if (req.method === 'GET' && url.pathname === '/api/backup') return send(res, 200, await assets.portableProject(history.project));
+      if (req.method === 'GET' && url.pathname === '/api/hub') return send(res, 200, { ...hub.status(), candidates: hub.candidates(history.project) });
+      if (req.method === 'GET' && url.pathname === '/api/hub/lock') return send(res, 200, hub.locks(history.project));
+      if (req.method === 'POST' && url.pathname === '/api/hub') {
+        const input = JSON.parse((await body(req, 32768)).toString('utf8'));
+        const result = await enqueue(async () => {
+          checkBasis(input);
+          if (input.action === 'refresh') return hub.refresh(input.source);
+          if (input.action === 'cache' || input.action === 'verify') return hub.fetchAsset(input.id, input.action === 'verify');
+          if (input.action === 'ingest') return hub.ingest(input.id, input.metadata, input.catalogRevision);
+          throw new Error('未知素材源操作。');
+        });
+        broadcast('assets', { changed: true }); return send(res, 200, result);
+      }
       if (req.method === 'GET' && url.pathname === '/api/assets') return send(res, 200, assets.list());
-      if (req.method === 'GET' && url.pathname === '/api/tickets') return send(res, 200, tickets.list());
+      if (req.method === 'GET' && url.pathname === '/api/assets/variants') return send(res, 200, variants.list());
+      if (req.method === 'GET' && url.pathname === '/api/assets/inspect') return send(res, 200, await variants.inspect(url.searchParams.get('id')));
+      if (req.method === 'POST' && url.pathname === '/api/assets/variant') {
+        const bytes = await body(req, MAX_ASSET_BYTES);
+        const value = await enqueue(() => variants.put(url.searchParams.get('original'), bytes, url.searchParams.get('kind')));
+        broadcast('assets', { changed: true }); return send(res, 201, value);
+      }
+      if (req.method === 'GET' && url.pathname === '/api/tickets') return send(res, 200, tickets.list().map(t => ({ ...t, locationStatus: locationStatus(t, history.project) })));
       if (req.method === 'GET' && /^\/api\/tickets\/[a-f0-9]{32}$/.test(url.pathname)) {
         const ticket = tickets.list().find(t => t.id === url.pathname.split('/').at(-1));
-        return send(res, ticket ? 200 : 404, ticket || { error: '小票不存在。' });
+        return send(res, ticket ? 200 : 404, ticket ? { ...ticket, locationStatus: locationStatus(ticket, history.project) } : { error: '小票不存在。' });
       }
       if (req.method === 'POST' && url.pathname === '/api/assets') {
         const bytes = await body(req, MAX_ASSET_BYTES);
@@ -162,6 +230,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
           if (url.pathname === '/api/tickets') {
             checkBasis(input);
             validateAnchor(input.anchor); ticketText(input.comment, 4000, '修改意见');
+            input.location = captureLocation(history.project, input.location || { scope: input.scope }, input.anchor);
             const snapshot = await saveSnapshot(`标注 #${tickets.list().length + 1} · ${input.comment.slice(0, 48)}`);
             return tickets.create(input, { ...basis(), snapshotId: snapshot.id });
           }
@@ -194,14 +263,18 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
             if (typeof command.name !== 'string' || !command.name.trim() || command.name.length > 120) throw new Error('快照名称需为 1–120 字。');
             return { ...view(), snapshotCreated: await saveSnapshot(command.name.trim()) };
           }
-          const restored = command?.type === 'snapshot-restore' ? { type: 'import-project', project: (await readSnapshot(command.id)).project } : command;
+          const restored = command?.type === 'hub-apply' ? { type: 'import-project', project: await hub.apply(history.project, command) }
+            : command?.type === 'hub-replace' ? { type: 'import-project', project: await hub.replace(history.project, command.ids) }
+            : command?.type === 'restore-files' ? { type: 'import-project', project: command.project }
+            : command?.type === 'snapshot-restore' ? { type: 'import-project', project: (await readSnapshot(command.id)).project } : command;
           const resolved = await assets.command(restored, history.project);
           const candidate = new ProjectHistory(history.project);
           candidate.past = [...history.past]; candidate.future = [...history.future]; candidate.revision = history.revision;
           candidate.execute(resolved, revision);
-          if (command.type === 'snapshot-restore' || (['undo', 'redo'].includes(command.type) && history.project.baseTheme.custom_css !== candidate.project.baseTheme.custom_css)) await builds.pause();
+          if (['snapshot-restore', 'restore-files'].includes(command.type) || (['undo', 'redo'].includes(command.type) && history.project.baseTheme.custom_css !== candidate.project.baseTheme.custom_css)) await builds.pause();
           await persist(candidate);
           history = candidate;
+          await runner.projectChanged();
           await builds.activate().catch(e => broadcast('build', { ...builds.status(), status: { state: 'failed', error: e.message } }));
           const result = view();
           for (const client of events) client.write(`data: ${JSON.stringify(result)}\n\n`);
@@ -227,7 +300,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
   const address = `http://127.0.0.1:${server.address().port}`;
   await writeFile(path.join(dataDir, 'runtime.json'), JSON.stringify({ address, pid: process.pid }));
   await builds.activate();
-  return { server, address, close: async () => { await builds.close(); for (const client of events) client.end(); return new Promise(resolve => server.close(resolve)); } };
+  return { server, address, close: async () => { await runner.close(); await builds.close(); for (const client of events) client.end(); return new Promise(resolve => server.close(resolve)); } };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   const app = await createServer({ port: Number(process.env.STUDIO_PORT || 19321) });

@@ -31,6 +31,7 @@ export async function mapProjectCss(value, transform) {
     }
   }
   if (typeof next.customCss === 'string') next.customCss = await transform(next.customCss);
+  for (const scope of Object.values(next.rules || {})) for (const props of Object.values(scope)) for (const [key, value] of Object.entries(props)) if (typeof value === 'string') props[key] = await transform(value);
   for (const layer of next.decorations || []) if (typeof layer.asset === 'string') layer.asset = await transform(layer.asset);
   for (const reference of next.assetRefs || []) if (typeof reference.reference === 'string') reference.reference = await transform(reference.reference);
   return next;
@@ -81,6 +82,11 @@ export async function createAssetStore(dataDir) {
   }
   return {
     list: () => structuredClone(entries), put, read, extract, embed,
+    async archive(ids, archived) {
+      if (!Array.isArray(ids) || !ids.length || ids.some(id => !entries.some(e => e.id === id))) throw new Error('请选择存在的素材。');
+      const next = entries.map(e => ids.includes(e.id) ? { ...e, archived: archived === true } : e);
+      await writeFile(indexFile + '.tmp', JSON.stringify(next, null, 2)); await rename(indexFile + '.tmp', indexFile); entries = next; return structuredClone(entries);
+    },
     async external(value, name) {
       const url = externalImageUrl(value);
       return save({ id: createHash('sha256').update(url).digest('hex'), kind: 'external', name: String(name || new URL(url).hostname).slice(0, 120), reference: url, size: null });

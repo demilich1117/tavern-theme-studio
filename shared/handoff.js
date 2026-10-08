@@ -4,7 +4,7 @@ export function publicReceipt(ticket) {
   if (!/^[a-f0-9]{32}$/.test(ticket?.id)) throw new Error('小票 ID 无效。');
   const basis = {};
   for (const key of ['name', 'projectId', 'revision', 'fingerprint', 'snapshotId', 'sessionId']) if (ticket.basis?.[key] !== undefined) basis[key] = ticket.basis[key];
-  return { id: ticket.id, number: ticket.number, version: ticket.version, state: ticket.state, comment: ticket.comment, scope: ticket.scope, anchor: validateAnchor(ticket.anchor), basis, association: ticket.association || 'stable-project' };
+  return { id: ticket.id, number: ticket.number, version: ticket.version, state: ticket.state, comment: ticket.comment, scope: ticket.scope, anchor: validateAnchor(ticket.anchor), location: ticket.location, locationStatus: ticket.locationStatus, basis, association: ticket.association || 'stable-project' };
 }
 export function formatAgentHandoff(tickets, context) {
   if (!Array.isArray(tickets) || !tickets.length || tickets.length > 200) throw new Error('请明确选择 1–200 张需要交接的小票。');

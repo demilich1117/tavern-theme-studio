@@ -1,0 +1,11 @@
+export function attachExport({ download, toast }) {
+  const dialog = document.createElement('dialog'); dialog.className = 'wide-dialog'; dialog.id = 'export-dialog';
+  dialog.innerHTML = `<form method="dialog" class="dialog-header"><h2>导出与依赖检查</h2><button aria-label="关闭导出">×</button></form><div class="dialog-body"><p>离线主题内嵌全部已具备的字节；外链主题只使用已验证的固定公开地址。原生主题不附带工作台内部数据。</p><pre id="export-audit" role="status"></pre><div class="inline-controls"><button id="export-offline">导出完整离线主题</button><button id="export-external">验证并导出外链主题</button><button id="export-portable">单文件工程备份</button></div><h3>分文件工程备份与恢复</h3><p>大工程通过 CLI 逐张保存和恢复素材；不会把图片塞回一个超限 JSON。目标目录必须尚不存在。清单最后写入，出现错误的目录不视为完整备份。</p><pre>node scripts/cli.js backup-files output/my-backup
+node scripts/cli.js restore-files output/my-backup</pre><p>命令先设置当前测试工作台的 STUDIO_URL。此备份包含当前工程与素材，不包含本机执行配置、小票或其他快照。完整历史保留当前数据目录。</p></div>`;
+  document.body.append(dialog);
+  const read = async route => { const r = await fetch(route), data = await r.json(); if (!r.ok) throw new Error(data.error); return data; };
+  const show = text => { document.querySelector('#export-audit').textContent = text; };
+  document.querySelector('#export-theme').addEventListener('click', async () => { dialog.showModal(); show('正在检查依赖…'); try { const a = await read('/api/export/audit'); show(`CSS ${(a.cssBytes / 1024).toFixed(1)} KiB · 内嵌预估 ${(a.approximateEmbeddedBytes / 1024).toFixed(1)} KiB\n本地素材 ${a.local.length} · 外部依赖 ${a.remote.length} · 未解析 ${a.unresolved.length}\n${a.unresolved.join('\n')}\n${a.remote.map(r => `${r.cached ? '已缓存' : '缺离线字节'} · ${r.reference}`).join('\n')}`); } catch (e) { show(e.message); } });
+  for (const mode of ['offline', 'external']) document.querySelector('#export-' + mode).addEventListener('click', async () => { show('正在验证导出…'); try { const result = await read('/api/export?mode=' + mode); download(result.theme, '.' + mode); show(`已导出 ${(result.report.actualBytes / 1024).toFixed(1)} KiB · ${mode}`); } catch (e) { show(e.message); toast(e.message, true); } });
+  document.querySelector('#export-portable').addEventListener('click', async () => { try { download(await read('/api/backup'), '.studio'); } catch (e) { show(e.message); } });
+}

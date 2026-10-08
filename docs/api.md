@@ -1,5 +1,7 @@
 # API、CLI 与 Agent 工作流
 
+0.8 新增 Source Hub、通用 CLI 执行任务、严格导出、素材变体/归档与分文件备份恢复，接口及命令见 [操作与协议](resources-and-runner.md)。原有 API 与复制小票流程继续可用；默认 `/api/theme` 为历史兼容导出，要求完整离线或验证外链时使用 `/api/export?mode=offline|external`。
+
 默认地址 `http://127.0.0.1:19321`。所有编辑均进入同一命令核心，界面通过 SSE 收到变化。CLI 已可直接用于 agent harness，无需模拟点击。
 
 真实宿主测试优先使用 [原生测试工作台](native-lab.md)。`npm run lab` 使用独立工程目录和默认 19323 端口；CLI 需要显式设置 `STUDIO_URL=http://127.0.0.1:19323`，否则它仍连接普通工作台。测试聊天由宿主连接器自己的按钮创建／打开，不通过 HTTP API 接收任意聊天正文。

@@ -5,6 +5,7 @@ import { attachWorkflow } from '/workflow.js';
 import { attachSource } from '/source.js';
 import { attachLayers } from '/layers.js';
 import { attachLayouts } from '/layouts.js';
+import { attachExport } from '/export.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
@@ -234,7 +235,7 @@ function bindControls() {
   const exportFile = async (url, suffix, message) => {
     try { await commandQueue; const response = await fetch(url), data = await response.json(); if (!response.ok) throw new Error(data.error); download(data, suffix); toast(message); } catch (e) { toast(e.message, true); }
   };
-  $('#export-theme').addEventListener('click', () => exportFile('/api/theme', '', '主题已导出，本地素材已内嵌；外链保留 URL。'));
+  attachExport({ download, toast });
   $('#save-project').addEventListener('click', () => exportFile('/api/backup', '.studio', '工程备份已导出，包含本地素材。'));
   $('#import-file').addEventListener('change', async e => {
     try { const file = e.target.files[0]; if (!file) return; if (file.size > 48 * 1024 * 1024) throw new Error('工程导入上限 48 MiB；更大素材请单独上传或使用外链。'); const data = JSON.parse(await file.text()); await command(data.schemaVersion !== undefined ? { type: 'import-project', project: data } : { type: 'import-theme', theme: data }); $('#files-dialog').close(); toast('已导入并提取内嵌图片，可用撤销恢复。'); } catch (error) { toast(error.message, true); } finally { e.target.value = ''; }

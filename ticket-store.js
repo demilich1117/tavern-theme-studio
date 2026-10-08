@@ -13,7 +13,7 @@ export async function createTicketStore(dataDir) {
     async create(input, basis) {
       const ticket = { schemaVersion: 1, id: randomBytes(16).toString('hex'), number: tickets.length + 1, version: 1, state: 'open',
         comment: ticketText(input.comment, 4000, '修改意见'), anchor: validateAnchor(input.anchor), basis,
-        scope: input.scope === 'mobile' ? 'mobile' : 'base', createdAt: new Date().toISOString(), result: '', owner: '' };
+        scope: input.location?.scope || (input.scope === 'mobile' ? 'mobile' : 'base'), ...(input.location && { location: structuredClone(input.location) }), createdAt: new Date().toISOString(), result: '', owner: '' };
       await persist([...tickets, ticket]); return ticket;
     },
     async update(id, input, currentBasis) {
