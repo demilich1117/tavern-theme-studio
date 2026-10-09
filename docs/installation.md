@@ -2,17 +2,17 @@
 
 本地可视化美化工具。需要 **Node.js 22+** 与 SillyTavern。运行依赖已经随包提供；不需要先生成大型主题样本，也不需要配置模型 CLI 或 Source Hub。
 
-1. 将本包解压到独立目录，打开终端，运行 `npm run lab`。
+1. 将本包解压到独立目录，打开终端，运行 `npm start`，或在 Windows 双击 `start.cmd`。
 2. 解压 `dist/tavern-theme-studio-connector.zip`，将其中整个文件夹放到酒馆 `data/<用户名>/extensions/`；安装后直接包含 manifest.json、connector/、shared/。刷新酒馆。
 3. 打开终端打印的 `#tts-lab` 链接。默认酒馆地址 8000、工作台 19323；等工作台明确显示「当前为虚构测试对话」后开始制作。
 4. 选部件、改属性、换素材或标点评论，观察真实酒馆预览。小票可简明或完整复制到已打开项目的 Agent 对话，由 Agent 领取、修改并提交待验收，再由你验收。
 5. 导出主题 JSON，在酒馆原生 UI Theme 中导入并选择，才完成持久化应用。
 
-已有工程保存在 `.local/native-lab/`，重启和升级保留。`npm start` 是普通工作台（19321，数据 `.local/`）。首次可用 `npm run lab -- examples/starter.theme.json` 选择通用起点；不要把已有工程作为新的种子反复导入。
+已有工程保存在 `.local/native-lab/`，重启和升级保留。`npm start`、`npm run lab` 和 `start.cmd` 共用同一工程。高级独立模式为 `npm run start:standalone`（19321 / `.local/`），原有独立模式数据保持原位。首次可用 `npm run lab -- examples/starter.theme.json` 选择通用起点；不要把已有工程作为新的种子反复导入。
 
-导入陌生主题后，可打开「素材与装饰清点」，查图片、装饰及使用位置，再点「复制主题分析给 Agent」。Agent 能读取完整 CSS、工程和本地图片；不需要手动粘贴大段 CSS。酒馆里切换了主题时，可在此入口读取为新工程，自动保存旧工程快照。见 [主题分析与接入](docs/theme-analysis.md)。
+导入陌生主题后，可打开「素材 → 主题图片」，查图片、装饰及使用位置，再点「复制分析给 AI」。Agent 能读取完整 CSS、工程和本地图片；不需要手动粘贴大段 CSS。酒馆里切换了主题时，可在「主题 → 接入酒馆当前主题」读取为新工程，自动保存旧工程快照。见 [主题分析与接入](docs/theme-analysis.md)。
 
-连接问题先用 `npm run doctor`。真实连接器版本与 fixture 状态在侧栏「连接诊断 → 检查连接与版本」。`STUDIO_PORT`、`STUDIO_DATA_DIR`、`TAVERN_URL` 分别设置端口、数据目录与酒馆地址。同一数据目录只允许一个实例。
+连接问题先用 `npm run doctor`。真实连接器版本与 fixture 状态在「高级工具 → 连接诊断 → 检查连接与版本」。`STUDIO_PORT`、`STUDIO_DATA_DIR`、`TAVERN_URL` 分别设置端口、数据目录与酒馆地址。同一数据目录只允许一个实例。
 
 代码使用 [MIT](LICENSE)，运行依赖与素材范围见 [第三方声明](THIRD-PARTY-NOTICES.md)。本核心包不包含大型月誓主题示例或维护测试；package.json 中开发/样本打包命令须在完整源码仓库中运行。
 

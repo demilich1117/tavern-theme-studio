@@ -126,3 +126,9 @@ node scripts/cli.js command output/command.json
 - `accept` 若当前工程指纹不同于 `completedBasis.fingerprint` 返回 409；用户核对后可显式传 `acknowledgeChanged:true`。工程 ID 不同仍拒绝。
 - `node scripts/cli.js ticket-copy <id> --compact`：输出简明交接；默认 CLI 仍提供完整交接。UI「复制给 Agent」默认简明，「复制完整交接」保留快照文本。
 - 相同数据目录的第二个服务在任何迁移/恢复写入之前以 `STUDIO_DATA_LOCKED` 拒绝启动。服务启动失败或正常关闭释放锁；旧进程退出后可恢复。见 [恢复说明](release.md)。
+
+## 0.9.2 普通导出与导入恢复
+
+GET /api/export?mode=standard 返回 {theme,report}：内嵌 tts-asset 本地图片、保留原有公网外链，不要求 Source Hub 固定版本或离线缓存。缺失本地素材与本机地址仍拒绝；外部依赖和未解析项列在 report 中。这不是完整离线或固定公开引用保证，offline/external 模式保持严格检查。UI 允许为下载副本设置新名称，不更改工程名；原生酒馆拒绝同名主题导入。
+
+import-theme、import-project、theme-import、base-theme、restore-files、snapshot-restore 在候选校验成功后、替换前持久保存旧工程，返回 snapshotCreated。快照保存失败则不替换，导入/恢复暂停旧源码自动同步。自动构建与 Hub 参数更新继续原有流程。GET /api/project 和 /api/session 的 dataDir 为实际数据目录。

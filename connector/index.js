@@ -40,7 +40,7 @@ function mount() {
   const content = document.createElement('div'); content.id = 'tts-settings-content'; content.className = 'inline-drawer-content'; content.style.display = 'none';
   const body = document.createElement('div'); body.className = 'tts-settings-body';
   const addressLabel = document.createElement('label'); addressLabel.className = 'tts-url-label'; addressLabel.htmlFor = 'tts-address'; addressLabel.textContent = '工作台地址';
-  const input = document.createElement('input'); input.id = 'tts-address'; input.type = 'url'; input.value = 'http://127.0.0.1:19321'; input.className = 'text_pole tts-address';
+  const input = document.createElement('input'); input.id = 'tts-address'; input.type = 'url'; input.value = 'http://127.0.0.1:19323'; input.className = 'text_pole tts-address';
   const actions = document.createElement('div'); actions.className = 'tts-actions';
   const lab = document.createElement('a'); lab.className = 'menu_button'; lab.textContent = '在新标签打开测试工作台'; lab.target = '_blank'; lab.rel = 'noopener';
   const labUrl = new URL(location.pathname, location.origin); labUrl.hash = 'tts-lab'; lab.href = labUrl.href;

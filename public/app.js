@@ -8,6 +8,7 @@ import { attachLayouts } from '/layouts.js';
 import { attachExport } from '/export.js';
 import { attachSetup } from '/setup.js';
 import { attachThemeAnalysis } from '/theme-analysis.js';
+import { attachNavigation, showEditor } from '/panels.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
@@ -92,6 +93,8 @@ function render() {
     button.querySelector('.target-count').textContent = count || ''; button.querySelector('.target-count').hidden = !count;
   }
   const target = TARGETS.find(x => x.id === selected);
+  $('#target-select').value = selected;
+  $('#storage-location').textContent = `自动保存在本机：${state.dataDir || '当前服务的数据目录'}`;
   $('#selected-name').textContent = target.name; $('#selected-selector').textContent = target.selector; $('#selected-note').textContent = target.note;
   $('#selection-breadcrumb').textContent = `${live ? '真实酒馆' : '示例场景'} / ${target.name} / ${scope === 'base' ? '所有尺寸' : '仅手机'}`;
   $('#rule-count').textContent = `${ruleCount(state.project)} 项样式修改`;
@@ -99,7 +102,7 @@ function render() {
   renderFields(); advanced?.render(); workflow?.render(); source?.render(); layers?.render(); layouts?.render();
   themeAnalysis?.render();
 }
-function setSelected(id) { selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
+function setSelected(id) { showEditor(); selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
 function setDevice(next) {
   device = next;
   for (const button of $('#device-controls').children) { button.classList.toggle('active', button.dataset.device === device); button.setAttribute('aria-pressed', String(button.dataset.device === device)); }
@@ -184,10 +187,11 @@ window.addEventListener('pagehide', () => send('disconnect'));
 
 function download(data, suffix) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = `${state.project.name.replace(/[<>:"/\\|?*]/g, '_')}${suffix}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = `${(data.name || state.project.name).replace(/[<>:"/\\|?*]/g, '_')}${suffix}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function buildControls() {
   for (const target of TARGETS) {
+    $('#target-select').add(new Option(target.name, target.id));
     const button = document.createElement('button'); button.dataset.target = target.id; button.dataset.detail = String(!!target.detail);
     const icon = document.createElement('span'); icon.className = 'target-icon'; icon.textContent = target.icon;
     const name = document.createElement('span'); name.textContent = target.name;
@@ -195,7 +199,8 @@ function buildControls() {
     button.append(icon, name, count); button.addEventListener('click', () => setSelected(target.id)); $('#target-list').append(button);
   }
   let group;
-  for (const field of FIELDS) {
+  const editingOrder = ['文字', '形状与留白', '色彩'];
+  for (const field of FIELDS.toSorted((a,b) => editingOrder.indexOf(a.group)-editingOrder.indexOf(b.group))) {
     if (field.group !== group) { group = field.group; const h = document.createElement('h3'); h.textContent = group; $('#property-fields').append(h); }
     const row = document.createElement('div'); row.className = 'field'; row.id = `field-${field.key}`;
     const labelRow = document.createElement('div'); labelRow.className = 'field-label';
@@ -218,6 +223,7 @@ function buildControls() {
   }
 }
 function bindControls() {
+  $('#target-select').addEventListener('change', () => setSelected($('#target-select').value));
   for (const scene of FIXTURE_SCENES) { const option = document.createElement('option'); option.value = scene.id; option.textContent = scene.label; $('#fixture-scene').append(option); }
   const openFixture = fresh => {
     if (!ready || !fixtureSupported || fixtureBusy) return;
@@ -241,16 +247,16 @@ function bindControls() {
   const exportFile = async (url, suffix, message) => {
     try { await commandQueue; const response = await fetch(url), data = await response.json(); if (!response.ok) throw new Error(data.error); download(data, suffix); toast(message); } catch (e) { toast(e.message, true); }
   };
-  attachExport({ download, toast });
+  attachExport({ download, toast, settled: () => commandQueue, getName: () => state.project.name });
   $('#save-project').addEventListener('click', () => exportFile('/api/backup', '.studio', '工程备份已导出，包含本地素材。'));
   $('#import-file').addEventListener('change', async e => {
-    try { const file = e.target.files[0]; if (!file) return; if (file.size > 48 * 1024 * 1024) throw new Error('工程导入上限 48 MiB；更大素材请单独上传或使用外链。'); const data = JSON.parse(await file.text()); await command(data.schemaVersion !== undefined ? { type: 'import-project', project: data } : { type: 'import-theme', theme: data }); $('#files-dialog').close(); toast('已导入并提取内嵌图片，可用撤销恢复。'); } catch (error) { toast(error.message, true); } finally { e.target.value = ''; }
+    try { const file = e.target.files[0]; if (!file) return; if (file.size > 48 * 1024 * 1024) throw new Error('工程导入上限 48 MiB；更大素材请单独上传或使用外链。'); const data = JSON.parse(await file.text()); await command(data.schemaVersion !== undefined ? { type: 'import-project', project: data } : { type: 'import-theme', theme: data }); $('#files-dialog').close(); toast('已导入。旧工程已保存在“保存 / 恢复版本”。'); } catch (error) { toast(error.message, true); } finally { e.target.value = ''; }
   });
   $('#advanced-button').addEventListener('click', () => { $('#css-editor').value = state.project.customCss; $('#css-editor').readOnly = false; $('#css-dialog-title').textContent = '高级 CSS'; $('#save-css').hidden = false; $('#css-help').textContent = '在可视化规则之后应用。可覆盖部件设置；外部资源引用会由浏览器加载。'; $('#css-dialog').showModal(); });
   $('#view-css').addEventListener('click', () => { $('#css-editor').value = compileOverrides(state.project) || '/* 尚未添加样式修改 */'; $('#css-editor').readOnly = true; $('#css-dialog-title').textContent = '生成的 CSS'; $('#save-css').hidden = true; $('#css-help').textContent = '由部件规则和高级 CSS 生成。导出的主题还会保留原主题 CSS。'; $('#css-dialog').showModal(); });
   $('#save-css').addEventListener('click', async () => { try { await command({ type: 'custom-css', css: $('#css-editor').value }); $('#css-dialog').close(); } catch {} });
   $('#capture-theme').addEventListener('click', () => { if (connectedTheme) act({ type: 'base-theme', theme: connectedTheme }); $('#base-dialog').close(); });
-  document.addEventListener('keydown', e => { if (e.target.matches('input, textarea, [contenteditable]') || document.querySelector('dialog[open]')) return; if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); act({ type: e.shiftKey ? 'redo' : 'undo' }); } if (e.key === 'Escape') setPicking(false); });
+  document.addEventListener('keydown', e => { if (e.target.matches('input, textarea, [contenteditable]') || document.querySelector('dialog:modal')) return; if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); act({ type: e.shiftKey ? 'redo' : 'undo' }); } if (e.key === 'Escape') setPicking(false); });
   new ResizeObserver(resizePreview).observe($('#canvas'));
 }
 try {
@@ -264,7 +270,7 @@ try {
   layers = attachLayers({ getState: () => state, command, preview, toast, send });
   themeAnalysis = attachThemeAnalysis({ getState: () => state, getToken: () => token, command, send, toast, connection: () => ({ ready, live, capabilities: connectorCapabilities }) });
   layouts = attachLayouts({ getState: () => state, command, toast, getSelected: () => selected });
-  render(); connect();
+  attachNavigation(); render(); connect();
   const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };
   window.addEventListener('pagehide', () => { events.close(); clearInterval(helloTimer); clearInterval(heartbeat); }, { once: true });
   workflow.events(events);

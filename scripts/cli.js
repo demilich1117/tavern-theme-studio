@@ -15,7 +15,12 @@ try {
   }
   if (commandName === 'targets') { console.log(JSON.stringify({ targets: TARGETS, fields: FIELDS }, null, 2)); process.exit(0); }
   let address = process.env.STUDIO_URL;
-  if (!address) { try { address = JSON.parse(await readFile(new URL('../.local/runtime.json', import.meta.url))).address; } catch { address = 'http://127.0.0.1:19321'; } }
+  if (!address) {
+    for (const file of ['../.local/native-lab/runtime.json', '../.local/runtime.json']) {
+      try { address = JSON.parse(await readFile(new URL(file, import.meta.url))).address; break; } catch (e) { if (e.code !== 'ENOENT') throw e; }
+    }
+    address ||= 'http://127.0.0.1:19323';
+  }
   const sessionRes = await fetch(`${address}/api/session`); if (!sessionRes.ok) throw new Error('Cannot connect to local workbench');
   const session = await sessionRes.json();
   const expected = { sessionId: session.sessionId, projectId: session.projectId, fingerprint: session.fingerprint, revision: session.revision };

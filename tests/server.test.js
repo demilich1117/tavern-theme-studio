@@ -50,7 +50,7 @@ test('HTTP editing persists, rejects forged requests, handles conflicts and surv
     assert.equal((await post({ type: 'redo' }, 5)).status, 200);
     await app.close(); app = await createServer({ dataDir: dir, port: 0 });
     assert.deepEqual((await get('/api/project')).project, saved);
-    assert.equal((await get('/api/snapshots'))[0].name, '排版完成');
+    assert.ok((await get('/api/snapshots')).some(s => s.id === snapshotId && s.name === '排版完成'));
     assert.equal((await get(`/api/snapshots/${snapshotId}`)).changes.length, 0);
     assert.equal((await fetch(app.address + '/.local/project.json')).status, 404);
   } finally {

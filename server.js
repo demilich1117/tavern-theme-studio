@@ -45,7 +45,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
   const migration = await migrateStorage(dataDir);
   let history = new ProjectHistory(migration.project);
   const sessionId = randomUUID();
-  const view = () => ({ ...history.snapshot(), sessionId, projectId: history.project.projectId, fingerprint: projectFingerprint(history.project), sourceBound: builds?.status().bound === true, capabilities: { projectSchema: 3, stableBindings: true, sourceBuild: 1, decorations: 1 }, migrationRecovery: migration.recovery });
+  const view = () => ({ ...history.snapshot(), sessionId, projectId: history.project.projectId, fingerprint: projectFingerprint(history.project), dataDir, sourceBound: builds?.status().bound === true, capabilities: { projectSchema: 3, stableBindings: true, sourceBuild: 1, decorations: 1 }, migrationRecovery: migration.recovery });
   function checkBasis(input) {
     if (!input.sessionId || !input.fingerprint || !input.projectId) throw Object.assign(new Error('需要 v3 会话、工程 ID 与指纹；请更新工作台/CLI 并重新读取工程。'), { status: 428 });
     if (input.sessionId !== sessionId || input.projectId !== history.project.projectId || input.fingerprint !== projectFingerprint(history.project) || input.revision !== history.revision) throw Object.assign(new Error('工程或服务会话已更新，请重新读取后核对修改。'), { status: 409 });
@@ -312,8 +312,10 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
           candidate.past = [...history.past]; candidate.future = [...history.future]; candidate.revision = history.revision;
           candidate.execute(resolved, revision);
           let snapshotCreated;
-          if (command.type === 'theme-import') snapshotCreated = await saveSnapshot('切换主题前：' + history.project.name.slice(0, 95));
-          if (['snapshot-restore', 'restore-files', 'theme-import'].includes(command.type) || (['undo', 'redo'].includes(command.type) && history.project.baseTheme.custom_css !== candidate.project.baseTheme.custom_css)) await builds.pause();
+          const replacesProject = ['theme-import', 'import-theme', 'import-project', 'base-theme', 'restore-files', 'snapshot-restore'].includes(command.type);
+          // Persist recovery before changing history or disk. A failed snapshot aborts import.
+          if (replacesProject) snapshotCreated = await saveSnapshot('替换前：' + history.project.name.slice(0, 100));
+          if (replacesProject || (['undo', 'redo'].includes(command.type) && history.project.baseTheme.custom_css !== candidate.project.baseTheme.custom_css)) await builds.pause();
           await persist(candidate);
           history = candidate;
           await runner.projectChanged();

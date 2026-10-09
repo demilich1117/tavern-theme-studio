@@ -35,12 +35,13 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
       const current = edits[variable.id] ?? variable.value, config = variableControl(variable.value);
       if (config.type === 'range' && variable.spec) { if (variable.spec.min !== undefined) config.min = variable.spec.min; if (variable.spec.max !== undefined) config.max = variable.spec.max; }
       const row = node('section', undefined, 'variable-row'); row.dataset.variable = variable.id;
-      const head = node('div', undefined, 'variable-heading'); head.append(node('code', variable.name));
+      const head = node('div', undefined, 'variable-heading'); head.append(node('strong', variable.label || variable.name));
       const reset = node('button', '↺', 'quiet'); reset.title = '还原原始声明'; reset.setAttribute('aria-label', `还原变量 ${variable.name} 第 ${variable.line} 行`); reset.disabled = !(variable.id in edits);
       reset.addEventListener('click', () => command({ type: 'variable', id: variable.id, value: null }).catch(() => {})); head.append(reset); row.append(head);
-      if (variable.label) row.append(node('p', variable.label, 'variable-label'));
+      const sourceDetails=node('details',undefined,'variable-details'); sourceDetails.append(node('summary','查看来源'),node('code',variable.name));
+      if (variable.context !== ':root') row.append(node('p',variable.context,'variable-condition'));
       if (variable.ambiguous) row.append(node('p', '绑定待解决：相同上下文含重复声明。源码刷新时会保留旧预览并报告冲突。', 'diagnostic-warning'));
-      const context = node('p', `第 ${variable.line} 行 · ${variable.context}${variable.important ? ' · !important' : ''}`, 'variable-context'); context.title = context.textContent; row.append(context);
+      const context = node('p', `第 ${variable.line} 行 · ${variable.context}${variable.important ? ' · !important' : ''}`, 'variable-context'); context.title = context.textContent; sourceDetails.append(context);
       // Embedded artwork is preserved in the source; don't expose a multi-KB base64
       // blob in a value control that cannot accept it under the edit size limit.
       if (current.length > 4000 && /url\(["']?data:image\//i.test(current)) {
@@ -84,8 +85,8 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
       input.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); commit(input.value); } });
       const apply = node('button', '应用', 'variable-apply'); apply.setAttribute('aria-label', `应用变量 ${variable.name} 第 ${variable.line} 行`); apply.addEventListener('click', () => commit(input.value));
       controls.append(input, apply); row.append(controls);
-      row.append(node('small', variable.id in edits ? `已修改 · 原值 ${variable.value}` : `原始声明 · ${config.type === 'text' ? '文本 / CSS 表达式' : '可视化调整'}`, variable.id in edits ? 'variable-original edited' : 'variable-original'));
-      $('#variables-list').append(row);
+      sourceDetails.append(node('small', variable.id in edits ? `已修改 · 原值 ${variable.value}` : `原始声明 · ${config.type === 'text' ? '文本 / CSS 表达式' : '可视化调整'}`, variable.id in edits ? 'variable-original edited' : 'variable-original'));
+      row.append(sourceDetails); $('#variables-list').append(row);
     }
   }
   function request(type, payload = {}) {

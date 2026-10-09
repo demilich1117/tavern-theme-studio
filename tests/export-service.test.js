@@ -29,3 +29,15 @@ test('ticket container and named breakpoint identities detect deletion and condi
   project.breakpoints.at(-1).condition = '(max-width: 999px)'; assert.equal(locationStatus(ticket, project).valid, false);
   project.breakpoints.pop(); assert.equal(locationStatus(ticket, project).valid, false);
 });
+test('ordinary native export embeds local images, preserves public imports and keeps strict modes strict',async()=>{
+  const dir=await mkdtemp(path.join(os.tmpdir(),'tts-standard-export-'));
+  try{
+    const assets=await createAssetStore(dir),service=createExportService(assets,{status:()=>({assets:[]})});
+    const a=await assets.put(Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7','base64'));
+    const p=createProject({name:'陌生主题',custom_css:`@import "https://example.org/font.css";body{background:url("${a.reference}"),url("https://example.org/art.png")}`});
+    const result=await service.theme(p,'standard');assert(result.theme.custom_css.includes('data:image/gif;base64,'));assert(!result.theme.custom_css.includes('tts-asset://'));
+    assert(result.theme.custom_css.includes('https://example.org/font.css'));assert(result.theme.custom_css.includes('https://example.org/art.png'));
+    assert.equal(result.report.remote.length,2);await assert.rejects(service.theme(p,'offline'),/缺少依赖/);await assert.rejects(service.theme(p,'external'),/未验证/);
+    p.customCss='body{background:url("http://127.0.0.1:19323/api/assets/local.png")}';await assert.rejects(service.theme(p,'standard'),/本机地址/);
+  }finally{assert.equal(path.dirname(path.resolve(dir)),path.resolve(os.tmpdir()));assert(path.basename(dir).startsWith('tts-standard-export-'));await rm(dir,{recursive:true,force:true});}
+});

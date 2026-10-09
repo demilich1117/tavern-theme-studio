@@ -1,3 +1,4 @@
+import { openStudioPanel } from '/panels.js';
 import { copyClipboard as copyText } from "/clipboard.js";
 import { TARGETS } from '/shared/core.js';
 import { scanVariables } from '/shared/variables.js';
@@ -29,13 +30,13 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
   }
   function reportError(error) {
     toast(error.message, true);
-    const dialog = document.querySelector('dialog[open]');
+    const dialog = document.querySelector('dialog:modal') || document.querySelector('dialog[open]');
     if (!dialog) return;
-    let message = dialog.querySelector('.workflow-error');
-    if (!message) { message = node('p', undefined, 'workflow-error'); message.setAttribute('role', 'alert'); dialog.querySelector('.dialog-body').prepend(message); }
+    let message = dialog.querySelector('[data-workflow-error]');
+    if (!message) { message = node('p', undefined, 'workflow-error'); message.dataset.workflowError = ''; message.setAttribute('role', 'alert'); dialog.querySelector('.dialog-body').prepend(message); }
     message.textContent = error.message; message.scrollIntoView({ block: 'nearest' });
   }
-  const run = action => async event => { event?.preventDefault(); document.querySelectorAll('.workflow-error').forEach(el => el.remove()); try { await action(event); } catch (e) { reportError(e); } };
+  const run = action => async event => { event?.preventDefault(); document.querySelectorAll('[data-workflow-error]').forEach(el => el.remove()); try { await action(event); } catch (e) { reportError(e); } };
   attachHub({ api, command, getState, reportError, layerTarget, download });
   attachRunner({ api, getIds: () => [...selectedTickets], reportError });
   const assetScope = node('select'); assetScope.setAttribute('aria-label', '素材范围');
@@ -55,7 +56,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
     const context = await api('/api/handoff-context');
     await copyClipboard(formatAgentHandoff(selected, context, { compact }), `已复制 ${ids.length} 张小票的${compact ? '简明' : '完整'}交接内容，可粘贴到已打开项目的 harness 对话。`);
   }
-  function updateSelection() { $('#copy-harness').textContent = `复制所选给 Agent (${selectedTickets.size})`; $('#copy-harness').disabled = !selectedTickets.size; }
+  function updateSelection() { $('#copy-harness').textContent = `复制给 AI (${selectedTickets.size})`; $('#copy-harness').disabled = !selectedTickets.size; }
   function reviewPanel(ticket) {
     const panel = node('details', undefined, 'ticket-evidence');
     panel.append(node('summary', '查看变更与证据'));
@@ -94,7 +95,10 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
   function renderTickets() {
     $('#ticket-count').textContent = relevant().filter(t => t.state !== 'done').length;
     const filter = $('#ticket-filter').value;
-    const shown = tickets.filter(t => filter === 'all' || (filter === 'active' ? t.state !== 'done' : t.state === filter));
+    const pool = $('#ticket-project-filter').value === 'all' ? tickets : relevant();
+    const shown = pool.filter(t => filter === 'all' || (filter === 'active' ? t.state !== 'done' : t.state === filter));
+    for (const id of selectedTickets) if (!shown.some(t => t.id === id)) selectedTickets.delete(id);
+    updateSelection();
     $('#tickets-total').textContent = shown.length;
     const list = $('#tickets-list'); list.replaceChildren();
     if (!shown.length) { list.append(node('p', '还没有这类小票。在真实酒馆中点击「标点评论」，点一下想调整的位置。', 'empty-state')); return; }
@@ -114,9 +118,10 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
         else send('annotation-focus', { anchor: ticket.location?.kind === 'container' ? { ...ticket.anchor, target: ticket.location.id, occurrence: 0, messageIndex: undefined, point: { x: .5, y: .5 } } : ticket.anchor });
       });
       const copy = node('button', '复制 JSON'); copy.addEventListener('click', run(async () => { await copyClipboard(JSON.stringify(await api(`/api/tickets/${ticket.id}`), null, 2), '纯 JSON 已复制。'); }));
-      const agent = node('button', '复制给 Agent'); agent.title = '简明交接：Agent 会重新读取完整小票与快照'; agent.addEventListener('click', run(() => copyAgent([ticket.id])));
+      const agent = node('button', '复制任务给 AI'); agent.title = '简明交接：Agent 会重新读取完整小票与快照'; agent.addEventListener('click', run(() => copyAgent([ticket.id])));
       const full = node('button', '复制完整交接'); full.addEventListener('click', run(() => copyAgent([ticket.id], false)));
-      actions.append(locate, agent, full, copy);
+      actions.append(locate, agent);
+      const extra = node('details', undefined, 'ticket-secondary'); extra.append(node('summary', '交接详情')); const extraActions=node('div'); extraActions.append(full,copy); extra.append(extraActions);
       if (ticket.state === 'review') {
         const stale = ticket.completedBasis?.fingerprint !== getState().fingerprint;
         const acknowledge = node('input'); acknowledge.type = 'checkbox';
@@ -141,7 +146,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
         }
         row.append(result, reviewPanel(ticket));
       }
-      row.append(actions); list.append(row);
+      row.append(actions, extra); list.append(row);
     }
     updateSelection();
   }
@@ -205,14 +210,14 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
     try {
       const [kind, id] = locationTarget.value.split(':');
       await api('/api/tickets', { ...draft, location: { kind, id, scope: locationScope.value }, comment: $('#annotation-comment').value });
-      draft = null; $('#annotation-dialog').close(); await loadTickets(); $('#tickets-dialog').showModal(); toast('小票已进入本机待办队列。');
+      draft = null; $('#annotation-dialog').close(); await loadTickets(); openStudioPanel('tickets-dialog'); toast('小票已进入本机待办队列。');
     } finally { busy = false; button.disabled = false; }
   }));
-  $('#tickets-button').addEventListener('click', run(async () => { $('#tickets-dialog').showModal(); await loadTickets(); }));
-  $('#ticket-filter').addEventListener('change', () => { selectedTickets.clear(); renderTickets(); });
+  $('#tickets-button').addEventListener('click', run(async () => { openStudioPanel('tickets-dialog'); await loadTickets(); }));
+  $('#ticket-filter').addEventListener('change', () => { selectedTickets.clear(); renderTickets(); }); $('#ticket-project-filter').addEventListener('change', () => { selectedTickets.clear(); renderTickets(); });
   $('#export-tickets').addEventListener('click', () => download({ schemaVersion: 1, tickets }, '.tickets'));
   $('#copy-harness').addEventListener('click', run(() => copyAgent([...selectedTickets])));
-  $('#assets-button').addEventListener('click', run(async () => { $('#assets-dialog').showModal(); await loadAssets(); }));
+  $('#assets-button').addEventListener('click', run(async () => { openStudioPanel('assets-dialog'); await loadAssets(); }));
   $('#extract-assets').addEventListener('click', run(async () => {
     const before = new TextEncoder().encode(getState().project.baseTheme.custom_css || '').length;
     await command({ type: 'optimize-assets' }); await loadAssets();
@@ -233,7 +238,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
   $('#asset-link-form').addEventListener('submit', run(async () => { await api('/api/assets/link', { url: $('#asset-url').value }); $('#asset-url').value = ''; await loadAssets(); toast('外链已添加，选择图片变量后可替换。'); }));
   loadTickets().catch(e => toast(e.message, true));
   return {
-    render() { tickets = tickets.map(t => ({ ...t, locationStatus: locationStatus(t, getState().project) })); $('#ticket-count').textContent = relevant().filter(t => t.state !== 'done').length; if (lastProjectId !== getState().project.projectId) lastProjectId = getState().project.projectId; sendPins(); if ($('#tickets-dialog').open) renderTickets(); if ($('#assets-dialog').open) renderAssetVariables(); },
+    render() { tickets = tickets.map(t => ({ ...t, locationStatus: locationStatus(t, getState().project) })); $('#ticket-count').textContent = relevant().filter(t => t.state !== 'done').length; if (lastProjectId !== getState().project.projectId) { lastProjectId = getState().project.projectId; selectedTickets.clear(); $('#ticket-project-filter').value = 'current'; updateSelection(); } sendPins(); if ($('#tickets-dialog').open) renderTickets(); if ($('#assets-dialog').open) renderAssetVariables(); },
     ready() { sendPins(); },
     events(events) { events.addEventListener('tickets', () => loadTickets().catch(e => toast(e.message, true))); events.addEventListener('assets', () => { if ($('#assets-dialog').open) loadAssets().catch(e => toast(e.message, true)); }); },
     receive(data) {
@@ -245,7 +250,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
         for (const target of TARGETS.filter(t => ['stage', 'chat', 'composer', 'left', 'right', 'message-text'].includes(t.id))) locationTarget.add(new Option('容器 · ' + target.name, 'container:' + target.id));
         locationScope.replaceChildren(new Option('所有尺寸', 'base')); for (const b of state.project.breakpoints) locationScope.add(new Option(b.name + ' · ' + b.condition, b.id)); locationScope.value = getScope();
         $('#annotation-context').textContent = describe(data.anchor); $('#annotation-comment').value = ''; $('#annotation-dialog').showModal(); $('#annotation-comment').focus();
-      } else if (data.type === 'annotation-ticket') { $('#ticket-filter').value = 'all'; renderTickets(); $('#tickets-dialog').showModal(); document.querySelector(`[data-ticket="${data.id}"]`)?.scrollIntoView({ block: 'center' }); }
+      } else if (data.type === 'annotation-ticket') { $('#ticket-filter').value = 'all'; renderTickets(); openStudioPanel('tickets-dialog'); document.querySelector(`[data-ticket="${data.id}"]`)?.scrollIntoView({ block: 'center' }); }
       else if (data.type === 'pick-cancelled' || data.type === 'disconnected') mark(false);
     },
   };

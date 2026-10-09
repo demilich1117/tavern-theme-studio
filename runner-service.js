@@ -14,7 +14,7 @@ export async function createRunner({ dataDir, getProjectId, publish = () => {} }
   const save = async next => { await atomicJson(file, next); state = next; publish(snapshot()); };
   const serial = work => { const task = queue.then(work); queue = task.catch(() => {}); return task; };
   await save(state);
-  async function update(id, patch) { await save({ ...state, tasks: state.tasks.map(t => t.id === id ? { ...t, ...patch, updatedAt: new Date().toISOString() } : t) }); }
+  async function update(id, patch, metadata = {}) { await save({ ...state, ...metadata, tasks: state.tasks.map(t => t.id === id ? { ...t, ...patch, updatedAt: new Date().toISOString() } : t) }); }
   async function pump() {
     if (active || closing) return;
     const task = state.tasks.find(t => t.state === 'queued'); if (!task) return;
@@ -62,8 +62,7 @@ export async function createRunner({ dataDir, getProjectId, publish = () => {} }
     child.once('error', e => { spawnError = e.message; });
     child.once('close', code => { clearInterval(timer); serial(async () => {
       const finalState = running.reason === 'cancelled' ? 'cancelled' : running.reason === 'interrupted' ? 'interrupted' : !running.reason && !spawnError && code === 0 && running.result ? 'succeeded' : 'failed';
-      await update(task.id, { state: finalState, exitCode: code, result: running.result, log: running.log, error: running.reason || spawnError || (finalState === 'failed' ? '进程失败或未返回有效结构化结果' : null), completedAt: new Date().toISOString() });
-      if (finalState === 'succeeded' && JSON.stringify(config) === JSON.stringify(state.config)) await save({ ...state, verified: true });
+      await update(task.id, { state: finalState, exitCode: code, result: running.result, log: running.log, error: running.reason || spawnError || (finalState === 'failed' ? '进程失败或未返回有效结构化结果' : null), completedAt: new Date().toISOString() }, finalState === 'succeeded' && JSON.stringify(config) === JSON.stringify(state.config) ? { verified: true } : {});
       active = null; finish(); await pump();
     }).catch(() => { active = null; finish(); }); });
   }

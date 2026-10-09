@@ -5,5 +5,5 @@ if not exist "node_modules\css-tree\package.json" (
   pause
   exit /b 1
 )
-node server.js
+node scripts/start-native-lab.js
 pause

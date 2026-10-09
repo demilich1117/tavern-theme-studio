@@ -33,10 +33,15 @@ export function createExportService(assets, hub) {
   }
   return { audit,
     async theme(project, mode) {
-      if (!['offline', 'external'].includes(mode)) throw new Error('导出模式需为 offline 或 external。');
+      if (!['standard', 'offline', 'external'].includes(mode)) throw new Error('导出模式需为 standard、offline 或 external。');
       const report = await audit(project), theme = exportTheme(project);
       const missing = [...report.unresolved], replacements = new Map();
-      if (mode === 'offline') {
+      if (mode === 'standard') {
+        // Ordinary native themes retain their public URLs and embed workbench assets.
+        // This is not an offline or immutable-publication guarantee.
+        if (report.remote.some(a => a.local)) throw new Error('普通导出包含本机地址，请先换成公开地址或本地素材。');
+        theme.custom_css = await assets.embed(theme.custom_css);
+      } else if (mode === 'offline') {
         for (const a of [...report.local, ...report.remote]) {
           const id = a.id || (a.cached && a.cached.slice(12));
           if (!id) missing.push(a.reference);

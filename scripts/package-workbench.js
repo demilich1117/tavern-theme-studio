@@ -8,7 +8,7 @@ const root = path.resolve(import.meta.dirname, '..');
 execFileSync(process.execPath, ['scripts/package-connector.js'], { cwd: root, stdio: 'inherit', windowsHide: true });
 const paths = new Set(['package.json', 'package-lock.json', 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md', 'AGENTS.md', 'start.cmd', 'examples/starter.theme.json', 'dist/tavern-theme-studio-connector.zip']);
 for (const f of await readdir(root)) if (f.endsWith('.js')) paths.add(f);
-for (const f of await readdir(path.join(root, 'public'))) if (f.endsWith('.js') || ['index.html', 'style.css', 'favicon.svg', 'demo.html', 'demo.css'].includes(f)) paths.add('public/' + f);
+for (const f of await readdir(path.join(root, 'public'))) if (f.endsWith('.js') || ['index.html', 'style.css', 'workspace.css', 'favicon.svg', 'demo.html', 'demo.css'].includes(f)) paths.add('public/' + f);
 async function tree(folder) {
   for (const item of await readdir(path.join(root, folder), { withFileTypes: true })) {
     const file = `${folder}/${item.name}`;

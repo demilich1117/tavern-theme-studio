@@ -1,3 +1,4 @@
+import { openStudioPanel } from '/panels.js';
 import { TARGETS, applyCommand } from '/shared/core.js';
 import { decorationDiagnostics, effectiveLayer, layerAsset } from '/shared/decorations.js';
 import { resolveAssetUrls } from '/shared/assets.js';
@@ -7,7 +8,7 @@ export function attachLayers({ getState, command, preview, toast, send }) {
   let selected, assets = [], scope = 'base', queue = Promise.resolve(), lastProjectId, hostIssues = [], canEdit = false, viewport;
   const button = node('button', '◇ 装饰图层'); button.id = 'layers-button'; $('.studio-tools').append(button);
   const dialog = node('dialog', undefined, 'wide-dialog'); dialog.id = 'layers-dialog';
-  dialog.innerHTML = `<form method="dialog" class="dialog-header"><h2>装饰图层 <small id="layers-total"></small></h2><button aria-label="关闭装饰图层">×</button></form>
+  dialog.innerHTML = `<form method="dialog" class="dialog-header"><h2>可调装饰 <small id="layers-total"></small></h2><button aria-label="关闭装饰图层">×</button></form>
   <div class="dialog-body"><p id="layers-recipe" class="panel-hint"></p><div class="inline-controls"><input id="layers-search" type="search" placeholder="搜索中文用途、分组或图层" aria-label="搜索图层"><select id="layers-group" aria-label="图层分组"></select></div>
   <div id="layers-list" class="layers-list"></div><div id="layer-editor"></div>
   <details><summary>新增装饰与配方</summary><form id="layer-add" class="workflow-form"><label for="layer-target">目标部件</label><select id="layer-target"></select><label for="layer-pseudo">绘制插槽</label><select id="layer-pseudo"><option value="::before">前装饰 ::before</option><option value="::after">后装饰 ::after</option></select><label for="layer-method">绘制方式</label><select id="layer-method"><option value="background">背景图片</option><option value="nine-slice">九切片边框</option></select><button type="submit">新增图层</button></form><button id="recipe-import-button" type="button">导入配方（替换图层）</button><input id="recipe-import" type="file" accept=".json,application/json" hidden><p class="panel-hint">新增时检查插槽占用。导入配方替换受控图层，可用撤销返回；未识别 CSS 保留。</p></details></div>`;
@@ -60,7 +61,7 @@ export function attachLayers({ getState, command, preview, toast, send }) {
     if (!dialog.open) return;
     const p = getState().project, diagnostics = decorationDiagnostics(p), search = $('#layers-search').value.trim().toLowerCase(), group = $('#layers-group').value;
     if (!Object.hasOwn(p.rules, scope)) scope = 'base';
-    $('#layers-total').textContent = p.decorations.length; $('#layers-recipe').textContent = p.recipe ? `${p.recipe.name} · ${p.recipe.version}。先选择中文用途，再调整参数；未识别 CSS 继续保留。` : '尚无配方。可新增空闲伪元素装饰，或导入作者声明的配方。';
+    $('#layers-total').textContent = p.decorations.length; $('#layers-recipe').textContent = p.recipe ? `${p.recipe.name} · ${p.recipe.version}。先选择中文用途，再调整参数；未识别 CSS 继续保留。` : '还没有可直接调整的装饰。先查看主题图片，再让 AI 接入。';
     const groups = [...new Set((p.recipe?.slots || []).map(s => s.group))]; $('#layers-group').replaceChildren(new Option('全部用途', '')); for (const g of groups) $('#layers-group').add(new Option(g, g)); $('#layers-group').value = groups.includes(group) ? group : '';
     const list = $('#layers-list'); list.replaceChildren();
     for (const layer of p.decorations) {
@@ -72,20 +73,21 @@ export function attachLayers({ getState, command, preview, toast, send }) {
       for (const d of diagnostics.filter(d => d.layerId === layer.id)) list.append(node('p', d.message, d.level === 'error' ? 'workflow-error' : 'diagnostic-warning'));
       for (const d of hostIssues.filter(d => d.layerId === layer.id)) list.append(node('p', d.message, 'workflow-error'));
     }
-    if (!list.children.length) list.append(node('p', '没有匹配图层。试试中文用途，或新增装饰。', 'empty-state'));
+    if (!list.children.length) { const empty=node('div',undefined,'material-help'); empty.append(node('p',p.decorations.length ? '没有匹配的装饰，试试其他关键词。' : '找到图片不代表已经可以拖动。接入后，就能在这里调整大小、位置和透明度。')); if (!p.decorations.length) { const next=node('button','查看主题图片','primary'); next.addEventListener('click',()=>document.querySelector('#theme-analysis-open').click()); empty.append(next); } list.append(empty); }
+    $('#layers-search').parentElement.hidden = !p.decorations.length; $('#layer-editor').hidden = !p.decorations.length;
     for (const d of diagnostics.filter(d => d.layerId.startsWith('hidden-'))) list.append(node('p', d.message, 'workflow-error'));
     for (const d of hostIssues.filter(d => d.layerId.startsWith('hidden-'))) list.append(node('p', d.message, 'workflow-error'));
     if (!selectedLayer()) selected = p.decorations[0]?.id;
     renderEditor();
   }
-  button.addEventListener('click', run(async () => { await assetList(); dialog.showModal(); }));
+  button.addEventListener('click', run(async () => { await assetList(); openStudioPanel('layers-dialog'); }));
   $('#layers-search').addEventListener('input', render); $('#layers-group').addEventListener('change', render);
   $('#layer-add').addEventListener('submit', run(async () => { await command({ type: 'decoration-add', target: $('#layer-target').value, pseudo: $('#layer-pseudo').value, method: $('#layer-method').value }); selected = getState().project.decorations.at(-1).id; $('#layers-search').value = ''; $('#layers-group').value = ''; }));
   $('#recipe-import-button').addEventListener('click', () => $('#recipe-import').click());
   $('#recipe-import').addEventListener('change', run(async e => { const file = e.target.files[0]; try { if (file) { if (file.size > 1048576) throw new Error('配方超过 1 MiB。'); await command({ type: 'recipe', recipe: JSON.parse((await file.text()).replace(/^\uFEFF/, '')) }); selected = undefined; } } finally { e.target.value = ''; } }));
   dialog.addEventListener('close', () => preview());
   function matchWidth(condition, width) { const m=condition.match(/\((min|max)-width: (\d+)px\)/); return m && (m[1]==='max'?width<=Number(m[2]):width>=Number(m[2])); }
-  return { capabilities(c) { canEdit=c?.decorationEditor===1;render(); }, render() { const p = getState().project; if (p.projectId !== lastProjectId) { lastProjectId = p.projectId; selected = undefined; scope = 'base'; } button.textContent = `◇ 装饰图层 (${p.decorations.length})`; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); }, receive(data) {
+  return { capabilities(c) { canEdit=c?.decorationEditor===1;render(); }, render() { const p = getState().project; if (p.projectId !== lastProjectId) { lastProjectId = p.projectId; selected = undefined; scope = 'base'; } button.textContent = `可调装饰 ${p.decorations.length}`; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); }, receive(data) {
     if (data.type==='viewport') { viewport=data;render(); }
     else if (data.type==='decoration-commit') { const s=getState(); if (!['projectId','sessionId','fingerprint','revision'].every(k=>data.basis?.[k]===s[k])) { send('decoration-commit-result',{ok:false,error:'工程更新，此次拖动未保存。'});preview();toast('工程更新，请重新定位。',true);return; } command({type:'decoration-update',id:data.id,scope:data.scope,patch:{props:data.props}}).then(()=>send('decoration-commit-result',{ok:true})).catch(e=>send('decoration-commit-result',{ok:false,error:e.message})); }
     else if (data.type==='decoration-editor-status'&&data.message) toast(data.message);

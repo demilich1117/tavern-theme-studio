@@ -20,5 +20,5 @@ for (const address of candidates) {
     checks.push({ name: '本机工作台', status: health.version === STUDIO_VERSION ? 'passed' : 'warning', detail: `${address} · ${health.version} · 工程 ${health.projectId}` });
   } catch (e) { checks.push({ name: '本机工作台', status: 'warning', detail: `${address}：${e.message}。首次使用运行 npm run lab。` }); }
 }
-console.log(JSON.stringify({ version: STUDIO_VERSION, checks, next: '在酒馆的专用测试标签连接工作台，点击「已连接 / 连接酒馆 → 检查连接与版本」，核对真实连接器和测试对话。Source Hub 与本机 CLI 均为可选。' }, null, 2));
+console.log(JSON.stringify({ version: STUDIO_VERSION, checks, next: '在酒馆的专用测试标签连接工作台，点击「高级工具 → 连接诊断 → 检查连接与版本」，核对真实连接器和测试对话。Source Hub 与本机 CLI 均为可选。' }, null, 2));
 if (checks.some(c => c.status === 'failed')) process.exitCode = 1;

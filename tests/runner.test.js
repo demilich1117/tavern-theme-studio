@@ -6,11 +6,11 @@ import path from 'node:path';
 import { createRunner } from '../runner-service.js';
 const wait = async (runner, state) => { for (let i = 0; i < 100; i++) { if (runner.status().tasks.at(-1)?.state === state) return; await new Promise(r => setTimeout(r, 30)); } assert.fail(JSON.stringify(runner.status())); };
 test('generic CLI lifecycle uses structured input, rejects stale config, requires results, cancels and restores interruptions', async () => {
-  const dataDir = await mkdtemp(path.join(os.tmpdir(), 'tts-runner-')); let runner;
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), 'tts-runner-')); let runner; const completed = new Set();
   const input = { projectId: 'test', basis: { projectId: 'test', revision: 0, fingerprint: 'a'.repeat(64) }, tickets: [{ comment: '$(should never execute)' }] };
   const config = { program: process.execPath, cwd: process.cwd(), args: [path.resolve('tests/fixtures/runner-adapter.mjs')], input: 'stdin', heartbeatMs: 1000, timeoutMs: 2000 };
   try {
-    runner = await createRunner({ dataDir, getProjectId: () => 'test' });
+    runner = await createRunner({ dataDir, getProjectId: () => 'test', publish: state => { const task=state.tasks.at(-1); if (task?.state === 'succeeded' && !completed.has(task.id)) { assert.equal(state.verified, true, 'success and verified status must publish atomically'); completed.add(task.id); } } });
     await assert.rejects(runner.enqueue(input), /未配置/);
     await runner.configure(config, 0); await assert.rejects(runner.configure(config, 0), /已更新/);
     await runner.enqueue(input); await wait(runner, 'succeeded'); assert.equal(runner.status().verified, true);
