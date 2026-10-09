@@ -1,8 +1,11 @@
-import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { ASSET_ID, ASSET_RE, assetReference, externalImageUrl } from './shared/assets.js';
 import { scanVariables } from './shared/variables.js';
+import { atomicJson } from './storage-migrations.js';
+import { serialQueue } from './serial-queue.js';
+import { dependencies, rewriteDependencies } from './css-dependencies.js';
 
 export const MAX_ASSET_BYTES = 32 * 1024 * 1024;
 export const MAX_IMPORT_BYTES = 48 * 1024 * 1024;
@@ -40,13 +43,16 @@ export async function createAssetStore(dataDir) {
   const dir = path.join(dataDir, 'assets'), indexFile = path.join(dir, 'index.json');
   await mkdir(dir, { recursive: true });
   let entries = [];
+  const commit = serialQueue();
   try { entries = JSON.parse(await readFile(indexFile, 'utf8')); } catch (e) { if (e.code !== 'ENOENT') throw e; }
   async function save(entry) {
+    return commit(async () => {
     const existing = entries.find(x => x.id === entry.id);
     if (existing) return existing;
     const next = [...entries, { ...entry, createdAt: new Date().toISOString() }];
-    await writeFile(indexFile + '.tmp', JSON.stringify(next, null, 2)); await rename(indexFile + '.tmp', indexFile); entries = next;
+    await atomicJson(indexFile, next); entries = next;
     return next.at(-1);
+    });
   }
   async function put(bytes, name = '导入的装饰') {
     if (!bytes.length || bytes.length > MAX_ASSET_BYTES) throw Object.assign(new Error('单张素材需为 1 字节至 32 MiB；可先缩小静态图片，或使用外链。'), { status: 413 });
@@ -71,6 +77,7 @@ export async function createAssetStore(dataDir) {
     }
     // Missing local files must never silently produce a broken portable export.
     for (const id of new Set([...css.matchAll(ASSET_RE)].map(m => m[1]))) await read(id);
+    for (const ref of dependencies(css).filter(r => r.startsWith('tts-asset://'))) await read(ref.slice(12));
     return css;
   }
   async function embed(css) {
@@ -78,14 +85,21 @@ export async function createAssetStore(dataDir) {
     for (const id of new Set([...css.matchAll(ASSET_RE)].map(m => m[1]))) {
       const { bytes, mime } = await read(id); values.set(id, `data:${mime};base64,${bytes.toString('base64')}`);
     }
-    return css.replace(ASSET_RE, (_, id) => values.get(id));
+    css = css.replace(ASSET_RE, (_, id) => values.get(id));
+    const escaped = new Map();
+    for (const ref of dependencies(css).filter(r => r.startsWith('tts-asset://'))) {
+      const { bytes, mime } = await read(ref.slice(12)); escaped.set(ref, `data:${mime};base64,${bytes.toString('base64')}`);
+    }
+    return escaped.size ? rewriteDependencies(css, escaped, css.includes('{') || /^\s*@/.test(css) ? 'stylesheet' : 'value') : css;
   }
   return {
     list: () => structuredClone(entries), put, read, extract, embed,
     async archive(ids, archived) {
+      return commit(async () => {
       if (!Array.isArray(ids) || !ids.length || ids.some(id => !entries.some(e => e.id === id))) throw new Error('请选择存在的素材。');
       const next = entries.map(e => ids.includes(e.id) ? { ...e, archived: archived === true } : e);
-      await writeFile(indexFile + '.tmp', JSON.stringify(next, null, 2)); await rename(indexFile + '.tmp', indexFile); entries = next; return structuredClone(entries);
+      await atomicJson(indexFile, next); entries = next; return structuredClone(entries);
+      });
     },
     async external(value, name) {
       const url = externalImageUrl(value);

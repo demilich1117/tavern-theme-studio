@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { readFile, mkdir, writeFile, rename, readdir } from 'node:fs/promises';
+import { readFile, mkdir, writeFile, rename, readdir, unlink, access } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomBytes, timingSafeEqual, randomUUID } from 'node:crypto';
@@ -19,15 +19,29 @@ import { createRunner } from './runner-service.js';
 import { publicReceipt, formatAgentHandoff } from './shared/handoff.js';
 import { createExportService, referenceIndex } from './export-service.js';
 import { createVariants } from './asset-variants.js';
+import { acquireDataLock } from './data-lock.js';
+import { readArtifact, reviewEvidence } from './ticket-review.js';
+import { STUDIO_VERSION } from './shared/version.js';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.json': 'application/json; charset=utf-8', '.zip': 'application/zip' };
-export async function createServer({ dataDir = path.join(root, '.local'), port = 19321 } = {}) {
-  await mkdir(dataDir, { recursive: true });
+export async function createServer({ dataDir = path.join(root, '.local'), port = 19321, seedPath } = {}) {
+  const lock = await acquireDataLock(dataDir);
+  dataDir = lock.dataDir;
+  let builds, runner, server;
+  try {
+  if (seedPath) {
+    let exists = true;
+    try { await access(path.join(dataDir, 'project.json')); } catch (e) { if (e.code !== 'ENOENT') throw e; exists = false; }
+    if (!exists) {
+      const seed = JSON.parse(await readFile(path.resolve(seedPath), 'utf8'));
+      const project = seed.schemaVersion ? validateProject(seed) : createProject(seed);
+      await atomicJson(path.join(dataDir, 'project.json'), project);
+    }
+  }
   const migration = await migrateStorage(dataDir);
   let history = new ProjectHistory(migration.project);
   const sessionId = randomUUID();
-  let builds;
   const view = () => ({ ...history.snapshot(), sessionId, projectId: history.project.projectId, fingerprint: projectFingerprint(history.project), sourceBound: builds?.status().bound === true, capabilities: { projectSchema: 3, stableBindings: true, sourceBuild: 1, decorations: 1 }, migrationRecovery: migration.recovery });
   function checkBasis(input) {
     if (!input.sessionId || !input.fingerprint || !input.projectId) throw Object.assign(new Error('需要 v3 会话、工程 ID 与指纹；请更新工作台/CLI 并重新读取工程。'), { status: 428 });
@@ -101,8 +115,8 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       broadcast('assets', { changed: true }); return result;
     }),
   });
-  const runner = await createRunner({ dataDir, getProjectId: () => history.project.projectId, publish: value => broadcast('runner', value) });
-  const server = http.createServer(async (req, res) => {
+  runner = await createRunner({ dataDir, getProjectId: () => history.project.projectId, publish: value => broadcast('runner', value) });
+  server = http.createServer(async (req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
     res.setHeader('Cache-Control', 'no-store');
@@ -125,6 +139,16 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       }
       if (req.method === 'GET' && url.pathname === '/api/session') return send(res, 200, { token, ...view() });
       if (req.method === 'GET' && url.pathname === '/api/project') return send(res, 200, view());
+      if (req.method === 'GET' && url.pathname === '/api/health') return send(res, 200, { version: STUDIO_VERSION, node: process.versions.node, projectSchema: 3, projectId: history.project.projectId, dataLock: true, sourceBound: builds.status().bound === true, runner: { configured: !!runner.status().config, verified: runner.status().verified }, fixture: '请在已连接的工作台查看实时 fixture 状态；HTTP 服务不读取聊天。' });
+      const evidenceRoute = /^\/api\/tickets\/([a-f0-9]{32})\/(review|artifacts\/(\d+))$/.exec(url.pathname);
+      if (req.method === 'GET' && evidenceRoute) {
+        const ticket = tickets.list().find(t => t.id === evidenceRoute[1]);
+        if (!ticket) return send(res, 404, { error: '小票不存在。' });
+        if (evidenceRoute[2] === 'review') return send(res, 200, await reviewEvidence(ticket, basis(), readSnapshot, root));
+        const artifact = await readArtifact(root, ticket, Number(evidenceRoute[3]), true);
+        res.writeHead(200, { 'Content-Type': artifact.type, 'Content-Security-Policy': "default-src 'none'; sandbox", 'Cross-Origin-Resource-Policy': 'same-origin' });
+        return res.end(artifact.content);
+      }
       if (req.method === 'GET' && url.pathname === '/api/runner') return send(res, 200, runner.status());
       if (req.method === 'POST' && url.pathname === '/api/runner') {
         const input = JSON.parse((await body(req, 32768)).toString('utf8'));
@@ -138,7 +162,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
           const ids = previous ? previous.input.tickets.map(t => t.id) : input.ids;
           if (!Array.isArray(ids) || !ids.length || ids.length > 20 || new Set(ids).size !== ids.length) throw new Error('明确选择 1–20 张小票。');
           const selected = ids.map(id => { const t = tickets.list().find(t => t.id === id); if (!t || t.basis.projectId !== history.project.projectId || !['open', 'working'].includes(t.state)) throw new Error('小票不存在、不属当前工程或已待验收。'); if (!locationStatus(t, history.project).valid) throw new Error('小票需要重新定位。'); return t; });
-          const context = { current: basis(), address: origin, studioPath: root, projectPath: builds.status().config?.root || root, version: '0.8.0' };
+          const context = { current: basis(), address: origin, studioPath: root, projectPath: builds.status().config?.root || root, version: STUDIO_VERSION };
           return runner.enqueue({ schemaVersion: 1, projectId: history.project.projectId, basis: basis(), address: origin, tickets: selected.map(publicReceipt), handoff: formatAgentHandoff(selected, context) });
         });
         return send(res, 200, result);
@@ -235,7 +259,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
             return tickets.create(input, { ...basis(), snapshotId: snapshot.id });
           }
           checkBasis(input);
-          return tickets.update(url.pathname.split('/').at(-1), input, basis());
+          return tickets.update(url.pathname.split('/').at(-1), input, basis(), saveSnapshot);
         });
         broadcast(url.pathname.startsWith('/api/tickets') ? 'tickets' : 'assets', { changed: true });
         return send(res, 200, result);
@@ -298,12 +322,25 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
   server.on('close', () => { for (const client of events) client.end(); });
   await new Promise((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', resolve); });
   const address = `http://127.0.0.1:${server.address().port}`;
-  await writeFile(path.join(dataDir, 'runtime.json'), JSON.stringify({ address, pid: process.pid }));
+  await atomicJson(path.join(dataDir, 'runtime.json'), { address, pid: process.pid, lockNonce: lock.owner.nonce });
   await builds.activate();
-  return { server, address, close: async () => { await runner.close(); await builds.close(); for (const client of events) client.end(); return new Promise(resolve => server.close(resolve)); } };
+  let closing;
+  return { server, address, close: () => closing ||= (async () => {
+    await runner.close(); await builds.close(); for (const client of events) client.end();
+    await new Promise(resolve => server.close(resolve)); await queue;
+    await unlink(path.join(dataDir, 'runtime.json')).catch(e => { if (e.code !== 'ENOENT') throw e; });
+    await lock.release();
+  })() };
+  } catch (e) {
+    await runner?.close().catch(() => {}); await builds?.close().catch(() => {});
+    if (server?.listening) await new Promise(resolve => server.close(resolve));
+    const runtimeFile = path.join(dataDir, 'runtime.json');
+    try { if (JSON.parse(await readFile(runtimeFile, 'utf8')).lockNonce === lock.owner.nonce) await unlink(runtimeFile); } catch (error) { if (error.code !== 'ENOENT') e.runtimeCleanupError = error.message; }
+    await lock.release(); throw e;
+  }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  const app = await createServer({ port: Number(process.env.STUDIO_PORT || 19321) });
+  const app = await createServer({ port: Number(process.env.STUDIO_PORT || 19321), dataDir: process.env.STUDIO_DATA_DIR });
   console.log(`Tavern Theme Studio: ${app.address}`);
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => { await app.close(); process.exit(0); });
 }

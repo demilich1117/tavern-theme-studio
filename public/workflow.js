@@ -63,13 +63,48 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
   }
   function describe(anchor) { return `${TARGETS.find(t => t.id === anchor.target)?.name || anchor.target} · ${anchor.viewport.width} × ${anchor.viewport.height}${anchor.fixture ? ' · 虚构测试对话' : ''}`; }
   async function loadTickets() { tickets = await api('/api/tickets'); renderTickets(); sendPins(); }
-  async function copyAgent(ids) {
+  async function copyAgent(ids, compact = true) {
     if (!ids.length) throw new Error('请先明确选择需要处理的小票。');
     const selected = await Promise.all(ids.map(id => api(`/api/tickets/${id}`)));
     const context = await api('/api/handoff-context');
-    await copyClipboard(formatAgentHandoff(selected, context), `已复制 ${ids.length} 张小票的完整交接内容，可粘贴到已打开项目的 harness 对话。`);
+    await copyClipboard(formatAgentHandoff(selected, context, { compact }), `已复制 ${ids.length} 张小票的${compact ? '简明' : '完整'}交接内容，可粘贴到已打开项目的 harness 对话。`);
   }
   function updateSelection() { $('#copy-harness').textContent = `复制所选给 Agent (${selectedTickets.size})`; $('#copy-harness').disabled = !selectedTickets.size; }
+  function reviewPanel(ticket) {
+    const panel = node('details', undefined, 'ticket-evidence');
+    panel.append(node('summary', '查看变更与证据'));
+    const body = node('div', undefined, 'evidence-body'); panel.append(body);
+    panel.addEventListener('toggle', run(async () => {
+      if (!panel.open || panel.dataset.loaded) return;
+      panel.dataset.loaded = 'true'; body.textContent = '正在读取提交快照与证据…';
+      try {
+        const report = await api(`/api/tickets/${ticket.id}/review`); body.replaceChildren(node('p', report.note, 'panel-hint'));
+        if (report.stale) body.append(node('p', '提交后工程已有变化；以下证据对应提交时版本。请核对当前画面。', 'diagnostic-warning'));
+        if (report.error) body.append(node('p', report.error, 'workflow-error'));
+        if (report.changes) {
+          const value = v => { const s = typeof v === 'string' ? v : JSON.stringify(v); return s == null ? '未覆盖' : s.length > 240 ? s.slice(0, 240) + '…' : s; };
+          body.append(node('b', `工程变更 · ${report.changes.length} 项`));
+          for (const change of report.changes) {
+            const row = node('div', undefined, 'evidence-change');
+            row.append(node('span', change.label || change.path), node('code', value(change.before)), node('span', '→'), node('code', value(change.after))); body.append(row);
+          }
+        }
+        const grid = node('div', undefined, 'evidence-grid');
+        for (const artifact of report.artifacts) {
+          const card = node('div', undefined, 'evidence-card');
+          if (artifact.url) {
+            const link = node('a', artifact.label); link.href = artifact.url; link.target = '_blank'; link.rel = 'noopener';
+            if (artifact.type.startsWith('image/')) { const image = node('img'); image.src = artifact.url; image.alt = artifact.label; image.loading = 'lazy'; link.prepend(image); }
+            card.append(link);
+          } else card.append(node('b', artifact.label), node('small', artifact.unavailable, 'panel-hint'));
+          card.append(node('code', artifact.reference)); grid.append(card);
+        }
+        body.append(grid);
+        if (!report.artifacts.length) body.append(node('p', '处理者未附证据文件。', 'panel-hint'));
+      } catch (e) { delete panel.dataset.loaded; body.textContent = e.message; }
+    }));
+    return panel;
+  }
   function renderTickets() {
     $('#ticket-count').textContent = relevant().filter(t => t.state !== 'done').length;
     const filter = $('#ticket-filter').value;
@@ -93,10 +128,15 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
         else send('annotation-focus', { anchor: ticket.location?.kind === 'container' ? { ...ticket.anchor, target: ticket.location.id, occurrence: 0, messageIndex: undefined, point: { x: .5, y: .5 } } : ticket.anchor });
       });
       const copy = node('button', '复制 JSON'); copy.addEventListener('click', run(async () => { await copyClipboard(JSON.stringify(await api(`/api/tickets/${ticket.id}`), null, 2), '纯 JSON 已复制。'); }));
-      const agent = node('button', '复制给 Agent'); agent.addEventListener('click', run(() => copyAgent([ticket.id])));
-      actions.append(locate, agent, copy);
+      const agent = node('button', '复制给 Agent'); agent.title = '简明交接：Agent 会重新读取完整小票与快照'; agent.addEventListener('click', run(() => copyAgent([ticket.id])));
+      const full = node('button', '复制完整交接'); full.addEventListener('click', run(() => copyAgent([ticket.id], false)));
+      actions.append(locate, agent, full, copy);
       if (ticket.state === 'review') {
-        const accept = node('button', '验收通过', 'primary'); accept.addEventListener('click', run(async () => { await api(`/api/tickets/${ticket.id}`, { action: 'accept', version: ticket.version }); await loadTickets(); })); actions.append(accept);
+        const stale = ticket.completedBasis?.fingerprint !== getState().fingerprint;
+        const acknowledge = node('input'); acknowledge.type = 'checkbox';
+        const accept = node('button', '验收通过', 'primary'); accept.disabled = stale || ticket.basis.projectId !== getState().projectId;
+        if (stale) { const label = node('label', undefined, 'review-acknowledge'); label.append(acknowledge, node('span', '提交后工程已有变化。我已核对当前效果。')); row.append(label); acknowledge.addEventListener('change', () => { accept.disabled = !acknowledge.checked || ticket.basis.projectId !== getState().projectId; }); }
+        accept.addEventListener('click', run(async () => { await api(`/api/tickets/${ticket.id}`, { action: 'accept', version: ticket.version, acknowledgeChanged: acknowledge.checked }); await loadTickets(); })); actions.append(accept);
       }
       if (ticket.state !== 'open') {
         const reopen = node('button', '重新待办'); reopen.addEventListener('click', run(async () => { await api(`/api/tickets/${ticket.id}`, { action: 'reopen', version: ticket.version }); await loadTickets(); })); actions.append(reopen);
@@ -112,9 +152,8 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
           result.append(node('small', `使用基线：revision ${details.baseline.revision} · ${details.baseline.fingerprint.slice(0, 12)}`));
           for (const check of details.checks) result.append(node('p', `${({ passed: '通过', failed: '失败', skipped: '跳过' })[check.status]} · ${check.name}：${check.detail}`));
           for (const item of details.unverified) result.append(node('p', `未验证：${item}`, 'diagnostic-warning'));
-          for (const artifact of details.artifacts) result.append(node('p', `${artifact.label}：${artifact.reference}`, 'ticket-meta'));
         }
-        row.append(result);
+        row.append(result, reviewPanel(ticket));
       }
       row.append(actions); list.append(row);
     }

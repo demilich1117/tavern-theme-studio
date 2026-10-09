@@ -6,13 +6,14 @@ import { attachSource } from '/source.js';
 import { attachLayers } from '/layers.js';
 import { attachLayouts } from '/layouts.js';
 import { attachExport } from '/export.js';
+import { attachSetup } from '/setup.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
 let peer, peerOrigin, session, ready = false, live = false, lastSeen = 0, isPicking = false, connectedTheme;
 let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, layers, layouts, detailsExpanded = false;
 let fixtureBusy = false, fixtureSupported = false;
-let fixtureState, awaitingFirstPreview = false;
+let fixtureState, awaitingFirstPreview = false, connectorCapabilities;
 function updateFixture(fixture) {
   if (fixture) fixtureState = fixture;
   fixtureSupported = fixture?.supported === true;
@@ -146,6 +147,7 @@ window.addEventListener('message', event => {
   layouts?.receive(data);
   switch (data.type) {
     case 'ready': {
+      connectorCapabilities = data.capabilities;
       if (data.capabilities?.projectSchema !== 3 || (state.project.recipe && data.capabilities?.decorations !== 1)) {
         ready = false; $('#connection-caption').textContent = '连接器需要更新';
         toast('此工程使用 v3。请安装新版连接器，再刷新专用测试标签。', true); break;
@@ -253,6 +255,7 @@ try {
   buildControls(); bindControls();
   advanced = attachAdvanced({ getState: () => state, command, preview, send, toast, getSelected: () => selected, isLive: () => live, isReady: () => ready, setDevice, getDevice: () => device });
   workflow = attachWorkflow({ getState: () => state, getToken: () => token, getScope: () => scope, command, send, toast, isReady: () => ready, stopPicking: () => setPicking(false), download });
+  attachSetup(() => ({ ready, live, capabilities: connectorCapabilities, fixture: $('#fixture-status').textContent }));
   source = attachSource({ getState: () => state, getToken: () => token, toast });
   layers = attachLayers({ getState: () => state, command, preview, toast, send });
   layouts = attachLayouts({ getState: () => state, command, toast, getSelected: () => selected });

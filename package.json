@@ -1,20 +1,29 @@
 {
   "name": "tavern-theme-studio",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "本地酒馆主题可视化工作台",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node server.js",
     "lab": "node scripts/start-native-lab.js",
     "test": "node --test tests/*.test.js",
     "check": "node scripts/check.js",
+    "doctor": "node scripts/doctor.js",
+    "package:workbench": "node scripts/package-workbench.js",
+    "release:check": "npm run check && npm test && npm run package:workbench && node scripts/smoke-package.js",
     "cli": "node scripts/cli.js",
     "package:connector": "node scripts/package-connector.js",
     "build:example": "node scripts/build-moonveil-theme.js",
     "build:folio": "node scripts/build-moonveil-crescent.js",
     "package:folio": "node scripts/package-moonveil-crescent.js"
+  },
+  "dependencies": {
+    "css-tree": "3.1.0"
   }
 }
 

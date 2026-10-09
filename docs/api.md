@@ -114,3 +114,13 @@ node scripts/cli.js command output/command.json
 ## 0.7 布局与画面定位
 
 `breakpoints` 命令原子更新断点列表及各尺寸覆盖，旧 mobile 保留 767px。`set` 可修改受控容器的布局字段。定位桥接带完整基线，临时拖动不写入，松手提交一次。字段与限制见 [定位与布局](layouts-and-geometry.md)。
+
+## 0.8.1 验收与证据补充
+
+- `GET /api/health`：版本、Node、工程协议、数据锁、源码绑定与 CLI 配置摘要，不返回 token 或聊天。
+- `GET /api/tickets/<id>/review`：领取到提交的冻结快照差异、当前是否已变化、证据可用状态；旧票没有完成快照时 `changes=null` 并说明原因。
+- `GET /api/tickets/<id>/artifacts/<index>`：仅支持该票明确列出的、本项目 `output/` 内的 PNG/JPEG/WebP/GIF 或 JSON/Markdown/TXT，最多 16 MiB；检查真实路径、拒绝越界、HTML 和 SVG。没有通用本机文件读取接口。
+- `claim` / `review` 成功时新增 `claimedBasis.snapshotId` / `completedBasis.snapshotId`。不补写旧票或自动验收。
+- `accept` 若当前工程指纹不同于 `completedBasis.fingerprint` 返回 409；用户核对后可显式传 `acknowledgeChanged:true`。工程 ID 不同仍拒绝。
+- `node scripts/cli.js ticket-copy <id> --compact`：输出简明交接；默认 CLI 仍提供完整交接。UI「复制给 Agent」默认简明，「复制完整交接」保留快照文本。
+- 相同数据目录的第二个服务在任何迁移/恢复写入之前以 `STUDIO_DATA_LOCKED` 拒绝启动。服务启动失败或正常关闭释放锁；旧进程退出后可恢复。见 [恢复说明](release.md)。

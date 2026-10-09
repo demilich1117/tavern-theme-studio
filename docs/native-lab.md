@@ -9,13 +9,14 @@
 先启动原来的酒馆，更新已安装的工作台连接器，再运行：
 
 ```powershell
+npm ci --omit=dev
 npm run package:connector
-npm run lab -- dist/moonveil-covenant-2.2.4/moonveil.studio.json
+npm run lab
 ```
 
 `package:connector` 只打包。将 `dist/tavern-theme-studio-connector/` 的文件更新到原连接器目录；更新前备份。已有私人酒馆标签不需要刷新，新开测试标签会加载新版。
 
-`lab` 默认在 `http://127.0.0.1:19323` 启动工作台，工程与快照存放于 `.local/native-lab/`。文件参数只在这个目录尚无工程时作为种子；之后不会覆盖已有修改。可设置 `STUDIO_PORT` 和 `TAVERN_URL`。关闭该进程即停止测试服务。
+`lab` 默认在 `http://127.0.0.1:19323` 启动工作台，工程与快照存放于 `.local/native-lab/`。文件参数只在这个目录尚无工程时作为种子；之后不会覆盖已有修改。首次也可传 `examples/starter.theme.json`，不依赖未生成的 dist。可设置 `STUDIO_PORT`、`STUDIO_DATA_DIR` 和 `TAVERN_URL`。关闭该进程即停止测试服务。
 
 默认本机酒馆入口：
 

@@ -129,7 +129,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
     lastSeen = Date.now();
     try {
       switch (data.type) {
-        case 'hello': send('ready', { capabilities: { projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1 }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
+        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1 }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
         case 'ping': send('pong', { fixture: fixture?.status() }); break;
         case 'preview': {
           const project = validateProject(data.project);
@@ -193,3 +193,4 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
   window.addEventListener('pagehide', dispose);
   return { dispose };
 }
+import { STUDIO_VERSION } from '../shared/version.js';

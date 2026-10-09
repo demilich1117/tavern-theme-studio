@@ -25,7 +25,7 @@ try {
   };
   if (commandName === 'ticket-copy') {
     const ticket = await request(`/api/tickets/${encodeURIComponent(args[0] || '')}`), context = await request('/api/handoff-context');
-    console.log(formatAgentHandoff([ticket], context)); process.exit(0);
+    console.log(formatAgentHandoff([ticket], context, { compact: args.includes('--compact') })); process.exit(0);
   }
   if (['hub-status', 'hub-refresh', 'hub-verify', 'runner-status', 'runner-config', 'runner-start', 'runner-cancel', 'runner-retry', 'export-audit', 'asset-references'].includes(commandName)) {
     let result;

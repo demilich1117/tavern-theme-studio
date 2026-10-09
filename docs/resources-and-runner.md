@@ -88,3 +88,9 @@ GET/POST `/api/runner`；POST 的 action 为 configure/start/cancel/retry。
 GET `/api/export/audit`、`/api/export?mode=offline|external`、`/api/backup/manifest`、`/api/assets/references`、`/api/assets/variants`、`/api/assets/inspect?id=...`。POST `/api/assets/variant?original=...&kind=thumbnail|optimized` 上传二进制；POST `/api/assets/archive` 使用 `{ids,archived}`。
 
 所有 POST 都需要本机会话 token；工程与配置修改同时检查最新基线，配置另检查 version。图片缓存/优化只增添素材，不替用户应用到工程。
+
+## 0.8.1 导出与锁定
+
+依赖审计使用 css-tree 解析 URL、转义标识符、image-set 字符串和 @import，并按解析位置改写依赖；评论和普通 content 字符串不是依赖。无法可靠解析的 CSS / 动态 src() 或 image-set() 资源参数 会阻止严格导出并给出原因。可识别的依赖不代表可自动离线化：字体、远端样式表、相对路径等没有受支持的字节缓存时仍拒绝离线导出。
+
+工程 assetRefs 中保存的固定提交 URL 与 SHA-256 优先于当前 Hub 目录。目录更新、素材归档后，旧项目仍验证原地址；不自动升级版本。公开验证按 URL + 哈希记录，验证旧 URL 不代表新 URL 可访问。离线导出读取哈希校验后的本地字节，外链导出重新请求固定 URL 检查类型、哈希和已知大小。0.8 旧锁缺少大小/ext 时可从固定 URL 与实际哈希恢复验证。

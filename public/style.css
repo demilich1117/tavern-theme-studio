@@ -43,3 +43,18 @@ dialog{color:var(--text);background:var(--panel);border:1px solid var(--border-s
 #asset-layer { display: block; width: 100%; }
 #export-dialog pre { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 0; }
 #export-dialog .inline-controls { flex-wrap: wrap; }
+/* Review evidence and connection diagnosis follow the existing workbench tokens. */
+.ticket-evidence{margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.ticket-evidence summary{font-weight:600;cursor:pointer;min-height:40px;display:list-item;align-content:center;color:var(--accent)}
+.evidence-body{display:grid;gap:12px;padding:8px 0 16px;min-width:0}
+.evidence-change{display:grid;grid-template-columns:minmax(96px,1.4fr) minmax(0,1fr) 16px minmax(0,1fr);gap:8px;padding:8px;background:var(--control);border-radius:var(--radius);font-size:12px;align-items:start}
+.evidence-change code,.evidence-card code{overflow-wrap:anywhere;white-space:pre-wrap;font-size:11px;color:var(--secondary)}
+.evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px}
+.evidence-card{min-width:0;display:grid;gap:8px;padding:12px;background:var(--control);border-radius:var(--radius)}
+.evidence-card a{color:var(--accent);display:grid;gap:8px;min-height:40px;overflow-wrap:anywhere}
+.evidence-card img{display:block;width:100%;height:160px;object-fit:contain;background:var(--ink);border:1px solid var(--border);border-radius:4px}
+.review-acknowledge{display:flex;gap:8px;align-items:flex-start;padding:12px;background:var(--accent-bg);border-radius:var(--radius);color:var(--accent);font-size:12px;line-height:1.6;order:2}
+.review-acknowledge input{flex-shrink:0;margin-top:4px}
+.setup-status{display:grid;grid-template-columns:88px minmax(0,1fr);gap:12px 16px;font-size:13px;line-height:1.6}
+.setup-status dt{color:var(--secondary)}.setup-status dd{margin:0;overflow-wrap:anywhere}
+@media(max-width:520px){.evidence-change{grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr)}.evidence-change>span:first-child{grid-column:1/-1}.ticket-actions button,.ticket-evidence summary{min-height:44px}.setup-status{grid-template-columns:72px minmax(0,1fr);gap:12px}}
