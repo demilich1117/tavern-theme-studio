@@ -1,26 +1,101 @@
 # 酒馆主题工作台 · 核心安装包
 
-本地可视化美化工具。需要 **Node.js 22+** 与 SillyTavern。运行依赖已经随包提供；不需要先生成大型主题样本，也不需要配置模型 CLI 或 Source Hub。
+在真实酒馆里调整颜色、圆角、间距和装饰，满意后导出原生主题 JSON。本包版本 **0.9.2**，需要 **Node.js 22+**；已实测 SillyTavern **1.19.0 / 06bde939f**。
 
-1. 将本包解压到独立目录，打开终端，运行 `npm start`，或在 Windows 双击 `start.cmd`。
-2. 解压 `dist/tavern-theme-studio-connector.zip`，将其中整个文件夹放到酒馆 `data/<用户名>/extensions/`；安装后直接包含 manifest.json、connector/、shared/。刷新酒馆。
-3. 打开终端打印的 `#tts-lab` 链接。默认酒馆地址 8000、工作台 19323；等工作台明确显示「当前为虚构测试对话」后开始制作。
-4. 选部件、改属性、换素材或标点评论，观察真实酒馆预览。小票可简明或完整复制到已打开项目的 Agent 对话，由 Agent 领取、修改并提交待验收，再由你验收。
-5. 导出主题 JSON，在酒馆原生 UI Theme 中导入并选择，才完成持久化应用。
+运行依赖和连接器 ZIP 已包含在包里。入门与进阶是同一个工作台的两种路线。
 
-已有工程保存在 `.local/native-lab/`，重启和升级保留。`npm start`、`npm run lab` 和 `start.cmd` 共用同一工程。高级独立模式为 `npm run start:standalone`（19321 / `.local/`），原有独立模式数据保持原位。首次可用 `npm run lab -- examples/starter.theme.json` 选择通用起点；不要把已有工程作为新的种子反复导入。
+[发行下载与更新](https://github.com/demilich1117/tavern-theme-studio/releases) · [源码仓库](https://github.com/demilich1117/tavern-theme-studio)
 
-导入陌生主题后，可打开「素材 → 主题图片」，查图片、装饰及使用位置，再点「复制分析给 AI」。Agent 能读取完整 CSS、工程和本地图片；不需要手动粘贴大段 CSS。酒馆里切换了主题时，可在「主题 → 接入酒馆当前主题」读取为新工程，自动保存旧工程快照。见 [主题分析与接入](docs/theme-analysis.md)。
+| 你的目标 | 入口 |
+| --- | --- |
+| 和 Agent 从一个想法做出美化 | [从零共创指南](co-design.md)，工作台「从零共创」入口 |
+| 第一次安装，完成一处修改 | 下面的普通用户入门 |
+| 整理素材、使用 CSS、让 Agent 帮忙改 | [完整进阶指南](advanced-guide.md) |
+| 先看图再操作 | [DOUBLECHEESE 三页漫画](comic-guide.md)，从零设计先看 [共创篇](comic-guide.md#page-3) |
 
-连接问题先用 `npm run doctor`。真实连接器版本与 fixture 状态在「高级工具 → 连接诊断 → 检查连接与版本」。`STUDIO_PORT`、`STUDIO_DATA_DIR`、`TAVERN_URL` 分别设置端口、数据目录与酒馆地址。同一数据目录只允许一个实例。
+<a id="beginner"></a>
 
-代码使用 [MIT](LICENSE)，运行依赖与素材范围见 [第三方声明](THIRD-PARTY-NOTICES.md)。本核心包不包含大型月誓主题示例或维护测试；package.json 中开发/样本打包命令须在完整源码仓库中运行。
+## 普通用户入门
 
-- [真实酒馆与测试对话](docs/native-lab.md)
-- [小票交接](docs/annotations-assets.md)
-- [CLI 与 HTTP](docs/api.md)
-- [资源与可选 CLI 适配](docs/resources-and-runner.md)
-- [图层](docs/decorations.md) / [布局与断点](docs/layouts-and-geometry.md)
-- [备份、升级与恢复](docs/release.md)
+### 1. 启动
 
-当前实测宿主为 SillyTavern 1.19.0。实体手机、群聊、真实流式与各厂商 CLI 仅在实际验证后记录为可用；复制交接始终独立于自动启动适配器。
+保持酒馆运行，完整解压本包，进入 `tavern-theme-studio` 文件夹。Windows 双击 `start.cmd`，或在此目录打开终端运行：
+
+```powershell
+npm start
+```
+
+运行期间保持终端开启。
+
+### 2. 安装连接器
+
+解压 `dist/tavern-theme-studio-connector.zip`，将整个 `tavern-theme-studio-connector` 文件夹放入酒馆 `data/<用户名>/extensions/`。
+
+正确层级：
+
+```text
+data/<用户名>/extensions/tavern-theme-studio-connector/
+├─ manifest.json
+├─ connector/
+└─ shared/
+```
+
+刷新或新开酒馆标签，在「扩展」面板确认出现「主题工作台」。不要多套一层同名目录。
+
+### 3. 打开测试对话
+
+打开终端打印的 `#tts-lab` 链接，等工作台显示「当前为虚构测试对话」。默认酒馆地址是 8000，工作台端口是 19323；地址不同的设置方法见 [真实酒馆工作流](native-lab.md)。
+
+### 4. 改一处样式
+
+先在「保存 / 恢复版本」保存修改前版本，再点「拾取元素」并点击一条角色消息，调颜色、圆角或间距。也可从「界面部件」选择。
+
+勾选「查看原样」比较前后，`Ctrl+Z` 撤销。规则作用于同类部件；窄屏修改用「仅手机」，检查时缩窄真实酒馆窗口。
+
+### 5. 导出，并在酒馆里保存
+
+点击「导出主题」，填写新名称并「下载酒馆主题 JSON」。再到酒馆「用户设置 → UI Theme」导入并选择。
+
+**临时预览 ≠ 保存主题。** 导出不会自动应用到酒馆。普通导出内嵌本地图片，保留原有图片和字体外链；含外链的主题仍需网络。酒馆拒绝同名主题导入，请使用新的导出名称。
+
+### 6. 保留工程
+
+从「主题 → 备份工程」保存 `.studio.json`，下次回到工作台继续编辑。主题 JSON 用来安装，工程备份用来继续制作，命名版本用来阶段恢复。
+
+## 从零制作自己的美化
+
+连接后打开「从零共创」：说一句想做什么主题，选电脑 / 手机、布局能改多大，点「复制开场给 Agent」即可。参考图和特别要求折叠为选填，不用先写专业需求。Agent 先认识真实酒馆界面，再提 2–3 个构图和排版不同的视觉方向，用图与你讨论；布局允许大改，原生功能仍需保留。选定图片版本与取舍后，复制原生样板交接，先完成阅读面板、两类消息和输入区，再逐步扩展、用小票迭代并交付。
+
+图像生成使用 Agent 对话中的工具；复制不会启动 AI，也不会附带参考图片。简报按工程保存在此浏览器，换工程或设备前请下载，它不随工程备份导出。起点选择只记录意图，新主题另在「主题」中导入干净基础或 `examples/starter.theme.json`；已有工程会先保存恢复版本。
+
+界面地图、出图提示与选图方法见 [完整共创指南](co-design.md)，需要手工记录时用 [设计简报模板](co-design-brief.template.md)。已有明确参考图或只做小修，可以缩短探索。
+
+[看 DOUBLECHEESE 六格共创漫画与文字步骤](comic-guide.md#page-3)。
+
+<a id="advanced"></a>
+
+## 进阶路线
+
+| 需要什么 | 使用方式 |
+| --- | --- |
+| 接入另一份主题 | 「主题 → 接入酒馆当前主题」核对名称，保存快照并切换；或导入 JSON |
+| 找到图片与装饰 | 「素材 → 主题图片」清点使用位置，再整理素材库和图层 |
+| 让 Agent 修改指定位置 | 标点写需求 → 复制小票 → 粘贴到已打开本项目的 Agent → 检查后验收 |
+| 调整复杂样式 | 「主题样式」「高级 CSS」、断点和样式诊断 |
+| 完整备份或严格导出 | [进阶指南的交付与备份](advanced-guide.md#delivery) |
+
+复制小票不会自动启动 AI。工作台没有内置模型聊天面板；Source Hub 和本机 CLI 适配都按需配置。
+
+## 启动、升级和故障处理
+
+`npm start`、`npm run lab` 和 `start.cmd` 共用默认工程 `.local/native-lab/`。高级独立模式为 `npm run start:standalone`（19321 / `.local/`），数据各自保留。同一数据目录只运行一个实例。
+
+`STUDIO_PORT`、`STUDIO_DATA_DIR`、`TAVERN_URL` 分别设置工作台端口、数据目录和酒馆地址。升级前停止工作台，备份实际数据目录，更新程序文件时保留数据。
+
+连接或启动问题先运行 `npm run doctor`，再看「高级工具 → 连接诊断 → 检查连接与版本」。检查依赖是否完整、连接器目录层级是否正确、酒馆与工作台是否仍在运行。
+
+[进阶指南](advanced-guide.md) · [漫画说明](comic-guide.md) · [备份与恢复](release.md) · [API / CLI](api.md) · [主题分析](theme-analysis.md)
+
+本核心包提供通用起点主题，不包含大型月誓示例素材和维护测试；开发 / 样本构建命令需要完整源码仓库。
+
+代码使用 [MIT](../LICENSE)；依赖、示例素材和漫画范围见 [第三方声明](../THIRD-PARTY-NOTICES.md)。实体手机、群聊、真实流式和第三方扩展特殊组件需按实际环境另行验证。

@@ -1,0 +1,39 @@
+Use case: illustration-story.
+Asset type: finished Simplified Chinese comic instruction sheet for Tavern Theme Studio, a new companion page about co-designing a native SillyTavern theme from scratch with an Agent.
+Input image 1: CHARACTER AND PAGE-STYLE REFERENCE ONLY. Create a NEW companion comic based on this reference, replacing its panel actions and dialogue with the six-panel script below. Preserve the established DOUBLECHEESE character identity and warm ivory paper, espresso-brown outlines, cheese-gold numbered badges, burgundy accents, wood tavern workbench, richly shaded chibi illustration and typography. Do not reproduce the old page number or old panel text.
+
+The only protagonist is DOUBLECHEESE, consistent in all panels: warm brown skin, golden amber eyes, messy golden blond hair with long side strands and curled tuft, backwards burgundy cap and gold buckle, gold earrings, dark choker, chocolate streetwear jacket with cheese-yellow details and checkerboard lining, fingerless gloves, dark cargo trousers. Playful and confident. Ordinary chibi streetwear. No extra characters or robot mascots. Especially careful hand anatomy: exactly two arms per appearance; correct coherent hands, no duplicate hands, missing fingertips, or merged fingers. Hands should clearly grip each prop or point without impossible poses.
+
+Portrait about 2:3 aspect ratio, ideally 1536 x 2304 or similarly detailed. Exactly SIX numbered comic panels in TWO columns and THREE rows, reading left-to-right then top-to-bottom. Large title band, generous gutters, readable speech balloons, clearly sequenced storytelling. Dark editor and native chat UI are simple schematic drawings with meaningful message shapes and an input bar, NOT screenshots and NOT landscapes pretending to be chat interfaces. Large crisp Simplified Chinese lettering. Use ONLY the exact specified text, no invented small print.
+
+Title verbatim: "DOUBLECHEESE 的主题改造课"
+Subtitle verbatim: "03 / 从零共创你的酒馆"
+
+Panel 1 caption: "1  先认识酒馆"
+Speech: "先看真实界面，再发挥想象力！"
+Action: DOUBLECHEESE points with one hand at a large native chat layout map, holding a pointer or gesturing with a coherent hand. The screen visibly has a menu strip, two stacked character/user messages with avatars and a bottom input bar. Three clear labels only: "阅读区", "消息", "输入区". Warm light and curious expression.
+
+Panel 2 caption: "2  写一页简报"
+Speech: "设备、阅读习惯、氛围，先说清楚。"
+Action: DOUBLECHEESE writes a brief at the workbench; one writing hand and one hand naturally resting on the page. A simple note shows two example choices: "手机长文", "安静手稿感". A dark workbench tab labeled "从零共创" and one button labeled "复制开场给 Agent". The note is a creative brief, not code.
+
+Panel 3 caption: "3  用图探索方向"
+Speech: "比构图和排版，别只换颜色！"
+Action: DOUBLECHEESE thoughtfully compares THREE visual direction cards with clearly DIFFERENT native chat compositions, all including readable negative space and a bottom input bar: A continuous ivory page with integrated messages, B separated dark correspondence cards, C pale handwritten manuscript with narrow margin annotations. Each has a large label: "A 书页", "B 通讯笺", "C 批注". They must differ in message shapes, avatar/name placement, spacing, and ornament distribution, not merely color. Small note verbatim: "到 Agent 对话出图".
+
+Panel 4 caption: "4  选图并记取舍"
+Speech: "选 A 的书页感，手机减少装饰。"
+Action: DOUBLECHEESE selects a card labeled "A-v2" with a visible golden check, comparing a desktop layout to a phone layout in which the large corner ornament has been removed and text is more spacious. A decision note has the labels "保留", "调整", "舍弃". The pose is clear and hands are anatomically coherent.
+
+Panel 5 caption: "5  先做原生样板"
+Speech: "先做消息和输入区，回酒馆试读！"
+Action: DOUBLECHEESE examines a functional native chat prototype with two message styles and bottom input on a desktop and a phone, comparing with a small pinned concept sheet. The prototype clearly contains chat paragraphs, avatars and an input bar, not landscape art. One label: "真实测试对话". Gold reminder strip verbatim: "参考图 ≠ 验收截图".
+
+Panel 6 caption: "6  迭代、验收、交付"
+Speech: "标点提意见，检查后导出并导入！"
+Action: DOUBLECHEESE celebrates modestly with a thumbs-up; on the desk a numbered feedback ticket leads via a check mark to three neatly arranged deliverable file cards labeled "主题 JSON", "工程备份", "设计简报". Show the final theme card traveling into a small tavern chat window via an arrow, representing native import after export. No false indication of automatic model calls or automatic theme installation.
+
+Bottom reminder strip verbatim: "临时预览 ≠ 保存主题"
+Footer verbatim: "Tavern Theme Studio · 0.9.2 · 共创篇"
+
+Constraints: Match reference quality, protagonist identity and wardrobe. Draw new poses and scenes. No replacement of the old reference file. Complete Chinese glyphs, clean line breaks, no gibberish, no watermarks, no extra logos, no clipped balloons. The workflow is understand native UI → brief → image discussion → record decision → native prototype → test and deliver. Keep the distinction between visual concepts and working UI clear.

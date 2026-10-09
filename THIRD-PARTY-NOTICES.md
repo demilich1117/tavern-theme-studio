@@ -15,3 +15,11 @@
 `examples/moonveil-*`、`public/folio-art/`、`public/moonveil*` 以及相关主题发行包中的装饰图、字体和第三方资源不自动套用代码 MIT 许可。它们的来源、生成过程及已有第三方声明见对应示例 README 和 THIRD-PARTY-NOTICES。Font Awesome 字体/图标依其随包声明使用。示例素材包公开分发前须逐项确认权利；核心工具 ZIP 不包含这些大型示例素材或主题包。
 
 用户导入的主题、上传素材、Source Hub 素材和小票证据由原权利人保留权利。工作台的缓存、哈希验证或导出成功不代表取得素材再分发许可。
+
+## DOUBLECHEESE 说明漫画
+
+`docs/assets/doublecheese/01-getting-started.jpg` 和 `02-advanced.jpg` 用于本项目入门与进阶说明，也随核心安装包提供。DOUBLECHEESE 的角色参考由用户提供；两页原稿使用内置 imagegen 生成，最终配图采用用户修正手部后提供的版本。
+
+`docs/assets/doublecheese/03-co-design.png` 为新增的从零共创说明，以既有第二页漫画作为角色与画风参考，使用内置 imagegen 生成；前两页保持原样。共创篇及其提示词同样随核心包提供。
+
+角色与参考图的权利归原权利人，漫画图片不自动套用代码的 MIT 许可。来源、提示词及文件校验记录见 [漫画制作记录](docs/assets/doublecheese/GENERATION.md)。

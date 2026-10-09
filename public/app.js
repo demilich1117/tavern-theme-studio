@@ -8,6 +8,7 @@ import { attachLayouts } from '/layouts.js';
 import { attachExport } from '/export.js';
 import { attachSetup } from '/setup.js';
 import { attachThemeAnalysis } from '/theme-analysis.js';
+import { attachCoDesign } from '/co-design.js';
 import { attachNavigation, showEditor } from '/panels.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
@@ -16,7 +17,7 @@ let peer, peerOrigin, session, ready = false, live = false, lastSeen = 0, isPick
 let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, layers, layouts, detailsExpanded = false;
 let fixtureBusy = false, fixtureSupported = false;
 let fixtureState, awaitingFirstPreview = false, connectorCapabilities;
-let themeAnalysis;
+let themeAnalysis, coDesign;
 function updateFixture(fixture) {
   if (fixture) fixtureState = fixture;
   fixtureSupported = fixture?.supported === true;
@@ -25,6 +26,7 @@ function updateFixture(fixture) {
   $('#fixture-fresh').disabled = !ready || !fixtureSupported || fixtureBusy;
   $('#fixture-scene').disabled = !ready || !fixture?.active || fixtureBusy;
   $('#fixture-status').textContent = fixtureBusy ? '正在打开原生测试对话…' : !ready ? '酒馆连接已断开' : awaitingFirstPreview ? '正在应用主题预览…' : !fixtureSupported ? '更新连接器后可使用原生测试对话。' : fixture.active ? '当前为虚构测试对话 · 使用酒馆原生控件' : '测试对话独立保存；已有输入或编辑会阻止切换。';
+  coDesign?.render();
 }
 function toast(text, error = false) { clearTimeout(toastTimer); $('#toast').textContent = text; $('#toast').classList.toggle('error', error); $('#toast').hidden = false; toastTimer = setTimeout(() => $('#toast').hidden = true, 5000); }
 function send(type, payload = {}) { if (peer) peer.postMessage({ channel: CHANNEL, session, type, ...payload }, peerOrigin); }
@@ -101,6 +103,7 @@ function render() {
   $('#css-badge').textContent = state.project.customCss.trim() ? '●' : '';
   renderFields(); advanced?.render(); workflow?.render(); source?.render(); layers?.render(); layouts?.render();
   themeAnalysis?.render();
+  coDesign?.render();
 }
 function setSelected(id) { showEditor(); selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
 function setDevice(next) {
@@ -270,6 +273,7 @@ try {
   layers = attachLayers({ getState: () => state, command, preview, toast, send });
   themeAnalysis = attachThemeAnalysis({ getState: () => state, getToken: () => token, command, send, toast, connection: () => ({ ready, live, capabilities: connectorCapabilities }) });
   layouts = attachLayouts({ getState: () => state, command, toast, getSelected: () => selected });
+  coDesign = attachCoDesign({ getState: () => state, connection: () => ({ ready, live, fixtureActive: fixtureSupported && fixtureState?.active && !fixtureBusy && !awaitingFirstPreview }), selectTarget: setSelected, stopPicking: () => setPicking(false), toast });
   attachNavigation(); render(); connect();
   const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };
   window.addEventListener('pagehide', () => { events.close(); clearInterval(helloTimer); clearInterval(heartbeat); }, { once: true });

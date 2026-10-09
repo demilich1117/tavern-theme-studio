@@ -1,4 +1,4 @@
-const groups = { 'theme-analysis-dialog': 'materials', 'assets-dialog': 'materials', 'layers-dialog': 'materials', 'tickets-dialog': 'comments' };
+const groups = { 'theme-analysis-dialog': 'materials', 'assets-dialog': 'materials', 'layers-dialog': 'materials', 'tickets-dialog': 'comments', 'co-design-dialog': 'co-design' };
 const $ = selector => document.querySelector(selector);
 let changing = false;
 
@@ -36,6 +36,7 @@ export function attachNavigation() {
   $('#edit-view').addEventListener('click', showEditor);
   $('#materials-view').addEventListener('click', () => $('#theme-analysis-open').click());
   const tickets = $('#tickets-button'); tickets.dataset.view = 'comments'; $('#workbench-nav').append(tickets);
+  const coDesign = $('#co-design-view'); coDesign.hidden = false; $('#workbench-nav').append(coDesign);
   for (const [buttonId, panelId, name] of [['theme-analysis-open', 'theme-analysis-dialog', '主题图片'], ['assets-button', 'assets-dialog', '素材库'], ['layers-button', 'layers-dialog', '可调装饰']]) {
     const button = document.getElementById(buttonId); button.dataset.panel = panelId;
     if (buttonId !== 'layers-button') button.textContent = name;

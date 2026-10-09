@@ -1,0 +1,36 @@
+Use case: illustration-story.
+Asset type: finished Chinese comic instruction sheet for the Tavern Theme Studio README, page 1 of 2.
+Input image 1: CHARACTER REFERENCE ONLY. Draw a NEW comic; do not alter or copy the reference composition. The only protagonist is DOUBLECHEESE, the same cheerful, confident chibi character from the reference: warm brown skin, golden amber eyes, messy layered golden blond hair with long side strands and an upward curl, backwards dark burgundy cap with a gold buckle, gold earrings, black choker, dark brown streetwear jacket with melted-cheese yellow details and black/white checker lining, dark fingerless gloves, cargo pants and chunky sneakers. Preserve this recognizable identity in every panel. Use the reference's richly shaded anime/chibi illustration style.
+
+Create a polished portrait comic page, approximately 2:3 aspect ratio, high resolution and crisp readable Simplified Chinese. Warm ivory paper, espresso brown ink, cheese gold and burgundy accents derived from the character. A prominent title band, then exactly SIX clearly numbered panels arranged in TWO columns and THREE rows, read left-to-right and top-to-bottom. Clear gutters, generous speech-balloon space, strong typography, unobstructed artwork. This is a real instructional comic with expressive poses, sequential action and a gently playful tone, not a text-heavy infographic. Show a dark visual editor and a simplified tavern chat as illustrative UI; no dense invented interface text, no photographed screens, no additional people.
+
+Title, verbatim: "DOUBLECHEESE 的主题改造课"
+Subtitle, verbatim: "01 / 普通用户入门"
+
+Panel 1 caption, verbatim: "1  开工准备"
+Speech, verbatim: "先运行工作台，再装连接器！"
+Action: DOUBLECHEESE starts a laptop, carrying a small connector plug toward a simple chat-window icon. Two clear small labels only: "Node.js 22+" and "start.cmd". This is the core-ZIP path; do not show model API keys or theme sample downloads.
+
+Panel 2 caption, verbatim: "2  连接真实酒馆"
+Speech, verbatim: "打开测试链接，确认虚构测试对话。"
+Action: character proudly points at a connected editor beside fictional chat bubbles. One clearly visible status badge, verbatim: "当前为虚构测试对话". No actual private messages.
+
+Panel 3 caption, verbatim: "3  先留退路"
+Speech, verbatim: "保存一个版本，放心开始改！"
+Action: character presses a snapshot button and places a miniature version card in a little drawer. Button text only: "保存 / 恢复版本".
+
+Panel 4 caption, verbatim: "4  点哪改哪"
+Speech, verbatim: "拾取元素，调颜色、圆角和间距。"
+Action: character uses a cursor to select a message card, then moves sliders while it visibly becomes more comfortable and rounded. Button label only: "拾取元素". Small second balloon, verbatim: "改过头？Ctrl+Z！"
+
+Panel 5 caption, verbatim: "5  电脑手机都看看"
+Speech, verbatim: "先调所有尺寸，再检查手机。"
+Action: character compares a wide desktop screen and a narrow phone, using a magnifying glass for text spacing. Two label chips only: "所有尺寸" and "仅手机". A small caption, verbatim: "真实酒馆要缩窄窗口实测。"
+
+Panel 6 caption, verbatim: "6  导出才是交付"
+Speech, verbatim: "导出 JSON，再到酒馆导入并选择！"
+Action: character hands a theme JSON file from the editor to the tavern window. A clear gold reminder strip, verbatim: "临时预览 ≠ 保存主题". Small label only: "UI Theme".
+
+Footer, verbatim: "Tavern Theme Studio · 0.9.2 · 1/2"
+
+Render ONLY the specified visible text, exactly, with complete legible Chinese glyphs and clean line breaks. All captions and speech balloons must be readable at full page view. Avoid decorative gibberish, broken text, extra tutorial steps, logos, watermarks, clipped balloons, overcrowded UI, and inconsistent character designs. Keep the reference clothing as ordinary playful chibi streetwear, with no emphasis on sexuality.

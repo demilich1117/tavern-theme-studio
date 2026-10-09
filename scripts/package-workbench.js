@@ -17,7 +17,8 @@ async function tree(folder) {
   }
 }
 for (const folder of ['shared', 'connector']) await tree(folder);
-for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md', 'theme-analysis.md']) paths.add('docs/' + file);
+for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md', 'theme-analysis.md', 'advanced-guide.md', 'co-design.md', 'co-design-brief.template.md', 'comic-guide.md', 'validation-0.9.2.md']) paths.add('docs/' + file);
+await tree('docs/assets/doublecheese');
 for (const file of ['cli.js', 'doctor.js', 'start-native-lab.js', 'package-connector.js']) paths.add('scripts/' + file);
 // Lockfile defines the complete installed runtime closure; include original
 // package licenses and hashes, never development caches or workspace data.
@@ -31,7 +32,14 @@ for (const [folder, info] of Object.entries(lock.packages)) {
 }
 const manifest = { version: STUDIO_VERSION, format: 'tavern-theme-studio-core', files: [] }, files = [];
 for (const file of [...paths].sort()) {
-  const bytes = await readFile(path.join(root, file === 'README.md' ? 'docs/installation.md' : file));
+  let bytes = await readFile(path.join(root, file === 'README.md' ? 'docs/installation.md' : file));
+  if (file === 'README.md') {
+    // The source guide lives under docs/; the packaged README lives at the root.
+    bytes = Buffer.from(bytes.toString('utf8').replace(/(\]\()([^\s)]+)(\))/g, (match, before, target, after) => {
+      if (/^(?:[a-z][\w+.-]*:|#|\/)/i.test(target)) return match;
+      return before + path.posix.normalize(path.posix.join('docs', target)) + after;
+    }));
+  }
   files.push(['tavern-theme-studio/' + file, bytes]);
   manifest.files.push({ path: file, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') });
 }
