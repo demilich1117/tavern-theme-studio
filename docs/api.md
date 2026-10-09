@@ -10,6 +10,10 @@
 
 ## CLI
 
+作品版本使用 `artwork-status`、`artwork-config <绝对目录>`、`artwork-save <名称> [--note <说明>] [--git] [--no-source]`、`artwork-verify <id>`、`artwork-commit <id>` 和 `artwork-restore <id>`。界面入口为「主题 → 作品存档与回溯」，完整范围见 [作品存档](artwork-history.md)。
+
+`GET /api/artworks` 读取当前工程的存档位置和版本；`POST /api/artworks` 带最新 basis 与 token，action 为 configure/save/verify/commit/restore。configure 使用 `root`，save 使用 `name`、`note?`、`includeSource?`、`gitCommit?`，其余使用 `id`。保存返回 `id,directory,baseline,source,warnings,git,snapshotCreated?`；Git 失败时文件仍已存档，`git.status=failed` 与 `detail` 说明原因。恢复工程先核验全部文件并保存当前快照，暂停源码同步，不自动覆盖源码或推送 Git。
+
 ```powershell
 node scripts/cli.js status
 node scripts/cli.js targets

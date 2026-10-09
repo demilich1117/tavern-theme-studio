@@ -58,6 +58,14 @@ details>summary { cursor:pointer; min-height:40px; align-content:center; }
 .ticket-secondary>div { display:flex; flex-wrap:wrap; gap:8px; }
 #storage-location { overflow-wrap:anywhere; }
 #snapshots-button { width:100%; justify-content:flex-start; margin-bottom:16px; }
+.artwork-form { display:grid; gap:10px; margin:16px 0; }
+.artwork-form input:not([type=checkbox]), .artwork-form textarea { width:100%; min-width:0; box-sizing:border-box; }
+.artwork-option { display:flex; gap:8px; align-items:center; }
+.artwork-version { padding:16px 0; border-top:1px solid var(--border); }
+.artwork-restore-confirm { margin-top:12px; padding:12px; border:1px solid var(--border); border-radius:8px; }
+.artwork-restore-confirm button { margin:0 8px 0 0; }
+#artwork-directory { overflow-wrap:anywhere; }
+#artwork-result { white-space:pre-wrap; overflow-wrap:anywhere; }
 .file-action span { line-height:1.6; }
 .embedded .topbar { position:static; gap:8px; padding:12px 16px 8px; }
 .embedded .brand { display:none; }

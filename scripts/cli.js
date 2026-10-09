@@ -11,6 +11,7 @@ try {
     console.log('\n  tickets\n  ticket <id>\n  ticket-claim <id> <owner>\n  ticket-review <id> <owner> <result.txt>\n  assets\n  asset-upload <image-file>\n  asset-link <url> [name]\n  optimize-assets');
     console.log('\n  ticket-copy <id>\n  ticket-review <id> <owner> <result.json>\n  build-status\n  build-presets\n  build-preset <index|name>\n  build-bind <local-config.json>\n  build-now\n  build-auto on|off\n  build-cancel');
     console.log('\n  theme-analyze\n  theme-source <new-output-directory> [snapshotId]\n  theme-copy');
+    console.log('\n  artwork-status\n  artwork-config <absolute-directory>\n  artwork-save <name> [--note <text>] [--git] [--no-source]\n  artwork-verify <id>\n  artwork-commit <id>\n  artwork-restore <id>');
     process.exit(0);
   }
   if (commandName === 'targets') { console.log(JSON.stringify({ targets: TARGETS, fields: FIELDS }, null, 2)); process.exit(0); }
@@ -29,6 +30,15 @@ try {
     const response = await fetch(address + endpoint, body === undefined ? {} : { method: 'POST', headers: { 'X-Studio-Token': session.token, ...(!raw && { 'Content-Type': 'application/json' }) }, body: raw ? body : JSON.stringify({ ...expected, ...body }) });
     const data = await response.json(); if (!response.ok) throw new Error(data.error); return data;
   };
+  if (commandName.startsWith('artwork-')) {
+    const action = commandName.slice('artwork-'.length);
+    if (!['status', 'config', 'save', 'verify', 'commit', 'restore'].includes(action)) throw new Error('Unknown artwork command');
+    const result = action === 'status' ? await request('/api/artworks') : await request('/api/artworks', {
+      action: action === 'config' ? 'configure' : action,
+      ...(action === 'config' ? { root: args[0] } : action === 'save' ? { name: args[0], note: args.includes('--note') ? args[args.indexOf('--note') + 1] : '', gitCommit: args.includes('--git'), ...(args.includes('--no-source') && { includeSource: false }) } : { id: args[0] }),
+    });
+    console.log(JSON.stringify(result, null, 2)); process.exit(0);
+  }
   if (['theme-analyze', 'theme-source', 'theme-copy'].includes(commandName)) {
     if (commandName === 'theme-copy') console.log((await request('/api/commands', { command: { type: 'theme-analysis-handoff' } })).analysisHandoff);
     if (commandName === 'theme-analyze') console.log(JSON.stringify(await request('/api/theme-analysis'), null, 2));

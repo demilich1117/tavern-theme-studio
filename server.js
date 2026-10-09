@@ -25,10 +25,11 @@ import { STUDIO_VERSION } from './shared/version.js';
 import { analyzeTheme, analysisHandoff } from './theme-analysis.js';
 import { rewriteVariables } from './shared/variables.js';
 import { compileOverrides } from './shared/core.js';
+import { createArtworkService } from './artwork-service.js';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.json': 'application/json; charset=utf-8', '.zip': 'application/zip' };
-export async function createServer({ dataDir = path.join(root, '.local'), port = 19321, seedPath } = {}) {
+export async function createServer({ dataDir = path.join(root, '.local'), port = 19321, seedPath, artworkHome } = {}) {
   const lock = await acquireDataLock(dataDir);
   dataDir = lock.dataDir;
   let builds, runner, server;
@@ -53,6 +54,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
   const assets = await createAssetStore(dataDir), tickets = await createTicketStore(dataDir);
   const hub = await createHubClient(dataDir, assets);
   const exports = createExportService(assets, hub);
+  const artworks = await createArtworkService({ dataDir, studioRoot: root, home: artworkHome, exports, assets });
   const variants = await createVariants(dataDir, assets);
   const snapshotDir = path.join(dataDir, 'snapshots');
   const snapshotPattern = /^[a-f0-9]{32}$/;
@@ -142,6 +144,40 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       }
       if (req.method === 'GET' && url.pathname === '/api/session') return send(res, 200, { token, ...view() });
       if (req.method === 'GET' && url.pathname === '/api/project') return send(res, 200, view());
+      if (req.method === 'GET' && url.pathname === '/api/artworks') return send(res, 200, await artworks.status(history.project.projectId, builds.status().config?.root));
+      if (req.method === 'POST' && url.pathname === '/api/artworks') {
+        if (!String(req.headers['content-type']).startsWith('application/json')) return send(res, 415, { error: 'JSON required' });
+        const input = JSON.parse((await body(req, 32768)).toString('utf8'));
+        const result = await enqueue(async () => {
+          checkBasis(input);
+          const build = builds.status(), projectId = history.project.projectId;
+          if (input.action === 'configure') return artworks.configure(projectId, input.root, build.config?.root);
+          if (input.action === 'save') {
+            const saved = await artworks.save({ project: history.snapshot().project, baseline: basis(), build, name: input.name, note: input.note, includeSource: input.includeSource, gitCommit: input.gitCommit === true, assertCurrent: async () => { checkBasis(input); } });
+            // The durable archive is already complete; snapshot failure cannot hide it.
+            try { saved.snapshotCreated = await saveSnapshot(`作品存档：${saved.name}`.slice(0, 120)); }
+            catch (e) { saved.warnings.push(`作品已存档，但快捷快照保存失败：${e.message}`); }
+            return saved;
+          }
+          if (input.action === 'commit') return artworks.commit(projectId, input.id, build.config?.root);
+          if (!['verify', 'restore'].includes(input.action)) throw new Error('未知作品存档操作。');
+          const archived = await artworks.verify(projectId, input.id, build.config?.root);
+          if (input.action === 'verify') return { id: input.id, verified: true, files: archived.manifest.files.length, source: archived.manifest.source, warnings: archived.manifest.warnings };
+          for (const image of archived.images) await assets.put(image.content, image.id);
+          const resolved = await assets.command({ type: 'import-project', project: archived.project }, history.project);
+          const candidate = new ProjectHistory(history.project);
+          candidate.past = [...history.past]; candidate.future = [...history.future]; candidate.revision = history.revision;
+          candidate.execute(resolved, input.revision);
+          const snapshotCreated = await saveSnapshot('作品恢复前：' + history.project.name.slice(0, 100));
+          await builds.pause('已恢复作品存档，自动同步暂停。核对源码后再继续构建。');
+          await persist(candidate); history = candidate;
+          await runner.projectChanged(); await builds.activate();
+          const result = { ...view(), snapshotCreated, restoredArtwork: input.id, sourceDirectory: archived.manifest.source.included ? path.join(archived.root, 'versions', input.id, 'source') : null };
+          for (const client of events) client.write(`data: ${JSON.stringify(view())}\n\n`);
+          return result;
+        });
+        broadcast('artworks', { changed: true }); return send(res, 200, result);
+      }
       if (req.method === 'GET' && ['/api/theme-analysis', '/api/theme-analysis/source'].includes(url.pathname)) {
         const saved = url.searchParams.has('snapshot') ? await readSnapshot(url.searchParams.get('snapshot')) : null;
         const project = saved?.project || history.snapshot().project;

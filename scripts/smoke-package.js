@@ -32,11 +32,14 @@ try {
       catch(error){ await app.close(); if(error.cause?.message!=='bad port'||attempt===4)throw error; }
     }
     try {
-      for(const route of ['/', '/app.js', '/workflow.js', '/panels.js', '/workspace.css', '/setup.js', '/co-design.js', '/shared/co-design.js', '/theme-analysis.js', '/clipboard.js', '/api/theme-analysis', '/api/theme-analysis/source', '/api/health', '/api/build/presets', '/connector.zip']) assert.equal((await fetch(app.address+route)).status,200,route);
+      for(const route of ['/', '/app.js', '/workflow.js', '/panels.js', '/workspace.css', '/setup.js', '/co-design.js', '/shared/co-design.js', '/theme-analysis.js', '/clipboard.js', '/artworks.js', '/api/artworks', '/api/theme-analysis', '/api/theme-analysis/source', '/api/health', '/api/build/presets', '/connector.zip']) assert.equal((await fetch(app.address+route)).status,200,route);
       const s=await(await fetch(app.address+'/api/session')).json();
       const response=await fetch(app.address+'/api/commands',{method:'POST',headers:{'Content-Type':'application/json','X-Studio-Token':s.token},body:JSON.stringify({projectId:s.projectId,sessionId:s.sessionId,revision:s.revision,fingerprint:s.fingerprint,command:{type:'set',target:'assistant',property:'border-radius',value:'12px'}})});
       assert.equal(response.status,200);
       const exported=await(await fetch(app.address+'/api/export?mode=offline')).json();assert.match(exported.theme.custom_css,/12px/);
+      const current=await(await fetch(app.address+'/api/session')).json();
+      const artwork=await fetch(app.address+'/api/artworks',{method:'POST',headers:{'Content-Type':'application/json','X-Studio-Token':current.token},body:JSON.stringify({projectId:current.projectId,sessionId:current.sessionId,revision:current.revision,fingerprint:current.fingerprint,action:'save',name:'Package validation'})});
+      assert.equal(artwork.status,200);const saved=await artwork.json();assert.equal(saved.baseline.fingerprint,current.fingerprint);
     }finally{await app.close()}
     const reopened=await createServer({port:0,seedPath:'dist/missing-old-example.json'});await reopened.close();
     console.log('Clean package startup, commands, export and restart: OK');`;

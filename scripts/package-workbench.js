@@ -17,7 +17,7 @@ async function tree(folder) {
   }
 }
 for (const folder of ['shared', 'connector', 'skills']) await tree(folder);
-for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md', 'theme-analysis.md', 'advanced-guide.md', 'co-design.md', 'co-design-brief.template.md', 'comic-guide.md', 'validation-0.9.2.md']) paths.add('docs/' + file);
+for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md', 'theme-analysis.md', 'advanced-guide.md', 'co-design.md', 'co-design-brief.template.md', 'comic-guide.md', 'validation-0.9.2.md', 'artwork-history.md']) paths.add('docs/' + file);
 await tree('docs/assets/doublecheese');
 // Preserve the earlier comic in source history; ship the current flow only.
 paths.delete('docs/assets/doublecheese/03-co-design.png');

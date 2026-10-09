@@ -33,7 +33,7 @@ export async function normalizeBuildConfig(value) {
   return { root, program: value.program, args: [...value.args], watch: paths, mode, debounceMs, timeoutMs };
 }
 
-export async function sourceFingerprint(config, dataDir) {
+export async function sourceFiles(config, dataDir) {
   const files = new Set();
   const data = path.resolve(dataDir);
   async function collect(relative) {
@@ -47,8 +47,12 @@ export async function sourceFingerprint(config, dataDir) {
     } else files.add(relative.replaceAll('\\', '/'));
   }
   for (const relative of config.watch) await collect(relative);
+  return [...files].sort();
+}
+export async function sourceFingerprint(config, dataDir) {
+  const files = await sourceFiles(config, dataDir);
   const hash = createHash('sha256').update(JSON.stringify({ program: config.program, args: config.args, mode: config.mode }));
-  for (const file of [...files].sort()) { hash.update(file).update('\0'); hash.update(await readFile(path.join(config.root, file))); hash.update('\0'); }
+  for (const file of files) { hash.update(file).update('\0'); hash.update(await readFile(path.join(config.root, file))); hash.update('\0'); }
   return hash.digest('hex');
 }
 
