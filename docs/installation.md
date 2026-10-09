@@ -10,6 +10,8 @@
 
 已有工程保存在 `.local/native-lab/`，重启和升级保留。`npm start` 是普通工作台（19321，数据 `.local/`）。首次可用 `npm run lab -- examples/starter.theme.json` 选择通用起点；不要把已有工程作为新的种子反复导入。
 
+导入陌生主题后，可打开「素材与装饰清点」，查图片、装饰及使用位置，再点「复制主题分析给 Agent」。Agent 能读取完整 CSS、工程和本地图片；不需要手动粘贴大段 CSS。酒馆里切换了主题时，可在此入口读取为新工程，自动保存旧工程快照。见 [主题分析与接入](docs/theme-analysis.md)。
+
 连接问题先用 `npm run doctor`。真实连接器版本与 fixture 状态在侧栏「连接诊断 → 检查连接与版本」。`STUDIO_PORT`、`STUDIO_DATA_DIR`、`TAVERN_URL` 分别设置端口、数据目录与酒馆地址。同一数据目录只允许一个实例。
 
 代码使用 [MIT](LICENSE)，运行依赖与素材范围见 [第三方声明](THIRD-PARTY-NOTICES.md)。本核心包不包含大型月誓主题示例或维护测试；package.json 中开发/样本打包命令须在完整源码仓库中运行。

@@ -10,6 +10,7 @@ try {
     console.log(`Tavern Theme Studio CLI\n\n  status\n  targets\n  variables\n  variable <id> <value>\n  variable-reset <id>\n  snapshots\n  snapshot-save <name>\n  snapshot-diff <id>\n  snapshot-restore <id>\n  set <target> <property> <value> [base|mobile]\n  unset <target> <property> [base|mobile]\n  undo | redo\n  rename <name>\n  export <output.json>\n  backup <output.studio.json>\n  import <input.json>\n  command <command.json>\n\nUses STUDIO_URL or the running local server. The UI observes the same project.`);
     console.log('\n  tickets\n  ticket <id>\n  ticket-claim <id> <owner>\n  ticket-review <id> <owner> <result.txt>\n  assets\n  asset-upload <image-file>\n  asset-link <url> [name]\n  optimize-assets');
     console.log('\n  ticket-copy <id>\n  ticket-review <id> <owner> <result.json>\n  build-status\n  build-presets\n  build-preset <index|name>\n  build-bind <local-config.json>\n  build-now\n  build-auto on|off\n  build-cancel');
+    console.log('\n  theme-analyze\n  theme-source <new-output-directory> [snapshotId]\n  theme-copy');
     process.exit(0);
   }
   if (commandName === 'targets') { console.log(JSON.stringify({ targets: TARGETS, fields: FIELDS }, null, 2)); process.exit(0); }
@@ -23,6 +24,29 @@ try {
     const response = await fetch(address + endpoint, body === undefined ? {} : { method: 'POST', headers: { 'X-Studio-Token': session.token, ...(!raw && { 'Content-Type': 'application/json' }) }, body: raw ? body : JSON.stringify({ ...expected, ...body }) });
     const data = await response.json(); if (!response.ok) throw new Error(data.error); return data;
   };
+  if (['theme-analyze', 'theme-source', 'theme-copy'].includes(commandName)) {
+    if (commandName === 'theme-copy') console.log((await request('/api/commands', { command: { type: 'theme-analysis-handoff' } })).analysisHandoff);
+    if (commandName === 'theme-analyze') console.log(JSON.stringify(await request('/api/theme-analysis'), null, 2));
+    if (commandName === 'theme-source') {
+      if (!args[0]) throw new Error('请提供新的输出目录。');
+      const data = await request('/api/theme-analysis/source' + (args[1] ? '?snapshot=' + encodeURIComponent(args[1]) : ''));
+      const directory = path.resolve(args[0]); await mkdir(path.dirname(directory), { recursive: true }); await mkdir(directory, { recursive: false });
+      for (const [file, value] of [['base.css', data.baseCss], ['effective-base.css', data.effectiveBaseCss], ['generated.css', data.generatedCss], ['overrides.css', data.overridesCss], ['compiled.css', data.compiledCss], ['project.json', JSON.stringify(data.project, null, 2)], ['analysis.json', JSON.stringify({ ...data.report, baseline: data.baseline }, null, 2)]]) await writeFile(path.join(directory, file), value, { flag: 'wx' });
+      await mkdir(path.join(directory, 'assets')); const downloaded = [], unverified = [];
+      for (const asset of data.report.resources.filter(r => r.storage === 'local')) {
+        const id = asset.reference.slice('tts-asset://'.length);
+        if (!/^[a-f0-9]{64}\.(png|jpg|webp|gif)$/.test(id)) { unverified.push(asset.reference); continue; }
+        const response = await fetch(address + '/assets/' + id);
+        if (!response.ok) { unverified.push(asset.reference); continue; }
+        const bytes = Buffer.from(await response.arrayBuffer());
+        if (bytes.length > 32 * 1048576 || createHash('sha256').update(bytes).digest('hex') !== id.split('.')[0]) throw new Error('分析包素材校验失败：' + id);
+        await writeFile(path.join(directory, 'assets', id), bytes, { flag: 'wx' }); downloaded.push(id);
+      }
+      await writeFile(path.join(directory, 'bundle.json'), JSON.stringify({ baseline: data.baseline, downloaded, unverified, note: '外链未下载；本包用于分析，不代替完整工程备份。' }, null, 2), { flag: 'wx' });
+      console.log(JSON.stringify({ directory, baseline: data.baseline, counts: data.report.counts, localAssets: downloaded.length, unverified }, null, 2));
+    }
+    process.exit(0);
+  }
   if (commandName === 'ticket-copy') {
     const ticket = await request(`/api/tickets/${encodeURIComponent(args[0] || '')}`), context = await request('/api/handoff-context');
     console.log(formatAgentHandoff([ticket], context, { compact: args.includes('--compact') })); process.exit(0);

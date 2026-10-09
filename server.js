@@ -22,6 +22,9 @@ import { createVariants } from './asset-variants.js';
 import { acquireDataLock } from './data-lock.js';
 import { readArtifact, reviewEvidence } from './ticket-review.js';
 import { STUDIO_VERSION } from './shared/version.js';
+import { analyzeTheme, analysisHandoff } from './theme-analysis.js';
+import { rewriteVariables } from './shared/variables.js';
+import { compileOverrides } from './shared/core.js';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.json': 'application/json; charset=utf-8', '.zip': 'application/zip' };
@@ -139,6 +142,13 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       }
       if (req.method === 'GET' && url.pathname === '/api/session') return send(res, 200, { token, ...view() });
       if (req.method === 'GET' && url.pathname === '/api/project') return send(res, 200, view());
+      if (req.method === 'GET' && ['/api/theme-analysis', '/api/theme-analysis/source'].includes(url.pathname)) {
+        const saved = url.searchParams.has('snapshot') ? await readSnapshot(url.searchParams.get('snapshot')) : null;
+        const project = saved?.project || history.snapshot().project;
+        const baseline = saved ? { projectId: saved.projectId, revision: saved.revision, fingerprint: saved.fingerprint, snapshotId: saved.id } : basis();
+        const report = { ...analyzeTheme(project, assets.list()), baseline, sourceBound: !saved && builds.status().bound === true };
+        return send(res, 200, url.pathname.endsWith('/source') ? { baseline, project, report, baseCss: project.baseTheme.custom_css || '', effectiveBaseCss: rewriteVariables(project.baseTheme.custom_css || '', project.variableEdits), generatedCss: compileOverrides({ ...project, customCss: '' }), overridesCss: project.customCss || '', compiledCss: exportTheme(project).custom_css } : report);
+      }
       if (req.method === 'GET' && url.pathname === '/api/health') return send(res, 200, { version: STUDIO_VERSION, node: process.versions.node, projectSchema: 3, projectId: history.project.projectId, dataLock: true, sourceBound: builds.status().bound === true, runner: { configured: !!runner.status().config, verified: runner.status().verified }, fixture: '请在已连接的工作台查看实时 fixture 状态；HTTP 服务不读取聊天。' });
       const evidenceRoute = /^\/api\/tickets\/([a-f0-9]{32})\/(review|artifacts\/(\d+))$/.exec(url.pathname);
       if (req.method === 'GET' && evidenceRoute) {
@@ -287,7 +297,13 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
             if (typeof command.name !== 'string' || !command.name.trim() || command.name.length > 120) throw new Error('快照名称需为 1–120 字。');
             return { ...view(), snapshotCreated: await saveSnapshot(command.name.trim()) };
           }
-          const restored = command?.type === 'hub-apply' ? { type: 'import-project', project: await hub.apply(history.project, command) }
+          if (command?.type === 'theme-import' && command.scanFingerprint !== projectFingerprint(history.project)) throw Object.assign(new Error('主题分析基线已变化，请重新读取主题。'), { status: 409 });
+          if (command?.type === 'theme-analysis-handoff') {
+            const snapshotCreated = await saveSnapshot(('主题分析：' + history.project.name).slice(0, 120));
+            return { ...view(), snapshotCreated, analysisHandoff: analysisHandoff({ current: basis(), address: origin, studioPath: root, projectPath: builds.status().config?.root || root, snapshotId: snapshotCreated.id }) };
+          }
+          const restored = command?.type === 'theme-import' ? { type: 'import-theme', theme: command.theme }
+            : command?.type === 'hub-apply' ? { type: 'import-project', project: await hub.apply(history.project, command) }
             : command?.type === 'hub-replace' ? { type: 'import-project', project: await hub.replace(history.project, command.ids) }
             : command?.type === 'restore-files' ? { type: 'import-project', project: command.project }
             : command?.type === 'snapshot-restore' ? { type: 'import-project', project: (await readSnapshot(command.id)).project } : command;
@@ -295,12 +311,14 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
           const candidate = new ProjectHistory(history.project);
           candidate.past = [...history.past]; candidate.future = [...history.future]; candidate.revision = history.revision;
           candidate.execute(resolved, revision);
-          if (['snapshot-restore', 'restore-files'].includes(command.type) || (['undo', 'redo'].includes(command.type) && history.project.baseTheme.custom_css !== candidate.project.baseTheme.custom_css)) await builds.pause();
+          let snapshotCreated;
+          if (command.type === 'theme-import') snapshotCreated = await saveSnapshot('切换主题前：' + history.project.name.slice(0, 95));
+          if (['snapshot-restore', 'restore-files', 'theme-import'].includes(command.type) || (['undo', 'redo'].includes(command.type) && history.project.baseTheme.custom_css !== candidate.project.baseTheme.custom_css)) await builds.pause();
           await persist(candidate);
           history = candidate;
           await runner.projectChanged();
           await builds.activate().catch(e => broadcast('build', { ...builds.status(), status: { state: 'failed', error: e.message } }));
-          const result = view();
+          const result = { ...view(), ...(snapshotCreated && { snapshotCreated }) };
           for (const client of events) client.write(`data: ${JSON.stringify(result)}\n\n`);
           return result;
         };

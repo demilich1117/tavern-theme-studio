@@ -23,9 +23,16 @@ try {
   const script = `
     import assert from 'node:assert/strict';
     import {createServer} from './server.js';
-    const app=await createServer({port:0});
+    let app;
+    // An OS-assigned ephemeral port can occasionally be on fetch's blocked-port list.
+    // Retry only that allocation error, never a failed application response.
+    for(let attempt=0;attempt<5;attempt++){
+      app=await createServer({port:0});
+      try { await fetch(app.address+'/api/health'); break; }
+      catch(error){ await app.close(); if(error.cause?.message!=='bad port'||attempt===4)throw error; }
+    }
     try {
-      for(const route of ['/', '/app.js', '/workflow.js', '/setup.js', '/api/health', '/api/build/presets', '/connector.zip']) assert.equal((await fetch(app.address+route)).status,200,route);
+      for(const route of ['/', '/app.js', '/workflow.js', '/setup.js', '/theme-analysis.js', '/clipboard.js', '/api/theme-analysis', '/api/theme-analysis/source', '/api/health', '/api/build/presets', '/connector.zip']) assert.equal((await fetch(app.address+route)).status,200,route);
       const s=await(await fetch(app.address+'/api/session')).json();
       const response=await fetch(app.address+'/api/commands',{method:'POST',headers:{'Content-Type':'application/json','X-Studio-Token':s.token},body:JSON.stringify({projectId:s.projectId,sessionId:s.sessionId,revision:s.revision,fingerprint:s.fingerprint,command:{type:'set',target:'assistant',property:'border-radius',value:'12px'}})});
       assert.equal(response.status,200);

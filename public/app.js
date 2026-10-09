@@ -7,6 +7,7 @@ import { attachLayers } from '/layers.js';
 import { attachLayouts } from '/layouts.js';
 import { attachExport } from '/export.js';
 import { attachSetup } from '/setup.js';
+import { attachThemeAnalysis } from '/theme-analysis.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
@@ -14,6 +15,7 @@ let peer, peerOrigin, session, ready = false, live = false, lastSeen = 0, isPick
 let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, layers, layouts, detailsExpanded = false;
 let fixtureBusy = false, fixtureSupported = false;
 let fixtureState, awaitingFirstPreview = false, connectorCapabilities;
+let themeAnalysis;
 function updateFixture(fixture) {
   if (fixture) fixtureState = fixture;
   fixtureSupported = fixture?.supported === true;
@@ -95,6 +97,7 @@ function render() {
   $('#rule-count').textContent = `${ruleCount(state.project)} 项样式修改`;
   $('#css-badge').textContent = state.project.customCss.trim() ? '●' : '';
   renderFields(); advanced?.render(); workflow?.render(); source?.render(); layers?.render(); layouts?.render();
+  themeAnalysis?.render();
 }
 function setSelected(id) { selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
 function setDevice(next) {
@@ -145,6 +148,7 @@ window.addEventListener('message', event => {
   workflow?.receive(data);
   layers?.receive(data);
   layouts?.receive(data);
+  themeAnalysis?.receive(data);
   switch (data.type) {
     case 'ready': {
       connectorCapabilities = data.capabilities;
@@ -258,6 +262,7 @@ try {
   attachSetup(() => ({ ready, live, capabilities: connectorCapabilities, fixture: $('#fixture-status').textContent }));
   source = attachSource({ getState: () => state, getToken: () => token, toast });
   layers = attachLayers({ getState: () => state, command, preview, toast, send });
+  themeAnalysis = attachThemeAnalysis({ getState: () => state, getToken: () => token, command, send, toast, connection: () => ({ ready, live, capabilities: connectorCapabilities }) });
   layouts = attachLayouts({ getState: () => state, command, toast, getSelected: () => selected });
   render(); connect();
   const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };

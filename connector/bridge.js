@@ -129,7 +129,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
     lastSeen = Date.now();
     try {
       switch (data.type) {
-        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1 }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
+        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, themeAnalysis: 1 }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
         case 'ping': send('pong', { fixture: fixture?.status() }); break;
         case 'preview': {
           const project = validateProject(data.project);
@@ -153,6 +153,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
         case 'annotations': pins.set(Array.isArray(data.tickets) ? data.tickets : []); break;
         case 'annotation-focus': pins.focus(data.anchor); break;
         case 'read-theme': send('theme', { theme: await readTheme() }); break;
+        case 'read-theme-for-analysis': send('theme-for-analysis', { requestId: data.requestId, theme: await readTheme() }); break;
         case 'scene': if (isDemo) { onScene(data.scene); requestAnimationFrame(inspect); } break;
         case 'fixture-open': {
           if (!fixture || isDemo) throw new Error('请连接支持测试对话的酒馆连接器。');

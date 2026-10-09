@@ -1,3 +1,4 @@
+import { copyClipboard as copyText } from "/clipboard.js";
 import { TARGETS } from '/shared/core.js';
 import { scanVariables } from '/shared/variables.js';
 import { TICKET_STATES } from '/shared/tickets.js';
@@ -20,22 +21,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
   const selectedTickets = new Set();
   const locationTarget = node('select'), locationScope = node('select');
   for (const [input, text] of [[locationTarget, '小票关联目标'], [locationScope, '小票关联断点']]) { const label = node('label', text); input.setAttribute('aria-label', text); label.append(input); $('#annotation-comment').before(label); }
-  async function copyClipboard(text, message) {
-    try { await navigator.clipboard.writeText(text); toast(message); return true; }
-    catch {
-      let dialog = $('#clipboard-dialog');
-      if (!dialog) {
-        dialog = node('dialog', undefined, 'wide-dialog'); dialog.id = 'clipboard-dialog';
-        const head = node('form', undefined, 'dialog-header'); head.method = 'dialog'; head.append(node('h2', '手动复制交接内容'));
-        const close = node('button', '×'); close.setAttribute('aria-label', '关闭手动复制'); head.append(close);
-        const body = node('div', undefined, 'dialog-body'); body.append(node('p', '当前浏览器没有允许直接复制。完整内容已准备，请选中文本后按 Ctrl+C 或使用系统复制。'));
-        const area = node('textarea'); area.id = 'clipboard-text'; area.readOnly = true; area.rows = 18; area.setAttribute('aria-label', '可手动复制的完整内容');
-        const select = node('button', '全选文本'); select.addEventListener('click', () => { area.focus(); area.select(); }); body.append(area, select); dialog.append(head, body); document.body.append(dialog);
-      }
-      $('#clipboard-text').value = text; dialog.showModal(); $('#clipboard-text').focus(); $('#clipboard-text').select();
-      toast('完整文本已准备，请在弹出的文本框中手动复制。'); return false;
-    }
-  }
+  const copyClipboard = (text, message) => copyText(text, toast, message);
   async function api(url, body, raw = false) {
     const state = getState();
     const res = await fetch(url, body === undefined ? {} : { method: 'POST', headers: { 'X-Studio-Token': getToken(), ...(!raw && { 'Content-Type': 'application/json' }) }, body: raw ? body : JSON.stringify({ sessionId: state.sessionId, projectId: state.projectId, fingerprint: state.fingerprint, revision: state.revision, ...body }) });

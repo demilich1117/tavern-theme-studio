@@ -17,7 +17,7 @@ async function tree(folder) {
   }
 }
 for (const folder of ['shared', 'connector']) await tree(folder);
-for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md']) paths.add('docs/' + file);
+for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md', 'theme-analysis.md']) paths.add('docs/' + file);
 for (const file of ['cli.js', 'doctor.js', 'start-native-lab.js', 'package-connector.js']) paths.add('scripts/' + file);
 // Lockfile defines the complete installed runtime closure; include original
 // package licenses and hashes, never development caches or workspace data.
