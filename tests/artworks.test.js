@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, writeFile, rm, readdir } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, writeFile, rm, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { execFile } from 'node:child_process';
@@ -26,7 +26,9 @@ async function fixture() {
   await mkdir(studioRoot); await mkdir(source);
   const assets = await createAssetStore(dataDir), exports = createExportService(assets, { status: () => ({ assets: [] }) });
   const create = () => createArtworkService({ dataDir, studioRoot, home: path.join(root, 'works'), exports, assets });
-  return { root, dataDir, studioRoot, source, assets, service: await create(), create };
+  // Production build bindings canonicalize their source root. Windows temp
+  // paths can be aliases (short names or junctions), so fixtures must do so too.
+  return { root, dataDir, studioRoot, source: await realpath(source), assets, service: await create(), create };
 }
 const archive = (project, extra = {}) => ({ project, baseline: { projectId: project.projectId, revision: 3, fingerprint: projectFingerprint(project) }, name: '阅读布局定稿', note: '保留面板里的间距调整。', assertCurrent: async () => {}, ...extra });
 
