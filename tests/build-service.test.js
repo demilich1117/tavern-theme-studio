@@ -18,15 +18,25 @@ async function until(fn, label) {
   throw new Error(`Timed out: ${label}`);
 }
 test('real build protocol shares twelve assets for inline/external candidates and leaves releases untouched', () => temp(async dir => {
-  const root = path.resolve(import.meta.dirname, '..'), baseline = path.join(root, 'dist/moonveil-covenant-2.2.4/moonveil.theme.json');
-  const before = await readFile(baseline);
+  const root = path.resolve(import.meta.dirname, '..');
+  const frozen = ['moonveil-covenant-2.2.4', 'moonveil-covenant-2.2.4-external'].map(name => path.join(root, 'dist', name));
+  // A fresh checkout has no ignored release archives. Preserve existing bytes
+  // when present, and also verify that building never creates a frozen release.
+  const readBaseline = async folder => {
+    try { return await readFile(path.join(folder, 'moonveil.theme.json')); }
+    catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+  };
+  const before = await Promise.all(frozen.map(readBaseline));
   await buildFolio({ outputDir: path.join(dir, 'local'), mode: 'local' });
   await buildFolio({ outputDir: path.join(dir, 'external'), mode: 'external' });
   const local = await readBuildCandidate(path.join(dir, 'local')), remote = await readBuildCandidate(path.join(dir, 'external'));
   assert.equal(local.assets.length, 12); assert.ok(local.theme.custom_css.length < 40000);
   assert.equal(remote.assets.length, 0); assert.equal(remote.assetRefs.length, 12); assert.equal(/tts-asset:|data:image/.test(remote.theme.custom_css), false);
-  assert.deepEqual(await readFile(baseline), before);
-  await assert.rejects(() => buildFolio({ outputDir: path.dirname(baseline) }), /基线只读/);
+  for (const folder of frozen) {
+    await assert.rejects(() => buildFolio({ outputDir: folder }), /基线只读/);
+    await assert.rejects(() => buildFolio({ outputDir: path.join(folder, 'nested') }), /基线只读/);
+  }
+  assert.deepEqual(await Promise.all(frozen.map(readBaseline)), before);
 }));
 test('watching coalesces saves, merges UI edits, keeps good output on failure, cancels and restores safely', () => temp(async dir => {
   const source = path.join(dir, 'source'), dataDir = path.join(dir, 'data'); await mkdir(source);
