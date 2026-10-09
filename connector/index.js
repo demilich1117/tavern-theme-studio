@@ -85,7 +85,10 @@ function mount() {
         let collapsed = false;
         collapseDock = () => {
           collapsed = !collapsed; frame.style.display = collapsed ? 'none' : '';
-          Object.assign(dock.style, { height: collapsed ? 'auto' : '100dvh', width: collapsed ? 'auto' : panelWidth+'px', top: collapsed ? 'auto' : '0', bottom: collapsed ? '0' : 'auto' }); resize.hidden=collapsed;
+          // A transformed html element can have zero height in native mobile
+          // layouts. Anchor to the viewport unit, then offset by our own height;
+          // bottom:0 would place the reopen button above the visible viewport.
+          Object.assign(dock.style, { height: collapsed ? 'auto' : '100dvh', width: collapsed ? 'auto' : panelWidth+'px', top: collapsed ? '100dvh' : '0', bottom: 'auto', transform: collapsed ? 'translateY(-100%)' : 'none' }); resize.hidden=collapsed;
           label.hidden = collapsed; close.hidden = collapsed;
           fold.textContent = collapsed ? '显示工作台' : '收起面板'; fold.setAttribute('aria-expanded', String(!collapsed));
         };

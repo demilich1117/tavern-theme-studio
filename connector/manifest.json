@@ -3,7 +3,7 @@
   "loading_order": 100,
   "js": "connector/index.js",
   "author": "Tavern Theme Studio",
-    "version": "0.9.0",
+  "version": "0.9.1",
   "minimum_client_version": "1.19.0",
   "description": "连接本地可视化工作台，拾取元素并临时预览主题。",
   "hooks": { "disable": "disable" }
