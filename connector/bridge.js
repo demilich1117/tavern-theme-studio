@@ -17,7 +17,7 @@ const themeColors = {
   user_mes_blur_tint_color: '--SmartThemeUserMesBlurTintColor', bot_mes_blur_tint_color: '--SmartThemeBotMesBlurTintColor',
   shadow_color: '--SmartThemeShadowColor', border_color: '--SmartThemeBorderColor',
 };
-export function themeVariablesCss(project) {
+export function themeVariablesCss(project, { followHostPageWidth = false } = {}) {
   const theme = exportTheme(project);
   const declarations = Object.entries(themeColors).flatMap(([key, variable]) => {
     const value = theme[key];
@@ -26,7 +26,7 @@ export function themeVariablesCss(project) {
   for (const [key, variable, suffix] of [['font_scale', '--fontScale', ''], ['blur_strength', '--blurStrength', ''], ['shadow_width', '--shadowWidth', '']]) {
     if (Number.isFinite(theme[key])) declarations.push(`${variable}: ${theme[key]}${suffix} !important;`);
   }
-  if (Number.isFinite(theme.chat_width) && theme.chat_width >= 0 && theme.chat_width <= 100) declarations.push(`--sheldWidth: ${theme.chat_width}vw !important;`);
+  if (!followHostPageWidth && Number.isFinite(theme.chat_width) && theme.chat_width >= 0 && theme.chat_width <= 100) declarations.push(`--sheldWidth: ${theme.chat_width}vw !important;`);
   return `:root { ${declarations.join(' ')} }`;
 }
 export function inspectTarget(id, preferred) {
@@ -139,7 +139,8 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
           if (previewEnabled) presentation.apply(exportTheme(project)); else presentation.restore();
           // Keep imports first in their own stylesheet. Separate variables override
           // host inline variables without mutating them; advanced CSS follows.
-          variables.textContent = data.enabled === false ? '' : themeVariablesCss(project);
+          // Native page width remains controlled by the host's settings slider.
+          variables.textContent = data.enabled === false ? '' : themeVariablesCss(project, { followHostPageWidth: !isDemo });
           renderPreview(project, data.enabled !== false);
           editor.update();
           requestAnimationFrame(() => { if (!closed) { inspect(); requestAnimationFrame(() => { if (!closed) send('preview-applied', { basis: data.basis }); }); } }); break;
