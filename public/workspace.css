@@ -115,12 +115,12 @@ details>summary { cursor:pointer; min-height:40px; align-content:center; }
 .co-design-body { line-height:1.7; }
 .co-design-body .co-design-lead { color:var(--text); font-size:15px; margin-bottom:8px; }
 .co-design-context { font-size:12px; color:var(--secondary); overflow-wrap:anywhere; }
-.co-design-atlas { margin:20px 0 28px; border-block:1px solid var(--border); padding:4px 0; }
+.co-design-atlas { margin:24px 0 0; border-top:1px solid var(--border); padding:8px 0; }
 .co-design-atlas summary { font-weight:500; }
 .co-design-atlas p { font-size:13px; }
 .co-design-targets { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
 .co-design-targets button { font-size:12px; min-height:40px; }
-.co-design-layout { display:grid; grid-template-columns:minmax(0,1fr) 224px; gap:40px; align-items:start; }
+.co-design-layout { display:grid; grid-template-columns:minmax(0,1fr) 224px; gap:40px; align-items:start; margin-top:28px; }
 .co-design-body h3 { font-size:15px; color:var(--text); }
 .co-design-form { display:grid; gap:16px; min-width:0; }
 .co-design-form h3 + p { margin-top:-8px; }
@@ -131,12 +131,12 @@ details>summary { cursor:pointer; min-height:40px; align-content:center; }
 .co-design-fields { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .co-design-optional-fields { display:grid; gap:16px; padding-top:12px; }
 .co-design-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
-.co-design-actions button, .co-design-save button, #co-design-build { min-height:44px; white-space:normal; }
-.co-design-decision { padding-top:12px; border-top:1px solid var(--border); }
-.co-design-decision label { margin:12px 0; }
-.co-design-save { display:flex; align-items:center; gap:16px; padding-top:12px; }
-.co-design-save button { flex-shrink:0; }
-.co-design-save small { font-size:12px; color:var(--secondary); }
+.co-design-actions button, .co-design-help button { min-height:44px; white-space:normal; }
+.co-design-form summary { min-height:44px; }
+.co-design-help { font-size:13px; color:var(--secondary); }
+.co-design-help p { margin:12px 0; }
+.co-design-draft-status { font-size:12px; color:var(--secondary); }
+.co-design-handoff-status { margin:0; padding:12px 14px; border-left:3px solid var(--accent); background:var(--raised); color:var(--text); font-size:13px; }
 .co-design-route ol { margin:20px 0 24px; padding-left:22px; }
 .co-design-route li { padding:0 0 16px 8px; }
 .co-design-route li::marker { color:var(--accent); font-variant-numeric:tabular-nums; }

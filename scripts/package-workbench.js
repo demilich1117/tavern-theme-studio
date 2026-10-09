@@ -16,9 +16,12 @@ async function tree(folder) {
     if (item.isDirectory()) await tree(file); else paths.add(file);
   }
 }
-for (const folder of ['shared', 'connector']) await tree(folder);
+for (const folder of ['shared', 'connector', 'skills']) await tree(folder);
 for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md', 'theme-analysis.md', 'advanced-guide.md', 'co-design.md', 'co-design-brief.template.md', 'comic-guide.md', 'validation-0.9.2.md']) paths.add('docs/' + file);
 await tree('docs/assets/doublecheese');
+// Preserve the earlier comic in source history; ship the current flow only.
+paths.delete('docs/assets/doublecheese/03-co-design.png');
+paths.delete('docs/assets/doublecheese/03-co-design-v2.png');
 for (const file of ['cli.js', 'doctor.js', 'start-native-lab.js', 'package-connector.js']) paths.add('scripts/' + file);
 // Lockfile defines the complete installed runtime closure; include original
 // package licenses and hashes, never development caches or workspace data.

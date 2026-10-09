@@ -8,8 +8,11 @@ export function attachCoDesign({ getState, connection, selectTarget, stopPicking
   const fields = [...form.elements].filter(element => element.name);
   const drafts = new Map();
   let projectId, storageFailed = false;
+  const handoffStatus = $('#co-design-handoff-status');
+  function clearHandoff() { handoffStatus.hidden = true; handoffStatus.textContent = ''; }
   const storageKey = id => `tts:co-design:v1:${id}`;
-  const currentBrief = () => normalizeBrief(Object.fromEntries(fields.map(element => [element.name, element.value])));
+  // Keep legacy decision notes even though the normal flow no longer asks users to fill them in.
+  const currentBrief = () => normalizeBrief({ ...drafts.get(projectId), ...Object.fromEntries(fields.map(element => [element.name, element.value])) });
 
   function context() {
     const state = getState(), host = connection();
@@ -20,9 +23,8 @@ export function attachCoDesign({ getState, connection, selectTarget, stopPicking
   }
   function updateDraftStatus() {
     $('#co-design-draft-status').textContent = storageFailed
-      ? '浏览器无法保存简报；离开前请下载或复制。'
-      : '简报按工程保存在此浏览器，换设备前请下载；不随工程备份导出。';
-    $('#co-design-build').disabled = !currentBrief().decision.trim();
+      ? '此浏览器无法保存想法；离开前请复制给 Agent，或展开「想法怎么保存？」下载。'
+      : '想法会自动保存在此浏览器，稍后回来可以继续。';
   }
   function remember() {
     const brief = currentBrief(); drafts.set(projectId, brief);
@@ -33,6 +35,7 @@ export function attachCoDesign({ getState, connection, selectTarget, stopPicking
   function render() {
     const state = getState();
     if (projectId !== state.projectId) {
+      clearHandoff();
       // Persist edits under the previous identity before loading another theme.
       if (projectId) remember();
       projectId = state.projectId;
@@ -43,6 +46,7 @@ export function attachCoDesign({ getState, connection, selectTarget, stopPicking
         catch { storageFailed = true; }
       }
       const brief = normalizeBrief(saved);
+      drafts.set(projectId, brief);
       for (const element of fields) element.value = brief[element.name];
     }
     const current = context();
@@ -50,13 +54,21 @@ export function attachCoDesign({ getState, connection, selectTarget, stopPicking
     updateDraftStatus();
   }
   form.addEventListener('submit', event => event.preventDefault());
-  form.addEventListener('input', remember);
-  form.addEventListener('change', remember);
+  function edited() { clearHandoff(); remember(); }
+  form.addEventListener('input', edited);
+  form.addEventListener('change', edited);
   $('#co-design-view').addEventListener('click', () => { stopPicking(); render(); openStudioPanel('co-design-dialog'); });
-  for (const button of document.querySelectorAll('[data-co-design-phase]')) button.addEventListener('click', async () => {
+  $('#co-design-start').addEventListener('click', async () => {
     try {
       remember();
-      await copyClipboard(buildCoDesignPrompt(currentBrief(), context(), button.dataset.coDesignPhase), toast, '共创说明已复制。粘贴给 Agent，并在同一对话附上参考图片。');
+      const sourceProjectId = projectId;
+      const copied = await copyClipboard(buildCoDesignPrompt(currentBrief(), context()), toast, '已复制。现在粘贴到 Agent 对话，接着在那里看图、选方向即可。');
+      if (projectId === sourceProjectId) {
+        handoffStatus.textContent = copied
+          ? '已复制。下一步：粘贴到 Agent 对话，有参考图时另附。直接聊想法、看图选方向；Agent 做出样板后，会带你回工作台微调和标注。'
+          : '还差一步：在弹出的文本框里手动复制，再粘贴到 Agent 对话；后续在那里看图、选方向即可。';
+        handoffStatus.hidden = false;
+      }
     } catch (error) { toast(error.message, true); }
   });
   $('#co-design-download').addEventListener('click', () => {
@@ -65,7 +77,7 @@ export function attachCoDesign({ getState, connection, selectTarget, stopPicking
     const url = URL.createObjectURL(blob), link = document.createElement('a');
     link.href = url; link.download = 'theme-design-brief.md'; document.body.append(link); link.click(); link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast('简报已下载，请和主题工程、选定参考图一起保留。');
+    toast('这页想法已下载。Agent 整理的最新设计记录和参考图请另行保留。');
   });
   for (const button of document.querySelectorAll('[data-co-design-target]')) button.addEventListener('click', () => selectTarget(button.dataset.coDesignTarget));
   render();

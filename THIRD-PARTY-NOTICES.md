@@ -20,6 +20,6 @@
 
 `docs/assets/doublecheese/01-getting-started.jpg` 和 `02-advanced.jpg` 用于本项目入门与进阶说明，也随核心安装包提供。DOUBLECHEESE 的角色参考由用户提供；两页原稿使用内置 imagegen 生成，最终配图采用用户修正手部后提供的版本。
 
-`docs/assets/doublecheese/03-co-design.png` 为新增的从零共创说明，以既有第二页漫画作为角色与画风参考，使用内置 imagegen 生成；前两页保持原样。共创篇及其提示词同样随核心包提供。
+`docs/assets/doublecheese/03-co-design-v3.png` 为当前从零共创说明，使用内置 imagegen 参考前版共创漫画生成，体现先聊、看图、试样板、用户微调和标注迭代的流程；前两页保持原样。当前共创篇及提示词随核心包提供。初版 `03-co-design.png` 与第二版 `03-co-design-v2.png` 保留在源码资料中，不随核心包提供。
 
 角色与参考图的权利归原权利人，漫画图片不自动套用代码的 MIT 许可。来源、提示词及文件校验记录见 [漫画制作记录](docs/assets/doublecheese/GENERATION.md)。
