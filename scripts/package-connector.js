@@ -1,16 +1,9 @@
 import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import path from 'node:path';
+import { connectorFiles } from './connector-files.js';
 const root = path.resolve(import.meta.dirname, '..');
 const folder = 'tavern-theme-studio-connector';
-const files = { 'manifest.json': 'connector/manifest.json', 'connector/index.js': 'connector/index.js', 'connector/bridge.js': 'connector/bridge.js', 'connector/diagnostics.js': 'connector/diagnostics.js', 'connector/theme-isolation.js': 'connector/theme-isolation.js', 'shared/core.js': 'shared/core.js', 'shared/variables.js': 'shared/variables.js' };
-for (const file of ['connector/fixture-host.js', 'shared/fixture.js', 'connector/assets/fixture-user.svg', 'connector/assets/fixture-guide.svg', 'connector/assets/fixture-landscape.svg', 'connector/assets/fixture-note.txt']) files[file] = file;
-for (const file of ['connector/annotations.js', 'shared/assets.js', 'shared/tickets.js']) files[file] = file;
-files['shared/migrations.js'] = 'shared/migrations.js';
-files['shared/decorations.js'] = 'shared/decorations.js';
-files['shared/layouts.js'] = 'shared/layouts.js';
-files['connector/decoration-editor.js'] = 'connector/decoration-editor.js';
-for (const file of ['connector/picking.js', 'connector/native-theme.js', 'shared/editing.js']) files[file] = file;
-for (const file of ['shared/version.js', 'LICENSE', 'THIRD-PARTY-NOTICES.md']) files[file] = file;
+const files = connectorFiles;
 // Standard ZIP, store method. No runtime or packaging dependencies.
 const table = Array.from({ length: 256 }, (_, n) => { for (let k = 0; k < 8; k++) n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1; return n >>> 0; });
 function crc32(buffer) { let crc = 0xffffffff; for (const byte of buffer) crc = table[(crc ^ byte) & 0xff] ^ (crc >>> 8); return (crc ^ 0xffffffff) >>> 0; }

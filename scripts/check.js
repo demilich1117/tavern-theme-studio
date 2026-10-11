@@ -12,6 +12,7 @@ async function check(folder, recursive = true) {
 }
 await check('', false);
 for (const folder of ['shared', 'public', 'connector', 'scripts', 'tests']) await check(folder);
+if (process.platform === 'win32') execFileSync('powershell.exe', ['-NoProfile', '-Command', "$ErrorActionPreference='Stop'; Get-ChildItem -LiteralPath scripts -Filter '*.ps1' | ForEach-Object { $parseErrors=$null; [System.Management.Automation.Language.Parser]::ParseFile($_.FullName,[ref]$null,[ref]$parseErrors) | Out-Null; if($parseErrors){throw ($parseErrors | Out-String)} }"], { cwd: root, stdio: 'inherit', windowsHide: true });
 const manifest = JSON.parse(await readFile(path.join(root, 'connector/manifest.json')));
 for (const key of ['display_name', 'js', 'author', 'version']) if (!manifest[key]) throw new Error(`Manifest missing ${key}`);
 await access(path.join(root, manifest.js));

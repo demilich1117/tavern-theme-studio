@@ -1,6 +1,6 @@
 {
   "name": "tavern-theme-studio",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -9,6 +9,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "setup": "node scripts/launcher.js",
     "start": "node scripts/start-native-lab.js",
     "start:standalone": "node server.js",
     "lab": "node scripts/start-native-lab.js",

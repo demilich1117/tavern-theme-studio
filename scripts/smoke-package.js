@@ -7,10 +7,12 @@ import { promisify } from 'node:util';
 import { createHash } from 'node:crypto';
 import { STUDIO_VERSION } from '../shared/version.js';
 import { readGeneratedZip } from './zip.js';
+import { validateCoreZip } from '../update-service.js';
 const root = path.resolve(import.meta.dirname, '..'), temp = await mkdtemp(path.join(os.tmpdir(), 'tts-package-'));
 try {
   const zip = await readFile(path.join(root, `output/releases/tavern-theme-studio-${STUDIO_VERSION}-core.zip`));
   const files = readGeneratedZip(zip);
+  assert.equal(validateCoreZip(zip, STUDIO_VERSION).size, files.length, 'Release updater accepts the exact built package');
   // Co-design must remain usable without the author's parent workspace skills.
   for (const file of ['AGENTS.md', 'skills/tavern-theme-studio/SKILL.md', 'docs/co-design.md', 'docs/host-reference.md', 'docs/co-design-brief.template.md', 'docs/native-lab.md']) {
     assert.ok(files.some(([name]) => name === `tavern-theme-studio/${file}`), `Missing co-design resource: ${file}`);
@@ -49,6 +51,47 @@ try {
     console.log('Clean package startup, commands, export and restart: OK');`;
   const { stdout } = await promisify(execFile)(process.execPath, ['--input-type=module', '-e', script], { cwd, windowsHide: true, timeout: 30000 });
   console.log(stdout.trim());
+  // Exercise the shipped launcher in isolation, not the developer checkout or
+  // an installed personal host. The fake host only supplies installation paths.
+  const host = path.join(temp, 'Silly Tavern'), dataDir = path.join(temp, 'launcher-data');
+  for (const [file, text] of Object.entries({
+    'package.json': JSON.stringify({ name: 'sillytavern', version: '1.19.0' }),
+    'server.js': '', 'public/scripts/extensions.js': '',
+    'config.yaml': 'dataRoot: ./data\nport: 8000\n',
+    'data/default-user/settings.json': '{"keep":"host settings"}',
+    'data/default-user/extensions/other-extension/manifest.json': '{"keep":true}',
+  })) { const target = path.join(host, file); await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, text); }
+  const env = { ...process.env, STUDIO_PORT: '0', STUDIO_DATA_DIR: dataDir, STUDIO_TAVERN_DIR: host, STUDIO_TAVERN_DATA_DIR: '', STUDIO_NO_BROWSER: '1' };
+  const setupArgs = ['scripts/launcher.js', '--tavern', host, '--profile', 'default-user', '--setup-only', '--no-browser'];
+  await promisify(execFile)(process.execPath, setupArgs, { cwd, env, windowsHide: true, timeout: 30000 });
+  const repeat = await promisify(execFile)(process.execPath, setupArgs, { cwd, env, windowsHide: true, timeout: 30000 });
+  assert.match(repeat.stdout, /连接器已就绪/);
+  const { readLauncher, stopLauncher } = await import('../launcher-service.js');
+  const child = process.platform === 'win32'
+    ? execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(cwd, 'scripts/windows-launcher.ps1'), '-Mode', 'start'], { cwd, env, windowsHide: true })
+    : execFile(process.execPath, ['scripts/launcher.js', '--no-browser'], { cwd, env, windowsHide: true });
+  let stderr = ''; child.stderr.on('data', bytes => { stderr += bytes; });
+  const closed = new Promise(resolve => child.once('exit', (code, signal) => resolve({ code, signal })));
+  try {
+    let running;
+    for (let attempt = 0; attempt < 100; attempt++) {
+      if (child.exitCode !== null) throw new Error('Packaged launcher stopped: ' + stderr);
+      running = await readLauncher(cwd); if (running) break;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    assert.ok(running, 'Packaged launcher becomes ready');
+    const reused = await promisify(execFile)(process.execPath, ['scripts/launcher.js', '--no-browser'], { cwd, env, windowsHide: true, timeout: 10000 });
+    assert.match(reused.stdout, /已在运行/);
+    assert.equal(await stopLauncher(cwd), true);
+    assert.equal((await closed).code, 0);
+    assert.equal(await readFile(path.join(host, 'data/default-user/settings.json'), 'utf8'), '{"keep":"host settings"}');
+    assert.equal(await readFile(path.join(host, 'data/default-user/extensions/other-extension/manifest.json'), 'utf8'), '{"keep":true}');
+    const installedManifest = JSON.parse(await readFile(path.join(host, 'data/default-user/extensions/tavern-theme-studio-connector/manifest.json')));
+    assert.equal(installedManifest.version, STUDIO_VERSION);
+    console.log('Clean package one-click setup, repeat launch, remembered host and managed shutdown: OK');
+  } finally {
+    if (child.exitCode === null) { await stopLauncher(cwd).catch(() => {}); child.kill(); await closed; }
+  }
   const connector = readGeneratedZip(await readFile(path.join(cwd, 'dist/tavern-theme-studio-connector.zip')));
   for (const [filename, bytes] of connector.filter(([f]) => f.endsWith('.js'))) {
     for (const m of bytes.toString().matchAll(/(?:from\s*|import\s*)['"](\.[^'"]+)['"]/g)) {

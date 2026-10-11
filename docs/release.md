@@ -6,11 +6,13 @@
 
 源码维护者运行 `npm ci`，再运行 `npm run release:check`。它检查语法和版本、执行测试、打包连接器和核心 ZIP、在全新临时目录验证启动 / 命令 / 离线导出 / 重启及连接器依赖完整性。只生成本地候选文件，不上传、不推送、不创建 Release。
 
-候选位于 `output/releases/tavern-theme-studio-<version>-core.zip`，有同名 `.sha256`；包内 `package-manifest.json` 列出每个文件的哈希。包中包含固定版本运行依赖及其原许可证。用户解压后需要 Node.js 22+，可直接 `npm run lab`；无需下载素材样本或配置 Source Hub / 模型 CLI。
+候选位于 `output/releases/tavern-theme-studio-<version>-core.zip`，有同名 `.sha256`；包内 `package-manifest.json` 列出每个文件的哈希。包中包含固定版本运行依赖及其原许可证。Windows 用户解压后双击 `start.cmd`，缺少 Node 时会自动准备；其他平台准备 Node.js 22+ 后使用 `npm run setup`。无需下载素材样本或配置 Source Hub / 模型 CLI。
 
 完整仓库用于开发、运行测试及制作大型主题样本。核心包用于运行工作台；其中不提供开发测试和大型样本构建脚本所需的素材。大型示例按独立发行物管理，不能把整个仓库 ZIP 当作日常安装包。
 
 ## 数据与恢复
+
+0.11 的 Windows 安装与更新入口分别是 `start.cmd` 和 `update.cmd`。安装包更新只采用已发布且高于当前版本的正式核心包，校验后备份程序文件，保留 `.local/` 与作品目录；源码目录走 Git 快进更新。连接器同步和受启动器管理的服务重启自动完成。首次从旧版迁入、失败恢复和特殊位置见 [一键安装与更新](install-update.md)。
 
 升级到 0.10 时，工作台与酒馆中的连接器需要同步更新。停止工作台、备份并保留下述数据后更新程序；源码安装重新安装依赖并打包连接器，核心包使用包内连接器。将连接器文件更新到酒馆原安装目录，再启动工作台并刷新专用测试标签。只更新程序会触发连接器升级提示。交互变化见 [直接编辑指南](direct-editing.md)，本地验证见 [0.10 验证记录](validation-0.10.md)。
 

@@ -2,13 +2,15 @@
 
 **和 Agent 从一个想法做出美化，在真实酒馆里边看边改。** 从认识界面、看图讨论方向开始，逐步完成原生主题；也可以直接调整现有主题的颜色、圆角、间距和装饰。满意后直接应用到酒馆，或下载主题 JSON 分享。
 
-当前源码 **0.10.0** · Node.js **22+** · 已实测 SillyTavern **1.19.0 / 06bde939f** · [MIT 代码许可](LICENSE)
+当前源码 **0.11.0** · Windows 双击启动 · 已实测 SillyTavern **1.19.0 / 06bde939f** · [MIT 代码许可](LICENSE)
 
-0.10：拾取更准确，颜色支持透明度、间距支持四边微调；手机半屏编辑，空白作品自动连接源码，支持直接应用到酒馆。见[直接编辑指南](docs/direct-editing.md)与[验证记录](docs/validation-0.10.md)。
+**Windows：双击 `start.cmd` 安装并启动，双击 `update.cmd` 更新后启动。** 首次选择一次酒馆目录，之后自动同步连接器；缺少 Node 时自动准备便携运行环境。详见 [一键安装与更新](docs/install-update.md)。
+
+编辑沿用原来的拾取和属性面板，支持透明度、四边间距、手机半屏编辑与直接应用到酒馆；见 [直接编辑指南](docs/direct-editing.md)。
 
 [下载核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/latest) · [浏览源码](https://github.com/demilich1117/tavern-theme-studio) · [自动检查](https://github.com/demilich1117/tavern-theme-studio/actions/workflows/ci.yml)
 
-当前已发布的核心安装包为 **0.9.2**；本页介绍 **0.10.0**，使用新增功能请按下方的源码方式启动。安装包请选 Release 附件中的 `tavern-theme-studio-<version>-core.zip`，包含运行依赖、连接器、指南和漫画；GitHub 自动提供的 Source code 压缩包用于源码开发。
+当前公开 Release 安装包为 **0.9.2**；本页介绍 **0.11.0** 的源码与本地候选包，新入口不在旧包中。正式安装包请选 Release 附件中的 `tavern-theme-studio-<version>-core.zip`；`update.cmd` 只下载已发布的正式核心包，不会把源码版本降级。Git 克隆的源码目录通过快进合并更新。
 
 电脑上运行工作台，酒馆里安装连接器。日常入口是「作品」「编辑」「素材」「修改意见」；还没有设计方案时，打开「从零共创」。在「作品」继续编辑、保存定稿或打开作品文件夹，详见 [固定作品目录](docs/work-folders.md)。
 
@@ -55,27 +57,25 @@
 
 ### 1. 启动工作台
 
-先准备 Node.js 22+，并保持你的酒馆运行。安装包和源码的启动方式如下，选择你手上的一种。
+先保持酒馆运行，完整解压工作台到一个固定文件夹。**Windows 直接双击 `start.cmd`**：运行环境、依赖和连接器都会自动准备，不需要先敲命令或手工安装 Node。
 
-**拿到核心安装包：** 完整解压 `tavern-theme-studio-<version>-core.zip`，进入包内的 `tavern-theme-studio` 文件夹。Windows 可以双击 `start.cmd`；也可以在此目录打开终端运行：
+首次会弹出目录选择框，选择你的 **SillyTavern 文件夹**（包含 `server.js`）；只有多用户酒馆才需要再选一次使用的用户。完成后自动打开专用测试页，以后会记住位置。使用期间保持启动窗口开启。
 
-```powershell
-npm start
-```
-
-核心包已包含运行依赖和连接器 ZIP。
-
-**使用完整源码：** 在本项目目录打开终端，首次运行：
+macOS / Linux 或偏好命令行时，准备 Node.js 22+，在源码目录运行：
 
 ```powershell
 npm ci --omit=dev
-npm run package:connector
-npm run lab
+npm run setup
 ```
 
-之后可直接双击 `start.cmd` 或运行 `npm start`。运行期间保持这个终端开启。
+核心包已含依赖，可直接 `npm run setup`。传统的 `npm start` / `npm run lab` 仍可使用，连接器手动安装方式如下。
 
 ### 2. 给酒馆安装连接器
+
+**通过 `start.cmd` 或 `npm run setup` 启动时，这一步已自动完成。** 只有手动部署连接器时才需要下面的操作；源码用户先运行 `npm run package:connector`。
+
+<details>
+<summary>手动安装连接器</summary>
 
 将整个 `tavern-theme-studio-connector` 文件夹放入酒馆的 `data/<用户名>/extensions/`。核心包用户先解压 `dist/tavern-theme-studio-connector.zip`；源码用户使用刚生成的 `dist/tavern-theme-studio-connector/`。
 
@@ -91,6 +91,8 @@ SillyTavern/
 ```
 
 刷新或新开一个酒馆标签，在「扩展」面板确认出现「主题工作台」。
+
+</details>
 
 ### 3. 进入专用测试对话
 
@@ -147,9 +149,9 @@ SillyTavern/
 
 ### 从旧版升级
 
-停止工作台，备份并保留作品目录和工具的 `.local/`（含作品位置记录及未迁移的旧工程），再更新程序文件。源码用户更新后重新运行 `npm ci --omit=dev` 和 `npm run package:connector`。
+**已有 0.11 入口：双击 `update.cmd` 即可。** 自动检查更新、校验并备份程序、同步连接器、重新打开测试页。原作品和 `.local/` 配置保留；源码有未提交修改时会停下来保留现场，不会强行覆盖。
 
-**同时更新酒馆中的连接器文件，再重启工作台、刷新专用测试标签。** 只更新工作台会出现连接器升级提示。换安装目录或迁移数据时，按 [固定作品目录](docs/work-folders.md) 恢复位置；详细故障处理见 [发布与恢复](docs/release.md)。
+**从 0.10 或更早版本首次迁入：** 先关闭旧工作台窗口，将新版程序放回原工具目录，保留原来的 `.local/`、完整作品目录和自定义数据目录，再双击 `start.cmd`。这次需要选择酒馆目录，以后无需重新选择或手工复制连接器。换安装目录时按 [固定作品目录](docs/work-folders.md) 恢复位置。
 
 <a id="advanced"></a>
 
@@ -191,9 +193,9 @@ SillyTavern/
 
 | 遇到的情况 | 先这样处理 |
 | --- | --- |
-| 双击启动后提示缺少依赖 | 源码用户在项目目录运行一次 `npm ci --omit=dev`；核心包用户确认已完整解压，且有 `node_modules/` |
+| 首次启动提示下载或依赖失败 | 检查网络后重新双击 `start.cmd`；保留窗口中的具体错误，不必重装酒馆 |
 | 酒馆里没有「主题工作台」 | 核对连接器目录层级和 `manifest.json` 位置，再刷新或新开酒馆标签 |
-| 提示连接器需要更新 | 将新版连接器文件更新到原安装目录，重启工作台并刷新专用测试标签 |
+| 提示连接器需要更新 | 双击 `update.cmd`，完成后使用自动打开的新测试标签；手动安装者仍可更新连接器文件 |
 | 只有「示例预览」，没连上酒馆 | 保持服务运行，从酒馆连接器进入；「高级工具 → 连接诊断 → 检查连接与版本」查看原因 |
 | 改了没有效果 | 先看属性下方的生效提示与「所有尺寸 / 仅手机」；需要时展开「技术详情」查看计算值与样式来源 |
 | 某个位置无法拾取 | 先展开实际部件再拾取，或从对象列表选择；复杂装饰和第三方组件可能需要 Agent 接入 |
@@ -218,8 +220,10 @@ SillyTavern/
 | [进阶指南](docs/advanced-guide.md) | 素材、CSS、Agent、CLI、导出与备份 |
 | [API / CLI](docs/api.md) | 命令、HTTP 接口与工程协议 |
 | [开发与发布](docs/release.md) | 源码检查、核心包、升级和故障恢复 |
+| [一键安装与更新](docs/install-update.md) | 双击入口、自动运行环境、目录记忆与更新恢复 |
 | [直接编辑指南](docs/direct-editing.md) | 拾取、精确微调、手机编辑和直接应用 |
 | [0.10 验证记录](docs/validation-0.10.md) | 已做的检查和实际验证范围 |
+| [0.11 验证记录](docs/validation-0.11.md) | 安装、更新、失败恢复与自动启动 |
 | [设计与技术取舍](docs/design.md) | 预览模型和兼容边界 |
 
 源码仓库还保留 [月弧浮页示例 · 2.2.4](examples/moonveil-crescent-folio/README.md)。需要制作该示例时，优先使用「源码同步」中的配方；候选与冻结发行物的关系见 [源码同步说明](docs/source-build.md)。核心安装包提供通用起点主题，不包含大型月誓示例素材。

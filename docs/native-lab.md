@@ -8,7 +8,7 @@
 
 新主题或整体改造先走 [从零共创](co-design.md)：认识当前宿主 → 设计简报 → 视觉参考与方向选择 → 原生样板。下面的启动与测试流程既用于采集构思依据，也用于样板和最终验收；概念图和示例预览不能替代宿主检查。
 
-先启动原来的酒馆，更新已安装的工作台连接器，再运行：
+Windows 可先启动酒馆，再双击 `start.cmd` 自动准备连接器并打开测试页；日常更新使用 `update.cmd`，见 [一键安装与更新](install-update.md)。手动维护源码和连接器时再运行：
 
 ```powershell
 npm ci --omit=dev
@@ -18,7 +18,7 @@ npm run lab
 
 `package:connector` 只打包。将 `dist/tavern-theme-studio-connector/` 的文件更新到原连接器目录；更新前备份。已有私人酒馆标签不需要刷新，新开测试标签会加载新版。
 
-`start.cmd`、`npm start` 与 `npm run lab` 共用同一启动入口；已有同目录服务可直接复用。`lab` 默认在 `http://127.0.0.1:19323` 启动工作台，使用记住的作品目录；未设置作品时沿用 `.local/native-lab/`。显式 `STUDIO_DATA_DIR` 优先，位置见[作品目录](work-folders.md)。文件参数只在所用数据目录尚无工程时作为种子；之后不会覆盖已有修改。首次也可传 `examples/starter.theme.json`，不依赖未生成的 dist。可设置 `STUDIO_PORT`、`STUDIO_DATA_DIR` 和 `TAVERN_URL`。关闭该进程即停止测试服务。
+`start.cmd` 在原启动逻辑外增加运行环境准备、连接器同步和自动打开浏览器；`npm start` 与 `npm run lab` 保留手动入口，已有同目录服务可直接复用。默认在 `http://127.0.0.1:19323` 启动工作台，使用记住的作品目录；未设置作品时沿用 `.local/native-lab/`。显式 `STUDIO_DATA_DIR` 优先，位置见[作品目录](work-folders.md)。`lab` 的文件参数只在所用数据目录尚无工程时作为种子；之后不会覆盖已有修改。首次也可传 `examples/starter.theme.json`，不依赖未生成的 dist。可设置 `STUDIO_PORT`、`STUDIO_DATA_DIR` 和 `TAVERN_URL`。关闭该进程即停止测试服务。
 
 默认本机酒馆入口：
 

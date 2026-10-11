@@ -7,6 +7,8 @@ import { zipFiles } from './zip.js';
 const root = path.resolve(import.meta.dirname, '..');
 execFileSync(process.execPath, ['scripts/package-connector.js'], { cwd: root, stdio: 'inherit', windowsHide: true });
 const paths = new Set(['package.json', 'package-lock.json', 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md', 'AGENTS.md', 'start.cmd', 'examples/starter.theme.json', 'dist/tavern-theme-studio-connector.zip']);
+paths.add('update.cmd');
+for (const file of ['connector-files.js', 'launcher.js', 'update.js', 'zip.js', 'windows-launcher.ps1', 'select-tavern.ps1']) paths.add('scripts/' + file);
 for (const f of await readdir(root)) if (f.endsWith('.js')) paths.add(f);
 for (const f of await readdir(path.join(root, 'public'))) if (f.endsWith('.js') || ['index.html', 'style.css', 'workspace.css', 'favicon.svg', 'demo.html', 'demo.css'].includes(f)) paths.add('public/' + f);
 async function tree(folder) {
@@ -23,6 +25,8 @@ paths.add('docs/work-folders.md');
 paths.add('docs/host-reference.md');
 paths.add('docs/direct-editing.md');
 paths.add('docs/validation-0.10.md');
+paths.add('docs/install-update.md');
+paths.add('docs/validation-0.11.md');
 // Preserve the earlier comic in source history; ship the current flow only.
 paths.delete('docs/assets/doublecheese/03-co-design.png');
 paths.delete('docs/assets/doublecheese/03-co-design-v2.png');

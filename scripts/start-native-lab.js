@@ -2,10 +2,11 @@ import path from 'node:path';
 import { readFile, realpath } from 'node:fs/promises';
 import { createServer } from '../server.js';
 import { resolveDataDirectory } from '../work-location.js';
+import { pathToFileURL } from 'node:url';
 
 const root = path.resolve(import.meta.dirname, '..');
+export async function startNativeLab({ seedPath } = {}) {
 const dataDir = await resolveDataDirectory();
-const seedPath = process.argv[2];
 let app;
 try { app = await createServer({ dataDir, seedPath, port: Number(process.env.STUDIO_PORT || 19323) }); }
 catch (error) {
@@ -20,11 +21,16 @@ catch (error) {
     if (!response.ok) throw error;
     const current = await response.json();
     if (!current.projectId || current.dataDir !== await realpath(dataDir)) throw error;
-    app = { address: runtime.address, close: async () => {} };
+    app = { address: runtime.address, reused: true, close: async () => {} };
     console.log('已有工作台正在运行，继续使用同一个工程。需要升级服务时，请先关闭旧进程再启动。');
   } catch { throw error; }
 }
 const host = new URL(process.env.TAVERN_URL || 'http://127.0.0.1:8000');
 host.hash = new URLSearchParams({ 'tts-lab': '', studio: app.address }).toString();
 console.log(`Native test workbench: ${host.href}\nStudio API: ${app.address}\nProject: ${dataDir}`);
+return { ...app, url: host.href };
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+const app = await startNativeLab({ seedPath: process.argv[2] });
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => { await app.close(); process.exit(0); });
+}
