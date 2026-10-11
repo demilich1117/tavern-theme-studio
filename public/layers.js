@@ -4,7 +4,7 @@ import { decorationDiagnostics, effectiveLayer, layerAsset } from '/shared/decor
 import { resolveAssetUrls } from '/shared/assets.js';
 const $ = s => document.querySelector(s);
 const node = (tag, text, cls) => { const el = document.createElement(tag); if (text !== undefined) el.textContent = text; if (cls) el.className = cls; return el; };
-export function attachLayers({ getState, command, preview, toast, send }) {
+export function attachLayers({ getState, command, preview, toast, send, getScope, setScope }) {
   let selected, assets = [], scope = 'base', queue = Promise.resolve(), lastProjectId, hostIssues = [], canEdit = false, viewport;
   const button = node('button', '◇ 装饰图层'); button.id = 'layers-button'; $('.studio-tools').append(button);
   const dialog = node('dialog', undefined, 'wide-dialog'); dialog.id = 'layers-dialog';
@@ -41,7 +41,7 @@ export function attachLayers({ getState, command, preview, toast, send }) {
     select('目标与绘制方式', 'slot', layer.slotId, (p.recipe?.slots || []).map(s => [s.name + (p.decorations.some(l => l.id !== layer.id && l.slotId === s.id) ? ' · 已占用' : ''), s.id]), slotId => update({ slotId }));
     const assetOptions = [['沿用源码素材', ''], ...assets.map(a => [a.name, a.reference])]; if (layer.asset && !assets.some(a => a.reference === layer.asset)) assetOptions.push(['当前替换素材', layer.asset]);
     select('素材', 'asset', layer.asset || '', assetOptions, asset => update({ asset: asset || null }));
-    select('尺寸覆盖', 'scope', scope, [['所有尺寸', 'base'], ...p.breakpoints.map(b => [`${b.name} · ${b.condition}`, b.id])], value => { scope = value; }, true);
+    select('尺寸覆盖', 'scope', scope, [['所有尺寸', 'base'], ...p.breakpoints.map(b => [`${b.name} · ${b.condition}`, b.id])], value => { setScope(value); scope = value; }, true);
     if (slot?.geometry) {
       for (const [label, k, min, max, step, fallback] of [['水平偏移 px', 'x', -10000, 10000, 1, 0], ['垂直偏移 px', 'y', -10000, 10000, 1, 0], ['等比缩放', 'scale', 0.05, 10, 0.05, 1], ['旋转 °', 'rotation', -360, 360, 1, 0], ['不透明度', 'opacity', 0, 1, 0.05, 1], ['叠放顺序', 'order', -9999, 9999, 1, 0]]) {
         const el = input(label, k, props[k] ?? fallback, value => update(changeProps(k, Number(value))), 'number'); el.min = min; el.max = max; el.step = step;
@@ -58,6 +58,7 @@ export function attachLayers({ getState, command, preview, toast, send }) {
     panel.append(node('code', slot ? `${slot.selector}${slot.pseudo} · ${slot.method === 'nine-slice' ? '九切片' : '背景'}${slot.condition ? ' · ' + slot.condition : ''}` : layer.slotId, 'layer-selector'));
   }
   function render() {
+    scope = getScope();
     if (!dialog.open) return;
     const p = getState().project, diagnostics = decorationDiagnostics(p), search = $('#layers-search').value.trim().toLowerCase(), group = $('#layers-group').value;
     if (!Object.hasOwn(p.rules, scope)) scope = 'base';
@@ -80,14 +81,20 @@ export function attachLayers({ getState, command, preview, toast, send }) {
     if (!selectedLayer()) selected = p.decorations[0]?.id;
     renderEditor();
   }
-  button.addEventListener('click', run(async () => { await assetList(); openStudioPanel('layers-dialog'); }));
+  async function open(id) {
+    await assetList();
+    if (id) { selected = id; $('#layers-search').value = ''; $('#layers-group').value = ''; }
+    openStudioPanel('layers-dialog'); render();
+    if (id) $('#layer-editor h3')?.scrollIntoView({ block: 'nearest' });
+  }
+  button.addEventListener('click', run(() => open()));
   $('#layers-search').addEventListener('input', render); $('#layers-group').addEventListener('change', render);
   $('#layer-add').addEventListener('submit', run(async () => { await command({ type: 'decoration-add', target: $('#layer-target').value, pseudo: $('#layer-pseudo').value, method: $('#layer-method').value }); selected = getState().project.decorations.at(-1).id; $('#layers-search').value = ''; $('#layers-group').value = ''; }));
   $('#recipe-import-button').addEventListener('click', () => $('#recipe-import').click());
   $('#recipe-import').addEventListener('change', run(async e => { const file = e.target.files[0]; try { if (file) { if (file.size > 1048576) throw new Error('配方超过 1 MiB。'); await command({ type: 'recipe', recipe: JSON.parse((await file.text()).replace(/^\uFEFF/, '')) }); selected = undefined; } } finally { e.target.value = ''; } }));
   dialog.addEventListener('close', () => preview());
   function matchWidth(condition, width) { const m=condition.match(/\((min|max)-width: (\d+)px\)/); return m && (m[1]==='max'?width<=Number(m[2]):width>=Number(m[2])); }
-  return { capabilities(c) { canEdit=c?.decorationEditor===1;render(); }, render() { const p = getState().project; if (p.projectId !== lastProjectId) { lastProjectId = p.projectId; selected = undefined; scope = 'base'; } button.textContent = `可调装饰 ${p.decorations.length}`; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); }, receive(data) {
+  return { open, capabilities(c) { canEdit=c?.decorationEditor===1;render(); }, render() { const p = getState().project; if (p.projectId !== lastProjectId) { lastProjectId = p.projectId; selected = undefined; } button.textContent = `可调装饰 ${p.decorations.length}`; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); }, receive(data) {
     if (data.type==='viewport') { viewport=data;render(); }
     else if (data.type==='decoration-commit') { const s=getState(); if (!['projectId','sessionId','fingerprint','revision'].every(k=>data.basis?.[k]===s[k])) { send('decoration-commit-result',{ok:false,error:'工程更新，此次拖动未保存。'});preview();toast('工程更新，请重新定位。',true);return; } command({type:'decoration-update',id:data.id,scope:data.scope,patch:{props:data.props}}).then(()=>send('decoration-commit-result',{ok:true})).catch(e=>send('decoration-commit-result',{ok:false,error:e.message})); }
     else if (data.type==='decoration-editor-status'&&data.message) toast(data.message);

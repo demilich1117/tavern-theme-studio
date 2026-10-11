@@ -13,7 +13,7 @@ export function attachSource({ getState, getToken, toast }) {
   <details><summary>本机源码绑定</summary><select id="source-preset" aria-label="源码配方"></select>
   <form id="source-form" class="workflow-form"><label for="source-root">源码根目录</label><input id="source-root" required>
   <label for="source-program">构建程序</label><input id="source-program" required placeholder="node.exe 的完整路径">
-  <label for="source-args">参数（每行一个，支持 {output} 与 {mode}）</label><textarea id="source-args" rows="5" required></textarea>
+  <label for="source-args">参数（每行一个，通用构建器留空）</label><textarea id="source-args" rows="5"></textarea>
   <label for="source-watch">监听文件或目录（相对于源码根目录，每行一个）</label><textarea id="source-watch" rows="5" required></textarea>
   <label for="source-mode">素材模式</label><select id="source-mode"><option value="local">本机制作 · 独立素材文件</option><option value="embedded">内嵌发行候选</option><option value="external">固定外链候选</option></select>
   <button type="submit">保存绑定</button></form><p class="panel-hint">本机路径与执行配置独立保存，不进入分享工程。输出、缓存和历史目录不参与监听。</p></details></div>`;

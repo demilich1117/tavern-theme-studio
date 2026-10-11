@@ -11,6 +11,10 @@ const root = path.resolve(import.meta.dirname, '..'), temp = await mkdtemp(path.
 try {
   const zip = await readFile(path.join(root, `output/releases/tavern-theme-studio-${STUDIO_VERSION}-core.zip`));
   const files = readGeneratedZip(zip);
+  // Co-design must remain usable without the author's parent workspace skills.
+  for (const file of ['AGENTS.md', 'skills/tavern-theme-studio/SKILL.md', 'docs/co-design.md', 'docs/host-reference.md', 'docs/co-design-brief.template.md', 'docs/native-lab.md']) {
+    assert.ok(files.some(([name]) => name === `tavern-theme-studio/${file}`), `Missing co-design resource: ${file}`);
+  }
   for (const [name, bytes] of files) {
     assert.ok(name.startsWith('tavern-theme-studio/') && !name.split('/').includes('..') && !/\/(?:\.local|\.git|output)\//.test(name));
     assert.ok(!name.includes('/folio-art/') && !name.includes('/moonveil'));
@@ -32,7 +36,7 @@ try {
       catch(error){ await app.close(); if(error.cause?.message!=='bad port'||attempt===4)throw error; }
     }
     try {
-      for(const route of ['/', '/app.js', '/workflow.js', '/panels.js', '/workspace.css', '/setup.js', '/co-design.js', '/shared/co-design.js', '/theme-analysis.js', '/clipboard.js', '/artworks.js', '/api/artworks', '/api/theme-analysis', '/api/theme-analysis/source', '/api/health', '/api/build/presets', '/connector.zip']) assert.equal((await fetch(app.address+route)).status,200,route);
+      for(const route of ['/', '/app.js', '/workflow.js', '/panels.js', '/workspace.css', '/setup.js', '/co-design.js', '/shared/co-design.js', '/theme-analysis.js', '/clipboard.js', '/artworks.js', '/work-import.js', '/api/works', '/api/artworks', '/api/theme-analysis', '/api/theme-analysis/source', '/api/health', '/api/build/presets', '/connector.zip']) assert.equal((await fetch(app.address+route)).status,200,route);
       const s=await(await fetch(app.address+'/api/session')).json();
       const response=await fetch(app.address+'/api/commands',{method:'POST',headers:{'Content-Type':'application/json','X-Studio-Token':s.token},body:JSON.stringify({projectId:s.projectId,sessionId:s.sessionId,revision:s.revision,fingerprint:s.fingerprint,command:{type:'set',target:'assistant',property:'border-radius',value:'12px'}})});
       assert.equal(response.status,200);

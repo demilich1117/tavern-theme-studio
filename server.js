@@ -3,7 +3,7 @@ import { readFile, mkdir, writeFile, rename, readdir, unlink, access } from 'nod
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomBytes, timingSafeEqual, randomUUID } from 'node:crypto';
-import { ProjectHistory, createProject, exportTheme } from './shared/core.js';
+import { ProjectHistory, createProject, exportTheme, validateTheme } from './shared/core.js';
 import { scanVariables } from './shared/variables.js';
 import { diffProjects } from './shared/diff.js';
 import { createAssetStore, MAX_ASSET_BYTES, MAX_IMPORT_BYTES } from './asset-store.js';
@@ -26,13 +26,70 @@ import { analyzeTheme, analysisHandoff } from './theme-analysis.js';
 import { rewriteVariables } from './shared/variables.js';
 import { compileOverrides } from './shared/core.js';
 import { createArtworkService } from './artwork-service.js';
+import { readManagedWork, resolveDataDirectory, workPointer } from './work-location.js';
+import { createWorkLibrary } from './work-library.js';
+import { starterTheme } from './shared/starter.js';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.json': 'application/json; charset=utf-8', '.zip': 'application/zip' };
-export async function createServer({ dataDir = path.join(root, '.local'), port = 19321, seedPath, artworkHome } = {}) {
+export async function createServer({ dataDir = path.join(root, '.local'), port = 19321, seedPath, artworkHome, folderOpener, workHome, pointer = workPointer } = {}) {
+  let active, switching = false, shuttingDown = false, switchFinished = Promise.resolve();
+  const retired = new Map();
+  const server = http.createServer((req, res) => {
+    if (!active || shuttingDown) { res.writeHead(503); res.end('工作台正在启动或关闭'); return; }
+    active.handle(req, res);
+  });
+  let library;
+  const open = directory => createWorkspace({ dataDir: directory, artworkHome, folderOpener, server, listWorks: () => library.list(), switchWork, isActive: workspace => active === workspace && !shuttingDown });
+  async function switchWork(request, beforeSwitch) {
+    if (switching || shuttingDown) throw Object.assign(new Error('正在切换作品，请稍后重试。'), { status: 409 });
+    switching = true; let next, finishSwitch;
+    switchFinished = new Promise(resolve => { finishSwitch = resolve; });
+    try {
+      const target = request.theme ? null : await library.find(request.projectId);
+      if (target?.dataDir === active.dataDir) return active.view();
+      // Snapshot failure must prevent creation or switching. The old draft stays in place.
+      const snapshotCreated = await beforeSwitch();
+      const work = target || await library.create(request.theme, { scaffold: request.scaffold });
+      await retired.get(work.dataDir);
+      next = await open(work.dataDir);
+      await next.start(address);
+      await library.remember(work);
+      const previous = active; active = next; next = null;
+      previous.switched(active.view());
+      const closing = previous.close(); retired.set(previous.dataDir, closing);
+      // Do not await the old command queue from inside its own switching command.
+      closing.catch(error => console.error('旧作品关闭失败：', error.message));
+      return { ...active.view(), snapshotCreated, switchedWork: { name: work.name, root: work.root } };
+    } catch (e) { await next?.close(); throw e; }
+    finally { switching = false; finishSwitch(); }
+  }
+  let address;
+  try {
+    active = await createWorkspace({ dataDir, seedPath, artworkHome, folderOpener, server, listWorks: () => library.list(), switchWork, isActive: workspace => active === workspace && !shuttingDown });
+    const work = await readManagedWork(active.dataDir);
+    library = createWorkLibrary({ home: workHome || (work ? path.dirname(work.root) : path.join(path.dirname(root), 'theme-works')), pointer });
+    await new Promise((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', resolve); });
+    address = `http://127.0.0.1:${server.address().port}`;
+    await active.start(address);
+    let closing;
+    return { server, address, close: () => closing ||= (async () => {
+      shuttingDown = true;
+      await switchFinished;
+      await active.close(); await Promise.all(retired.values());
+      await new Promise(resolve => server.close(resolve));
+    })() };
+  } catch (e) {
+    await active?.close();
+    if (server.listening) await new Promise(resolve => server.close(resolve));
+    throw e;
+  }
+}
+
+async function createWorkspace({ dataDir, seedPath, artworkHome, folderOpener, server, listWorks, switchWork, isActive }) {
   const lock = await acquireDataLock(dataDir);
   dataDir = lock.dataDir;
-  let builds, runner, server;
+  let builds, runner, workspace;
   try {
   if (seedPath) {
     let exists = true;
@@ -44,17 +101,20 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
     }
   }
   const migration = await migrateStorage(dataDir);
+  const managedWork = await readManagedWork(dataDir);
+  if (managedWork && managedWork.projectId !== migration.project.projectId) throw new Error('作品目录与工程身份不一致，已停止载入。');
   let history = new ProjectHistory(migration.project);
   const sessionId = randomUUID();
   const view = () => ({ ...history.snapshot(), sessionId, projectId: history.project.projectId, fingerprint: projectFingerprint(history.project), dataDir, sourceBound: builds?.status().bound === true, capabilities: { projectSchema: 3, stableBindings: true, sourceBuild: 1, decorations: 1 }, migrationRecovery: migration.recovery });
   function checkBasis(input) {
+    if (!isActive(workspace)) throw Object.assign(new Error('已切换作品，请重新读取当前工程。'), { status: 409 });
     if (!input.sessionId || !input.fingerprint || !input.projectId) throw Object.assign(new Error('需要 v3 会话、工程 ID 与指纹；请更新工作台/CLI 并重新读取工程。'), { status: 428 });
     if (input.sessionId !== sessionId || input.projectId !== history.project.projectId || input.fingerprint !== projectFingerprint(history.project) || input.revision !== history.revision) throw Object.assign(new Error('工程或服务会话已更新，请重新读取后核对修改。'), { status: 409 });
   }
   const assets = await createAssetStore(dataDir), tickets = await createTicketStore(dataDir);
   const hub = await createHubClient(dataDir, assets);
   const exports = createExportService(assets, hub);
-  const artworks = await createArtworkService({ dataDir, studioRoot: root, home: artworkHome, exports, assets });
+  const artworks = await createArtworkService({ dataDir, studioRoot: root, home: artworkHome, exports, assets, folderOpener });
   const variants = await createVariants(dataDir, assets);
   const snapshotDir = path.join(dataDir, 'snapshots');
   const snapshotPattern = /^[a-f0-9]{32}$/;
@@ -91,13 +151,14 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
     return { id, name, createdAt: saved.createdAt };
   }
   async function persist(candidate) {
+    if (managedWork && candidate.project.projectId !== managedWork.projectId) throw new Error('这是固定作品目录，不能用其他工程覆盖。请在“作品”页切换已有作品，或通过“新建作品”接入主题。');
     await atomicJson(path.join(dataDir, 'project.json'), candidate.project);
   }
   builds = await createBuildService({
     dataDir, getProjectId: () => history.project.projectId, publish: value => broadcast('build', value),
     commit: build => enqueue(async () => {
       const assertCurrent = async () => {
-        if (!build.current() || build.projectId !== history.project.projectId || await sourceFingerprint(build.config, dataDir) !== build.fingerprint) throw Object.assign(new Error('候选对应旧源码或旧工程，已丢弃迟到结果。'), { status: 409 });
+        if (!isActive(workspace) || !build.current() || build.projectId !== history.project.projectId || await sourceFingerprint(build.config, dataDir) !== build.fingerprint) throw Object.assign(new Error('候选对应旧源码或旧工程，已丢弃迟到结果。'), { status: 409 });
       };
       await assertCurrent();
       for (const asset of build.assets) {
@@ -121,7 +182,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
     }),
   });
   runner = await createRunner({ dataDir, getProjectId: () => history.project.projectId, publish: value => broadcast('runner', value) });
-  server = http.createServer(async (req, res) => {
+  const handle = async (req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
     res.setHeader('Cache-Control', 'no-store');
@@ -144,13 +205,29 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       }
       if (req.method === 'GET' && url.pathname === '/api/session') return send(res, 200, { token, ...view() });
       if (req.method === 'GET' && url.pathname === '/api/project') return send(res, 200, view());
-      if (req.method === 'GET' && url.pathname === '/api/artworks') return send(res, 200, await artworks.status(history.project.projectId, builds.status().config?.root));
+      if (req.method === 'GET' && url.pathname === '/api/works') return send(res, 200, { currentProjectId: history.project.projectId, works: await listWorks() });
+      if (req.method === 'GET' && url.pathname === '/api/artworks') {
+        const project = history.snapshot().project, fingerprint = projectFingerprint(project), build = builds.status();
+        const info = await artworks.status(project.projectId, build.config?.root);
+        const latest = info.versions.find(v => !v.error);
+        let sourceChanged = false, sourceError = null;
+        if (build.bound) {
+          try { sourceChanged = !latest?.source?.included || latest.source.fingerprint !== await sourceFingerprint(build.config, dataDir); }
+          catch (e) { sourceError = e.message; }
+        }
+        return send(res, 200, { ...info, projectId: project.projectId, name: project.name, fingerprint, latestVersionId: latest?.id || null, changedSinceLatest: latest ? fingerprint !== latest.baseline.fingerprint || sourceChanged : null, sourceError });
+      }
+      if (req.method === 'GET' && url.pathname === '/api/artworks/theme') {
+        const checked = await artworks.verify(history.project.projectId, url.searchParams.get('id'), builds.status().config?.root);
+        return send(res, 200, JSON.parse(checked.files.get('theme.json')));
+      }
       if (req.method === 'POST' && url.pathname === '/api/artworks') {
         if (!String(req.headers['content-type']).startsWith('application/json')) return send(res, 415, { error: 'JSON required' });
         const input = JSON.parse((await body(req, 32768)).toString('utf8'));
         const result = await enqueue(async () => {
           checkBasis(input);
           const build = builds.status(), projectId = history.project.projectId;
+          if (input.action === 'open') return artworks.open(projectId, input.target, input.id, build.config?.root);
           if (input.action === 'configure') return artworks.configure(projectId, input.root, build.config?.root);
           if (input.action === 'save') {
             const saved = await artworks.save({ project: history.snapshot().project, baseline: basis(), build, name: input.name, note: input.note, includeSource: input.includeSource, gitCommit: input.gitCommit === true, assertCurrent: async () => { checkBasis(input); } });
@@ -326,7 +403,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       if (req.method === 'POST' && url.pathname === '/api/commands') {
         if (!String(req.headers['content-type']).startsWith('application/json')) return send(res, 415, { error: 'JSON required' });
         const input = JSON.parse((await body(req, MAX_IMPORT_BYTES)).toString('utf8'));
-        const { command, revision } = input;
+        let { command, revision } = input;
         const work = async () => {
           checkBasis(input);
           if (command?.type === 'snapshot-save') {
@@ -338,6 +415,18 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
             const snapshotCreated = await saveSnapshot(('主题分析：' + history.project.name).slice(0, 120));
             return { ...view(), snapshotCreated, analysisHandoff: analysisHandoff({ current: basis(), address: origin, studioPath: root, projectPath: builds.status().config?.root || root, snapshotId: snapshotCreated.id }) };
           }
+          if (['work-create-theme', 'work-create-blank', 'work-switch'].includes(command?.type)) {
+            if (command.type === 'work-create-blank') command = { ...command, theme: starterTheme(command.name) };
+            if (command.type !== 'work-switch') {
+              validateTheme(command.theme);
+              if (command.scanFingerprint !== projectFingerprint(history.project)) throw Object.assign(new Error('接入前工程已变化，请重新读取主题。'), { status: 409 });
+            }
+            return switchWork(command.type !== 'work-switch' ? { theme: command.theme, scaffold: command.type === 'work-create-blank' } : { projectId: command.projectId }, async () => {
+              const snapshot = await saveSnapshot('切换作品前：' + history.project.name.slice(0, 100));
+              await builds.pause('已切换作品。返回后可继续编辑，核对源码后再开启自动同步。');
+              return snapshot;
+            });
+          }
           const restored = command?.type === 'theme-import' ? { type: 'import-theme', theme: command.theme }
             : command?.type === 'hub-apply' ? { type: 'import-project', project: await hub.apply(history.project, command) }
             : command?.type === 'hub-replace' ? { type: 'import-project', project: await hub.replace(history.project, command.ids) }
@@ -347,6 +436,7 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
           const candidate = new ProjectHistory(history.project);
           candidate.past = [...history.past]; candidate.future = [...history.future]; candidate.revision = history.revision;
           candidate.execute(resolved, revision);
+          if (managedWork && candidate.project.projectId !== managedWork.projectId) throw new Error('这是固定作品目录，不能用其他工程覆盖。请在“作品”页切换已有作品，或通过“新建作品”接入主题。');
           let snapshotCreated;
           const replacesProject = ['theme-import', 'import-theme', 'import-project', 'base-theme', 'restore-files', 'snapshot-restore'].includes(command.type);
           // Persist recovery before changing history or disk. A failed snapshot aborts import.
@@ -374,29 +464,30 @@ export async function createServer({ dataDir = path.join(root, '.local'), port =
       const content = await readFile(file);
       res.writeHead(200, { 'Content-Type': types[path.extname(file)] }); res.end(content);
     } catch (e) { if (!res.headersSent) send(res, e.status || (e.code === 'ENOENT' ? 404 : 400), { error: e.message, ...(e.conflicts && { conflicts: e.conflicts }) }); else res.end(); }
-  });
-  server.on('close', () => { for (const client of events) client.end(); });
-  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', resolve); });
-  const address = `http://127.0.0.1:${server.address().port}`;
-  await atomicJson(path.join(dataDir, 'runtime.json'), { address, pid: process.pid, lockNonce: lock.owner.nonce });
-  await builds.activate();
+  };
   let closing;
-  return { server, address, close: () => closing ||= (async () => {
+  workspace = { dataDir, handle, view,
+    async start(address) {
+      await atomicJson(path.join(dataDir, 'runtime.json'), { address, pid: process.pid, lockNonce: lock.owner.nonce });
+      await builds.activate();
+    },
+    switched(next) { for (const client of events) { client.write(`data: ${JSON.stringify(next)}\n\n`); client.end(); } },
+    close: () => closing ||= (async () => {
     await runner.close(); await builds.close(); for (const client of events) client.end();
-    await new Promise(resolve => server.close(resolve)); await queue;
+    await queue;
     await unlink(path.join(dataDir, 'runtime.json')).catch(e => { if (e.code !== 'ENOENT') throw e; });
     await lock.release();
   })() };
+  return workspace;
   } catch (e) {
     await runner?.close().catch(() => {}); await builds?.close().catch(() => {});
-    if (server?.listening) await new Promise(resolve => server.close(resolve));
     const runtimeFile = path.join(dataDir, 'runtime.json');
     try { if (JSON.parse(await readFile(runtimeFile, 'utf8')).lockNonce === lock.owner.nonce) await unlink(runtimeFile); } catch (error) { if (error.code !== 'ENOENT') e.runtimeCleanupError = error.message; }
     await lock.release(); throw e;
   }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  const app = await createServer({ port: Number(process.env.STUDIO_PORT || 19321), dataDir: process.env.STUDIO_DATA_DIR });
+  const app = await createServer({ port: Number(process.env.STUDIO_PORT || 19321), dataDir: await resolveDataDirectory('.local') });
   console.log(`Tavern Theme Studio: ${app.address}`);
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => { await app.close(); process.exit(0); });
 }

@@ -1,4 +1,4 @@
-const groups = { 'theme-analysis-dialog': 'materials', 'assets-dialog': 'materials', 'layers-dialog': 'materials', 'tickets-dialog': 'comments', 'co-design-dialog': 'co-design' };
+const groups = { 'theme-analysis-dialog': 'materials', 'assets-dialog': 'materials', 'layers-dialog': 'materials', 'tickets-dialog': 'comments', 'co-design-dialog': 'co-design', 'artworks-dialog': 'artwork' };
 const $ = selector => document.querySelector(selector);
 let changing = false;
 
@@ -46,13 +46,13 @@ export function attachNavigation() {
   $('.target-details').append($('#reset-target'));
   $('#reset-target').textContent = '重置当前部件';
   $('#files-dialog .dialog-body').prepend($('#snapshots-button'));
-  $('#files-dialog .dialog-body').prepend($('#theme-read-host'));
   $('#scope-row').append($('#scope-controls'));
+  $('#scope-row').after($('#scope-hint'));
   $('#workbench-nav').after($('#fixture-tools'));
   $('#tools-content').append(...$('.studio-tools').children, $('#advanced-button'), $('#fixture-actions'), $('#view-css'));
   $('#tools-button').addEventListener('click', () => $('#tools-dialog').showModal());
   $('#tools-content').addEventListener('click', e => { if (e.target.closest('button')) $('#tools-dialog').close(); }, { capture: true });
-  $('#files-dialog').addEventListener('click', e => { if (e.target.closest('#snapshots-button, #theme-read-host')) $('#files-dialog').close(); }, { capture: true });
+  $('#files-dialog').addEventListener('click', e => { if (e.target.closest('#snapshots-button')) $('#files-dialog').close(); }, { capture: true });
   $('#opinion-mark').addEventListener('click', () => { showEditor(); $('#annotate-button').click(); });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && document.body.dataset.view !== 'edit' && !document.querySelector('dialog:modal')) { showEditor(); $('#edit-view').focus(); }

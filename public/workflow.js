@@ -238,6 +238,16 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
   $('#asset-link-form').addEventListener('submit', run(async () => { await api('/api/assets/link', { url: $('#asset-url').value }); $('#asset-url').value = ''; await loadAssets(); toast('外链已添加，选择图片变量后可替换。'); }));
   loadTickets().catch(e => toast(e.message, true));
   return {
+    async openAssets(item) {
+      openStudioPanel('assets-dialog'); await loadAssets();
+      const p = getState().project, variables = scanVariables(p.baseTheme.custom_css || '');
+      const matches = variables.filter(v => (p.variableEdits[v.id] ?? v.value).includes(item.reference));
+      layerTarget.value = '';
+      $('#asset-variable').value = matches.length === 1 ? matches[0].id : '';
+      if (matches.length > 1) toast('这张图片用于多个位置，请在图片变量中选择要替换的位置。');
+      else if (!matches.length) toast('图片变量已变化，请刷新主题图片后再选择。');
+      $('#asset-variable').focus();
+    },
     render() { tickets = tickets.map(t => ({ ...t, locationStatus: locationStatus(t, getState().project) })); $('#ticket-count').textContent = relevant().filter(t => t.state !== 'done').length; if (lastProjectId !== getState().project.projectId) { lastProjectId = getState().project.projectId; selectedTickets.clear(); $('#ticket-project-filter').value = 'current'; updateSelection(); } sendPins(); if ($('#tickets-dialog').open) renderTickets(); if ($('#assets-dialog').open) renderAssetVariables(); },
     ready() { sendPins(); },
     events(events) { events.addEventListener('tickets', () => loadTickets().catch(e => toast(e.message, true))); events.addEventListener('assets', () => { if ($('#assets-dialog').open) loadAssets().catch(e => toast(e.message, true)); }); },

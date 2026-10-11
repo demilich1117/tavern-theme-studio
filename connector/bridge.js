@@ -5,6 +5,8 @@ import { resolveAssetUrls } from '../shared/assets.js';
 import { captureAnchor, createAnnotationPins } from './annotations.js';
 import { layerAsset } from '../shared/decorations.js';
 import { createDecorationEditor } from './decoration-editor.js';
+import { pickCandidates, relatedLayers } from './picking.js';
+import { activeRules } from '../shared/editing.js';
 
 export const CHANNEL = 'tavern-theme-studio/v1';
 const STYLE_ID = 'tts-preview-style';
@@ -42,10 +44,10 @@ export function inspectTarget(id, preferred) {
   const visible = !target.pseudo || (!['none', 'normal'].includes(computed.content) && computed.display !== 'none');
   return { id, count: matches.length, visible, pseudo: target.pseudo || null, values, rect: { width: Math.round(el.getBoundingClientRect().width), height: Math.round(el.getBoundingClientRect().height) } };
 }
-export function attachBridge({ peer, origin, session, readTheme, hostName = 'SillyTavern', isDemo = false, fixture, onFixtureScene = () => {}, onCollapse = () => {}, onScene = () => {}, onClose = () => {}, onPickChange = () => {} }) {
+export function attachBridge({ peer, origin, session, readTheme, applyNativeTheme, hostName = 'SillyTavern', isDemo = false, fixture, onFixtureScene = () => {}, onCollapse = () => {}, onScene = () => {}, onClose = () => {}, onPickChange = () => {} }) {
   if (!peer || !/^https?:\/\//.test(origin) || !session) throw new Error('连接信息不完整。');
   let picking = false, annotating = false, selected = 'assistant', lastSeen = Date.now(), closed = false, pending = false;
-  let currentProject, previewEnabled = true, pickedElement;
+  let currentProject, previewEnabled = true, pickedElement, applying = false;
   const isolation = createThemeIsolation(() => isDemo ? null : document.getElementById('custom-style'));
   const presentation = createThemePresentation(() => isDemo ? null : document.body, () => isDemo ? null : document.getElementById('send_form'));
   const headObserver = new MutationObserver(() => isolation.refresh());
@@ -93,6 +95,9 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
   const overlay = document.createElement('div'); overlay.id = OVERLAY_ID;
   Object.assign(overlay.style, { position: 'fixed', pointerEvents: 'none', zIndex: '2147483646', border: '2px solid #e6aa64', borderRadius: '4px', boxShadow: '0 0 0 1px #131517', display: 'none', boxSizing: 'border-box' });
   document.getElementById(OVERLAY_ID)?.remove(); document.body.append(overlay);
+  const pickHint = document.createElement('div'); pickHint.dataset.ttsUi = ''; pickHint.setAttribute('role', 'status');
+  pickHint.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);max-width:90vw;padding:8px 12px;z-index:2147483647;background:#17191d;color:#e7e8ea;border:1px solid #e6aa64;border-radius:6px;font:13px/1.5 sans-serif;pointer-events:none';
+  pickHint.hidden = true; document.body.append(pickHint);
   function outline(element) {
     if (!element) { overlay.style.display = 'none'; return; }
     const rect = element.getBoundingClientRect();
@@ -100,18 +105,23 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
   }
   function match(element) {
     if (!(element instanceof Element) || element.closest('[data-tts-ui]')) return null;
-    for (const id of ['avatar', 'input', 'name', 'timestamp', 'reasoning-header', 'reasoning', 'quote', 'code', 'table', 'message-buttons', 'message-text', 'composer', 'assistant', 'user', 'chat', 'left', 'right', 'global']) {
-      const target = TARGETS.find(x => x.id === id), el = element.closest(target.selector);
-      if (el) return { target, el };
-    }
-    return null;
+    return pickCandidates(element)[0] || null;
   }
-  const inspect = () => send('inspection', { inspection: inspectTarget(selected, pickedElement) });
-  const move = event => { if (picking) outline(match(event.target)?.el); };
+  const inspect = () => {
+    const target = TARGETS.find(t => t.id === selected), el = targetElement(target, pickedElement).element;
+    const inner = ['assistant', 'user'].includes(selected) ? TARGETS.filter(t => ['message-text', 'avatar', 'name'].includes(t.id) && targetElement(t).matches.some(child => el?.contains(child))) : [];
+    send('inspection', { inspection: { ...inspectTarget(selected, pickedElement), width: innerWidth,
+      related: [...inner, ...pickCandidates(el).filter(hit => hit.target.id !== selected).map(hit => hit.target)].map(t => ({ id: t.id, name: t.name })),
+      layers: relatedLayers(currentProject, el, condition => matchMedia(condition).matches) } });
+  };
+  const move = event => { if (picking) { const hit = match(event.target); outline(hit?.el); pickHint.textContent = hit ? `${hit.target.name} · 点击选择 · Esc 退出` : '此位置暂不支持直接编辑 · 继续选择或按 Esc 退出'; } };
   const click = event => {
     if (!picking) return;
-    let hit = match(event.target); if (!hit) return;
+    if (event.target.closest?.('[data-tts-ui]')) return;
+    let hit = match(event.target);
     event.preventDefault(); event.stopImmediatePropagation();
+    if (!hit) { pickHint.textContent = '此位置暂不支持直接编辑 · 继续选择或按 Esc 退出'; send('pick-unsupported', { message: '这个位置暂不支持直接编辑。请继续选择消息、头像或输入区，或按 Esc 退出。' }); return; }
+    pickHint.hidden = true;
     if (annotating) {
       const target = TARGETS.find(t => t.id === selected);
       const pseudoHost = target?.pseudo && event.target.closest(target.elementSelector);
@@ -122,16 +132,17 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
     selected = hit.target.id; pickedElement = hit.el; picking = false; overlay.style.display = 'none'; onPickChange(false);
     send('picked', { target: selected }); inspect();
   };
-  const key = event => { if (event.key === 'Escape' && picking) { picking = annotating = false; overlay.style.display = 'none'; onPickChange(false); send('pick-cancelled'); } };
+  const key = event => { if (event.key === 'Escape' && picking) { picking = annotating = false; pickHint.hidden = true; overlay.style.display = 'none'; onPickChange(false); send('pick-cancelled'); } };
   async function message(event) {
     const data = event.data;
     if (event.source !== peer || event.origin !== origin || data?.channel !== CHANNEL || data?.session !== session) return;
     lastSeen = Date.now();
     try {
       switch (data.type) {
-        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, themeAnalysis: 1 }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
+        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, themeAnalysis: 1, directEditing: 1, nativeThemeApply: !!applyNativeTheme }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
         case 'ping': send('pong', { fixture: fixture?.status() }); break;
         case 'preview': {
+          if (applying) break;
           const project = validateProject(data.project);
           currentProject = project; currentBasis = data.basis; previewEnabled = data.enabled !== false;
           if (!previewEnabled) editor.stop();
@@ -145,8 +156,15 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
           editor.update();
           requestAnimationFrame(() => { if (!closed) { inspect(); requestAnimationFrame(() => { if (!closed) send('preview-applied', { basis: data.basis }); }); } }); break;
         }
-        case 'select': if (!TARGETS.some(x => x.id === data.target)) throw new Error('未知部件。'); if (selected !== data.target) pickedElement = undefined; selected = data.target; inspect(); break;
-        case 'pick': editor.stop(); annotating = false; picking = !!data.enabled; if (!picking) overlay.style.display = 'none'; onPickChange(picking); break;
+        case 'select': {
+          const target = TARGETS.find(t => t.id === data.target); if (!target) throw new Error('未知部件。');
+          if (selected !== data.target) {
+            const context = pickedElement, selector = target.elementSelector || target.selector;
+            pickedElement = context?.closest(selector) || targetElement(target).matches.find(el => context?.contains(el));
+          }
+          selected = data.target; inspect(); break;
+        }
+        case 'pick': editor.stop(); annotating = false; picking = !!data.enabled; pickHint.hidden = !picking; pickHint.textContent = '点击画面中的部件 · Esc 退出'; if (!picking) overlay.style.display = 'none'; onPickChange(picking); break;
         case 'decoration-edit': picking = annotating = false; overlay.style.display = 'none'; editor.start(data); break;
         case 'decoration-edit-stop': editor.stop(); break;
         case 'decoration-commit-result': editor.receive(data); break;
@@ -154,6 +172,15 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
         case 'annotations': pins.set(Array.isArray(data.tickets) ? data.tickets : []); break;
         case 'annotation-focus': pins.focus(data.anchor); break;
         case 'read-theme': send('theme', { theme: await readTheme() }); break;
+        case 'apply-native-theme': {
+          if (!applyNativeTheme || applying) { send('native-theme-result', { requestId: data.requestId, ok: false, error: '当前无法直接应用，请稍后重试或下载主题。' }); break; }
+          applying = true; editor.stop(); const enabled = previewEnabled;
+          isolation.setEnabled(false); presentation.restore(); variables.textContent = ''; style.textContent = ''; onPickChange(true);
+          try { const result = await applyNativeTheme(data.theme); previewEnabled = false; send('native-theme-result', { requestId: data.requestId, ok: true, ...result }); }
+          catch (error) { send('native-theme-result', { requestId: data.requestId, ok: false, error: error.message }); if (enabled && currentProject) { isolation.setEnabled(true); presentation.apply(exportTheme(currentProject)); variables.textContent = themeVariablesCss(currentProject, { followHostPageWidth: !isDemo }); renderPreview(currentProject, true); } }
+          finally { applying = false; onPickChange(false); }
+          break;
+        }
         case 'read-theme-for-analysis': send('theme-for-analysis', { requestId: data.requestId, theme: await readTheme() }); break;
         case 'scene': if (isDemo) { onScene(data.scene); requestAnimationFrame(inspect); } break;
         case 'fixture-open': {
@@ -167,8 +194,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
         case 'diagnose': {
           const target = TARGETS.find(x => x.id === data.target);
           if (!target || !FIELDS.some(f => f.key === data.property)) throw new Error('诊断目标或属性无效。');
-          const mobileActive = matchMedia('(max-width: 767px)').matches;
-          const requested = (mobileActive ? currentProject?.rules.mobile[target.id]?.[data.property] : undefined) ?? currentProject?.rules.base[target.id]?.[data.property];
+          const requested = activeRules(currentProject, target.id, innerWidth)[data.property];
           send('diagnosis', { requestId: data.requestId, result: diagnose(target, data.property, requested, previewEnabled, selected === target.id ? pickedElement : undefined) }); break;
         }
         case 'audit': requestAnimationFrame(() => { if (!closed) send('audit-result', { requestId: data.requestId, result: { ...auditScene(), hostName, isDemo, enabled: previewEnabled } }); }); break;
@@ -190,7 +216,7 @@ export function attachBridge({ peer, origin, session, readTheme, hostName = 'Sil
     window.removeEventListener('message', message); window.removeEventListener('pagehide', dispose);
     document.removeEventListener('pointermove', move, true); document.removeEventListener('click', click, true); document.removeEventListener('keydown', key, true);
     window.removeEventListener('resize', viewport); editor.dispose();
-    pins.dispose(); variables.remove(); style.remove(); overlay.remove(); onPickChange(false); onClose();
+    pins.dispose(); variables.remove(); style.remove(); overlay.remove(); pickHint.remove(); onPickChange(false); onClose();
   }
   window.addEventListener('pagehide', dispose);
   return { dispose };

@@ -8,6 +8,8 @@ import { sourceFiles, sourceFingerprint } from './build-service.js';
 import { validateProject } from './shared/core.js';
 import { STUDIO_VERSION } from './shared/version.js';
 import { referenceIndex } from './export-service.js';
+import { readManagedWork, inside as within } from './work-location.js';
+import { openFolder } from './open-folder.js';
 
 const exec = promisify(execFile), markerName = '.studio-artwork.json';
 const idPattern = /^[a-f0-9]{32}$/;
@@ -40,14 +42,17 @@ async function git(root, args) {
   return stdout.trim();
 }
 
-export async function createArtworkService({ dataDir, studioRoot, home = path.join(path.dirname(studioRoot), 'theme-archives'), exports, assets }) {
+export async function createArtworkService({ dataDir, studioRoot, home = path.join(path.dirname(studioRoot), 'theme-archives'), exports, assets, folderOpener = openFolder }) {
   const settingsFile = path.join(dataDir, 'artwork-settings.json');
   let records = json(await optional(settingsFile) || Buffer.from('{}'));
+  const work = await readManagedWork(dataDir);
   async function location(projectId, value, sourceRoot) {
-    const root = await canonical(path.resolve(value || records[projectId]?.root || path.join(home, projectId)));
+    if (work && work.projectId !== projectId) throw failure('当前工程不属于此作品目录。');
+    if (work && value && await canonical(value) !== work.root) throw failure('固定作品的版本随作品保存，请迁移完整作品后再切换目录。');
+    const root = await canonical(path.resolve(work?.root || value || records[projectId]?.root || path.join(home, projectId)));
     const studio = await realpath(studioRoot), data = await realpath(dataDir);
-    if (inside(studio, root) || inside(root, studio) || inside(data, root) || inside(root, data)) throw failure('作品存档需放在工作台程序和运行数据目录之外。');
-    if (sourceRoot && (inside(sourceRoot, root) || inside(root, sourceRoot))) throw failure('存档目录不能与绑定源码目录重叠。');
+    if (inside(studio, root) || inside(root, studio) || (!work && (inside(data, root) || inside(root, data)))) throw failure('作品存档需放在工作台程序和运行数据目录之外。');
+    if (sourceRoot && (inside(sourceRoot, root) || inside(root, sourceRoot)) && !(work && await canonical(sourceRoot) === path.join(root, 'source'))) throw failure('存档目录不能与绑定源码目录重叠。');
     return root;
   }
   async function managed(root, projectId, create = false) {
@@ -79,7 +84,19 @@ export async function createArtworkService({ dataDir, studioRoot, home = path.jo
         versions.push({ id, name: m.name, note: m.note, createdAt: m.createdAt, baseline: m.baseline, source: m.source, warnings: m.warnings, git: records[projectId]?.commits?.[id] || { status: 'not_requested' }, directory: path.join(root, 'versions', id) });
       } catch (e) { versions.push({ id, name: '存档清单不可读', error: e.message }); }
     }
-    return { root, versions: versions.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')), sourceBound: !!sourceRoot };
+    return { root, versions: versions.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '') || b.id.localeCompare(a.id)), sourceBound: !!sourceRoot, managed: !!work, workspace: dataDir, sourceDirectory: sourceRoot || null };
+  }
+  async function open(projectId, target, id, sourceRoot) {
+    const info = await status(projectId, sourceRoot);
+    let directory;
+    if (target === 'work') { await managed(info.root, projectId); directory = info.root; }
+    else if (target === 'source' && sourceRoot) directory = await realpath(sourceRoot);
+    else if (target === 'version') { const checked = await verify(projectId, id, sourceRoot); directory = path.join(checked.root, 'versions', id); }
+    else throw failure('请选择作品、源码或已保存的版本目录。');
+    // Only known directories can be opened; a request cannot supply a path or command.
+    if (!(await lstat(directory)).isDirectory() || (await lstat(directory)).isSymbolicLink()) throw failure('文件夹不存在或为符号链接。');
+    if (target === 'version' && !within(info.root, await realpath(directory))) throw failure('版本目录越界。');
+    await folderOpener(directory); return { directory, opened: true };
   }
   async function configure(projectId, value, sourceRoot) {
     if (typeof value !== 'string' || !path.isAbsolute(value) || value.length > 2000) throw failure('请填写作品存档的绝对目录。');
@@ -178,5 +195,5 @@ export async function createArtworkService({ dataDir, studioRoot, home = path.jo
     const receipt = gitCommit ? await commit(projectId, id, build?.config?.root) : { git: { status: 'not_requested' } };
     return { id, directory, name: manifest.name, warnings, source, baseline: manifest.baseline, git: receipt.git };
   }
-  return { status, configure, save, verify, commit };
+  return { status, configure, save, verify, commit, open };
 }

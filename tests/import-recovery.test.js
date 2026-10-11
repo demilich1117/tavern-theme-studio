@@ -12,8 +12,10 @@ test('every replacement import persists recovery across restart; launcher reuses
   const dir=await mkdtemp(path.join(os.tmpdir(),'tts-recovery-')); let app;
   try {
     app=await createServer({dataDir:dir,port:0});
-    const get=async route=>(await fetch(app.address+route)).json();
-    const post=async command=>{const s=await get('/api/session');return fetch(app.address+'/api/commands',{method:'POST',headers:{'Content-Type':'application/json','X-Studio-Token':s.token},body:JSON.stringify({...s,command})});};
+    // A restarted server may receive the same ephemeral port on Windows. Do not
+    // reuse undici's old keep-alive socket across these deliberate restarts.
+    const get=async route=>(await fetch(app.address+route,{headers:{Connection:'close'}})).json();
+    const post=async command=>{const s=await get('/api/session');return fetch(app.address+'/api/commands',{method:'POST',headers:{Connection:'close','Content-Type':'application/json','X-Studio-Token':s.token},body:JSON.stringify({...s,command})});};
     await post({type:'set',target:'assistant',property:'border-radius',value:'12px'});
     const saved=await (await post({type:'snapshot-save',name:'起点'})).json();
     const commands=[

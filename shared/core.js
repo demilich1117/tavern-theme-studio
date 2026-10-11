@@ -61,6 +61,11 @@ export function normalizeValue(key, value) {
     if (typeof value !== 'string' || !/^#[a-f\d]{6}([a-f\d]{2})?$/i.test(value)) throw new Error('颜色需使用 #RRGGBB 或 #RRGGBBAA。');
     return value.toLowerCase();
   }
+  if (key === 'padding' && typeof value === 'string' && value.trim().includes(' ')) {
+    const sides = value.trim().split(/\s+/);
+    if (sides.length > 4) throw new Error('内边距最多包含上、右、下、左四个值。');
+    return sides.map(v => normalizeValue(key, v)).join(' ');
+  }
   const pattern = new RegExp(`^-?\\d+(?:\\.\\d+)?${field.unit}$`);
   const raw = typeof value === 'number' ? String(value) + field.unit : value;
   if (typeof raw !== 'string' || !pattern.test(raw)) throw new Error(`属性 ${key} 的单位应为 ${field.unit || '无单位'}。`);

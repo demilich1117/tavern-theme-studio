@@ -1,9 +1,10 @@
 import path from 'node:path';
 import { readFile, realpath } from 'node:fs/promises';
 import { createServer } from '../server.js';
+import { resolveDataDirectory } from '../work-location.js';
 
 const root = path.resolve(import.meta.dirname, '..');
-const dataDir = process.env.STUDIO_DATA_DIR || path.join(root, '.local/native-lab');
+const dataDir = await resolveDataDirectory();
 const seedPath = process.argv[2];
 let app;
 try { app = await createServer({ dataDir, seedPath, port: Number(process.env.STUDIO_PORT || 19323) }); }

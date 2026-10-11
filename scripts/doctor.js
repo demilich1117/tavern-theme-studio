@@ -1,6 +1,7 @@
 import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
 import { STUDIO_VERSION } from '../shared/version.js';
+import { resolveDataDirectory } from '../work-location.js';
 const root = path.resolve(import.meta.dirname, '..'), checks = [];
 checks.push({ name: 'Node.js', status: Number(process.versions.node.split('.')[0]) >= 22 ? 'passed' : 'failed', detail: process.version + '（需要 >=22）' });
 try { await import('css-tree'); checks.push({ name: '运行依赖', status: 'passed', detail: '已安装' }); }
@@ -8,8 +9,8 @@ catch { checks.push({ name: '运行依赖', status: 'failed', detail: '运行 np
 try { await access(path.join(root, 'dist/tavern-theme-studio-connector.zip')); checks.push({ name: '连接器包', status: 'passed', detail: '已生成；实际安装版本请在工作台「连接诊断」查看' }); }
 catch { checks.push({ name: '连接器包', status: 'optional', detail: '运行 npm run package:connector 后安装到酒馆用户扩展目录' }); }
 const candidates = new Set(process.env.STUDIO_URL ? [process.env.STUDIO_URL] : []);
-if (!candidates.size) for (const folder of ['.local/native-lab', '.local']) {
-  try { candidates.add(JSON.parse(await readFile(path.join(root, folder, 'runtime.json'), 'utf8')).address); } catch {}
+if (!candidates.size) for (const folder of [await resolveDataDirectory(), path.join(root, '.local')]) {
+  try { candidates.add(JSON.parse(await readFile(path.join(folder, 'runtime.json'), 'utf8')).address); } catch {}
 }
 if (!candidates.size) candidates.add('http://127.0.0.1:19323');
 for (const address of candidates) {

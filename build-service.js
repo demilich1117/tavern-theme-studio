@@ -24,6 +24,7 @@ export async function normalizeBuildConfig(value) {
   if (!(await stat(root)).isDirectory()) throw failure('源码根目录不存在。');
   if (typeof value.program !== 'string' || !value.program.trim() || value.program.length > 2000 || /\.(cmd|bat)$/i.test(value.program)) throw failure('请选择可执行程序；Windows npm/cmd 请改用 node.exe 与脚本参数。');
   if (!Array.isArray(value.args) || value.args.length > 100 || value.args.some(a => typeof a !== 'string' || a.length > 4000 || a.includes('\0'))) throw failure('构建参数必须是字符串数组。');
+  if (value.program === '$STUDIO_THEME' && value.args.length) throw failure('通用主题构建器不接受额外命令参数。');
   if (!Array.isArray(value.watch) || !value.watch.length || value.watch.length > 100) throw failure('请配置需要监听的源码文件或目录。');
   const paths = [...new Set(value.watch.map(relativeFile))];
   if (paths.some(p => ignored(p))) throw failure('输出、缓存、历史与日志目录不能作为监听来源。');
@@ -47,6 +48,11 @@ export async function sourceFiles(config, dataDir) {
     } else files.add(relative.replaceAll('\\', '/'));
   }
   for (const relative of config.watch) await collect(relative);
+  if (config.program === '$STUDIO_THEME' && !files.has('studio.recipe.json')) {
+    let exists = false;
+    try { await stat(path.join(config.root, 'studio.recipe.json')); exists = true; } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    if (exists) await collect('studio.recipe.json');
+  }
   return [...files].sort();
 }
 export async function sourceFingerprint(config, dataDir) {
@@ -114,7 +120,8 @@ export async function createBuildService({ dataDir, getProjectId, commit, publis
     return new Promise((resolve, reject) => {
       let output = '', error = '', timedOut = false;
       const args = config.args.map(a => a.replaceAll('{output}', directory).replaceAll('{mode}', config.mode));
-      child = spawn(config.program, args, { cwd: config.root, windowsHide: true, shell: false, env: { ...process.env, STUDIO_BUILD_OUTPUT: directory, STUDIO_ASSET_MODE: config.mode }, stdio: ['ignore', 'pipe', 'pipe'] });
+      const builtin = config.program === '$STUDIO_THEME';
+      child = spawn(builtin ? process.execPath : config.program, builtin ? [path.join(import.meta.dirname, 'scripts/build-theme.js')] : args, { cwd: config.root, windowsHide: true, shell: false, env: { ...process.env, STUDIO_BUILD_OUTPUT: directory, STUDIO_ASSET_MODE: config.mode }, stdio: ['ignore', 'pipe', 'pipe'] });
       const processChild = child;
       processChild.stdout.on('data', bytes => { output = (output + bytes.toString()).slice(-8000); });
       processChild.stderr.on('data', bytes => { error = (error + bytes.toString()).slice(-8000); });
@@ -161,7 +168,7 @@ export async function createBuildService({ dataDir, getProjectId, commit, publis
       const relative = String(fileName).replaceAll('\\', '/');
       const dataRelative = path.relative(record.config.root, dataDir).replaceAll('\\', '/');
       if (ignored(relative) || (dataRelative && (relative === dataRelative || relative.startsWith(dataRelative + '/')))) return;
-      const relevant = record.config.watch.some(p => p === '.' || relative === p || relative.startsWith(p.replace(/\/$/, '') + '/'));
+        const relevant = (record.config.program === '$STUDIO_THEME' && relative === 'studio.recipe.json') || record.config.watch.some(p => p === '.' || relative === p || relative.startsWith(p.replace(/\/$/, '') + '/'));
       if (relevant && records[id]?.autoSync && !records[id]?.paused) request(false);
     });
     watcher.on('error', e => { setStatus(id, 'failed', { error: `源码监听失败：${e.message}` }).catch(() => {}); });

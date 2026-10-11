@@ -4,6 +4,7 @@ import { referenceIndex } from '../export-service.js';
 import path from 'node:path';
 import { TARGETS, FIELDS } from '../shared/core.js';
 import { formatAgentHandoff } from '../shared/handoff.js';
+import { resolveDataDirectory } from '../work-location.js';
 const args = process.argv.slice(2), commandName = args.shift();
 try {
   if (!commandName || commandName === 'help') {
@@ -12,13 +13,15 @@ try {
     console.log('\n  ticket-copy <id>\n  ticket-review <id> <owner> <result.json>\n  build-status\n  build-presets\n  build-preset <index|name>\n  build-bind <local-config.json>\n  build-now\n  build-auto on|off\n  build-cancel');
     console.log('\n  theme-analyze\n  theme-source <new-output-directory> [snapshotId]\n  theme-copy');
     console.log('\n  artwork-status\n  artwork-config <absolute-directory>\n  artwork-save <name> [--note <text>] [--git] [--no-source]\n  artwork-verify <id>\n  artwork-commit <id>\n  artwork-restore <id>');
+    console.log('\n  artwork-open work|source|version [id]\n  Offline migration: node scripts/migrate-work.js copy <data-directory> <new-work-directory>\n  Select existing work: node scripts/migrate-work.js select <work-directory>');
+    console.log('\n  works\n  work-open <projectId>\n  work-new <theme.json>');
     process.exit(0);
   }
   if (commandName === 'targets') { console.log(JSON.stringify({ targets: TARGETS, fields: FIELDS }, null, 2)); process.exit(0); }
   let address = process.env.STUDIO_URL;
   if (!address) {
-    for (const file of ['../.local/native-lab/runtime.json', '../.local/runtime.json']) {
-      try { address = JSON.parse(await readFile(new URL(file, import.meta.url))).address; break; } catch (e) { if (e.code !== 'ENOENT') throw e; }
+    for (const file of [path.join(await resolveDataDirectory(), 'runtime.json'), new URL('../.local/runtime.json', import.meta.url)]) {
+      try { address = JSON.parse(await readFile(file)).address; break; } catch (e) { if (e.code !== 'ENOENT') throw e; }
     }
     address ||= 'http://127.0.0.1:19323';
   }
@@ -30,12 +33,16 @@ try {
     const response = await fetch(address + endpoint, body === undefined ? {} : { method: 'POST', headers: { 'X-Studio-Token': session.token, ...(!raw && { 'Content-Type': 'application/json' }) }, body: raw ? body : JSON.stringify({ ...expected, ...body }) });
     const data = await response.json(); if (!response.ok) throw new Error(data.error); return data;
   };
+  if (['works', 'work-open', 'work-new'].includes(commandName)) {
+    const result = commandName === 'works' ? await request('/api/works') : await request('/api/commands', { command: commandName === 'work-open' ? { type: 'work-switch', projectId: args[0] } : { type: 'work-create-theme', theme: await json(args[0]), scanFingerprint: session.fingerprint } });
+    console.log(JSON.stringify(result, null, 2)); process.exit(0);
+  }
   if (commandName.startsWith('artwork-')) {
     const action = commandName.slice('artwork-'.length);
-    if (!['status', 'config', 'save', 'verify', 'commit', 'restore'].includes(action)) throw new Error('Unknown artwork command');
+    if (!['status', 'config', 'save', 'verify', 'commit', 'restore', 'open'].includes(action)) throw new Error('Unknown artwork command');
     const result = action === 'status' ? await request('/api/artworks') : await request('/api/artworks', {
       action: action === 'config' ? 'configure' : action,
-      ...(action === 'config' ? { root: args[0] } : action === 'save' ? { name: args[0], note: args.includes('--note') ? args[args.indexOf('--note') + 1] : '', gitCommit: args.includes('--git'), ...(args.includes('--no-source') && { includeSource: false }) } : { id: args[0] }),
+      ...(action === 'config' ? { root: args[0] } : action === 'open' ? { target: args[0] || 'work', id: args[1] } : action === 'save' ? { name: args[0], note: args.includes('--note') ? args[args.indexOf('--note') + 1] : '', gitCommit: args.includes('--git'), ...(args.includes('--no-source') && { includeSource: false }) } : { id: args[0] }),
     });
     console.log(JSON.stringify(result, null, 2)); process.exit(0);
   }

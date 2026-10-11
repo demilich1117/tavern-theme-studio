@@ -1,5 +1,6 @@
 import { attachBridge } from './bridge.js';
 import { nativeFixtureHost, focusFixtureScene } from './fixture-host.js';
+import { applyNativeTheme, canApplyNativeTheme } from './native-theme.js';
 
 const ID = 'tts-connector';
 let bridge, studioWindow, dock, drawerObserver;
@@ -74,31 +75,31 @@ function mount() {
         const frame = document.createElement('iframe'); frame.title = '酒馆主题工作台编辑面板'; frame.src = url.href; frame.allow = 'clipboard-write'; Object.assign(frame.style, { width: '100%', flex: '1', minHeight: '0', border: '0' });
         const resize = document.createElement('div'); resize.setAttribute('role','separator'); resize.setAttribute('aria-label','调整工作台宽度'); resize.setAttribute('aria-orientation','vertical'); resize.tabIndex=0;
         resize.style.cssText='position:absolute;left:0;top:32px;bottom:0;width:7px;cursor:ew-resize;touch-action:none;background:linear-gradient(90deg,#e6aa6440,transparent);';
-        let panelWidth = 440, resizing;
-        const width = value => { panelWidth=Math.max(Math.min(320,innerWidth),Math.min(900,innerWidth,value)); if(!collapsed)dock.style.width=panelWidth+'px'; resize.setAttribute('aria-valuenow',Math.round(panelWidth));resize.setAttribute('aria-valuemin',Math.min(320,innerWidth));resize.setAttribute('aria-valuemax',Math.min(900,innerWidth)); };
-        resize.addEventListener('pointerdown',e=>{if(e.button!==0)return;resizing={x:e.clientX,width:panelWidth};resize.setPointerCapture(e.pointerId);e.preventDefault();});
-        resize.addEventListener('pointermove',e=>{if(resizing)width(resizing.width+resizing.x-e.clientX);});
-        resize.addEventListener('pointerup',()=>{resizing=undefined;});resize.addEventListener('pointercancel',()=>{resizing=undefined;});
-        resize.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();e.stopPropagation();width(panelWidth+(e.key==='ArrowLeft'?1:-1)*(e.shiftKey?50:10));}});
-        const onResize=()=>width(panelWidth);window.addEventListener('resize',onResize);disposeDock=()=>window.removeEventListener('resize',onResize);
-        const fold = document.createElement('button'); fold.type = 'button'; fold.textContent = '收起面板'; fold.setAttribute('aria-expanded', 'true'); fold.style.cssText = close.style.cssText;
-        let collapsed = false;
-        collapseDock = () => {
-          collapsed = !collapsed; frame.style.display = collapsed ? 'none' : '';
-          // A transformed html element can have zero height in native mobile
-          // layouts. Anchor to the viewport unit, then offset by our own height;
-          // bottom:0 would place the reopen button above the visible viewport.
-          Object.assign(dock.style, { height: collapsed ? 'auto' : '100dvh', width: collapsed ? 'auto' : panelWidth+'px', top: collapsed ? '100dvh' : '0', bottom: 'auto', transform: collapsed ? 'translateY(-100%)' : 'none' }); resize.hidden=collapsed;
-          label.hidden = collapsed; close.hidden = collapsed;
-          fold.textContent = collapsed ? '显示工作台' : '收起面板'; fold.setAttribute('aria-expanded', String(!collapsed));
+        let panelWidth = 440, panelHeight, resizing, collapsed = false;
+        const mobile = () => innerWidth <= 640;
+        const fold = document.createElement('button'); fold.type = 'button'; fold.style.cssText = close.style.cssText;
+        const layout = () => {
+          const sheet = mobile(), size = sheet ? Math.max(180, Math.min(innerHeight * .82, panelHeight ?? innerHeight * .48)) : Math.max(Math.min(320,innerWidth), Math.min(900,innerWidth,panelWidth));
+          frame.style.display = collapsed ? 'none' : '';
+          Object.assign(dock.style, { height: collapsed ? 'auto' : sheet ? size+'px' : '100dvh', width: collapsed ? 'auto' : sheet ? '100vw' : size+'px', top: collapsed || sheet ? '100dvh' : '0', bottom: 'auto', transform: collapsed || sheet ? 'translateY(-100%)' : 'none' });
+          resize.hidden = collapsed; resize.setAttribute('aria-orientation', sheet ? 'horizontal' : 'vertical'); resize.setAttribute('aria-label', sheet ? '调整工作台高度' : '调整工作台宽度');
+          resize.setAttribute('aria-valuenow', Math.round(size)); resize.setAttribute('aria-valuemin', sheet ? 180 : Math.min(320,innerWidth)); resize.setAttribute('aria-valuemax', Math.round(sheet ? innerHeight*.82 : Math.min(900,innerWidth)));
+          resize.style.cssText = sheet ? 'position:absolute;left:30%;right:30%;top:-6px;height:12px;cursor:ns-resize;touch-action:none;background:#e6aa6480;border-radius:6px' : 'position:absolute;left:0;top:32px;bottom:0;width:7px;cursor:ew-resize;touch-action:none;background:linear-gradient(90deg,#e6aa6440,transparent)';
+          label.hidden = collapsed; close.hidden = collapsed; fold.textContent = collapsed ? '显示工作台' : '收起面板'; fold.setAttribute('aria-expanded', String(!collapsed));
         };
+        resize.addEventListener('pointerdown',e=>{if(e.button!==0)return;resizing={x:e.clientX,y:e.clientY,width:panelWidth,height:panelHeight ?? innerHeight * .48};resize.setPointerCapture(e.pointerId);e.preventDefault();});
+        resize.addEventListener('pointermove',e=>{if(!resizing)return;if(mobile())panelHeight=Math.max(180,Math.min(innerHeight*.82,resizing.height+resizing.y-e.clientY));else panelWidth=Math.max(320,Math.min(900,resizing.width+resizing.x-e.clientX));layout();});
+        resize.addEventListener('pointerup',()=>{resizing=undefined;});resize.addEventListener('pointercancel',()=>{resizing=undefined;});
+        resize.addEventListener('keydown',e=>{const keys=mobile()?['ArrowUp','ArrowDown']:['ArrowLeft','ArrowRight'];if(!keys.includes(e.key))return;e.preventDefault();e.stopPropagation();const delta=(e.key===keys[0]?1:-1)*(e.shiftKey?50:10);if(mobile())panelHeight=Math.max(180,Math.min(innerHeight*.82,(panelHeight ?? innerHeight * .48)+delta));else panelWidth=Math.max(320,Math.min(900,panelWidth+delta));layout();});
+        window.addEventListener('resize',layout);disposeDock=()=>window.removeEventListener('resize',layout);
+        collapseDock = () => { collapsed = !collapsed; layout(); };
         fold.addEventListener('click', collapseDock); bar.prepend(fold);
-        dock.append(bar, frame, resize); document.body.append(dock); width(panelWidth); studioWindow = frame.contentWindow;
+        dock.append(bar, frame, resize); document.body.append(dock); layout(); studioWindow = frame.contentWindow;
       } else {
         studioWindow = window.open(url.href, 'tavern-theme-studio', 'popup,width=1440,height=960');
         if (!studioWindow) throw new Error('浏览器阻止了新窗口，可使用酒馆内的面板入口。');
       }
-      bridge = attachBridge({ peer: studioWindow, origin: url.origin, session, readTheme, fixture,
+      bridge = attachBridge({ peer: studioWindow, origin: url.origin, session, readTheme, fixture, applyNativeTheme: canApplyNativeTheme() ? applyNativeTheme : undefined,
         onFixtureScene: id => focusFixtureScene(fixture, id), onCollapse: collapseDock,
         onPickChange: picking => { if (embedded && dock) dock.style.visibility = picking ? 'hidden' : 'visible'; },
         onClose: () => { disposeDock(); dock?.remove(); dock = undefined; stop.disabled = true; status.textContent = '预览已停止，酒馆恢复原样。'; } });

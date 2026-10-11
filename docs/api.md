@@ -1,5 +1,9 @@
 # API、CLI 与 Agent 工作流
 
+作品入口继续使用 `/api/artworks`。GET 返回固定目录状态、源码/自动保存位置、最近定稿和 `changedSinceLatest`；POST 的 `action: "open"` 只接受 `target: "work" | "source" | "version"`（版本需 `id`），沿用会话、工程、revision、fingerprint 与 token 校验，不接收任意目录或命令。`GET /api/artworks/theme?id=<版本ID>` 核验后返回冻结主题。CLI 支持 `artwork-open work|source|version [id]`。离线迁移及通用构建见 [固定作品目录](work-folders.md)。
+
+`GET /api/works` 返回 `currentProjectId,works`，每件作品含 `projectId,name,root,dataDir`。`POST /api/commands` 新增 `work-create-theme`（`theme,scanFingerprint`）和 `work-switch`（目标 `projectId`）。前者创建独立目录，后者只接受作品列表中的身份；均先保留旧工程快照，暂停旧源码，再切换服务上下文。返回新工程、新 `sessionId`、`switchedWork` 和保存在旧作品里的 `snapshotCreated`；新 token 从 `/api/session` 读取。服务地址不变，SSE 通知所有页面刷新会话。CLI 对应 `works`、`work-new <theme.json>`、`work-open <projectId>`。
+
 0.9 新增只读 `/api/theme-analysis`、`/api/theme-analysis/source` 以及 `theme-analyze` / `theme-copy` / `theme-source` CLI。主题切换和冻结交接命令见 [素材与装饰清点](theme-analysis.md)。清点不自动改 CSS 或生成图层。
 
 0.8 新增 Source Hub、通用 CLI 执行任务、严格导出、素材变体/归档与分文件备份恢复，接口及命令见 [操作与协议](resources-and-runner.md)。原有 API 与复制小票流程继续可用；默认 `/api/theme` 为历史兼容导出，要求完整离线或验证外链时使用 `/api/export?mode=offline|external`。
@@ -136,3 +140,13 @@ node scripts/cli.js command output/command.json
 GET /api/export?mode=standard 返回 {theme,report}：内嵌 tts-asset 本地图片、保留原有公网外链，不要求 Source Hub 固定版本或离线缓存。缺失本地素材与本机地址仍拒绝；外部依赖和未解析项列在 report 中。这不是完整离线或固定公开引用保证，offline/external 模式保持严格检查。UI 允许为下载副本设置新名称，不更改工程名；原生酒馆拒绝同名主题导入。
 
 import-theme、import-project、theme-import、base-theme、restore-files、snapshot-restore 在候选校验成功后、替换前持久保存旧工程，返回 snapshotCreated。快照保存失败则不替换，导入/恢复暂停旧源码自动同步。自动构建与 Hub 参数更新继续原有流程。GET /api/project 和 /api/session 的 dataDir 为实际数据目录。
+
+## 0.10 直接编辑
+
+`set` 的 `padding` 支持 1–4 个合法 px 数值，整组修改作为一个撤销步骤。颜色继续使用 #RRGGBB / #RRGGBBAA。
+
+`work-create-blank` 接受 `name` 与 `scanFingerprint`，并使用常规会话/CAS 字段。先保留当前作品快照，再创建带源码及自动构建绑定的独立作品；不会给已有作品强加绑定。
+
+通用源码构建支持可选 `studio.recipe.json`，验证后放入 `build.json.recipe`；配方文件自动加入监听及源码指纹。
+
+连接器能力 `directEditing: 1` 和 `nativeThemeApply: true` 分别表示语义拾取/关联部件、原生主题导入。`apply-native-theme` 携带 `requestId` 与已内嵌素材的 `theme`，返回同请求 ID 的 `native-theme-result`；没有成功回执不视为已应用。只由用户点击应用入口触发。

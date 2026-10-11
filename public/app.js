@@ -1,4 +1,6 @@
 import { TARGETS, FIELDS, applyCommand, compileOverrides, exportTheme, ruleCount } from '/shared/core.js';
+import { attachInspector } from '/inspector.js';
+import { matchesWidth } from '/shared/editing.js';
 import { attachAdvanced } from '/advanced.js';
 import { FIXTURE_SCENES } from '/shared/fixture.js';
 import { attachWorkflow } from '/workflow.js';
@@ -11,6 +13,7 @@ import { attachThemeAnalysis } from '/theme-analysis.js';
 import { attachCoDesign } from '/co-design.js';
 import { attachNavigation, showEditor } from '/panels.js';
 import { attachArtworks } from '/artworks.js';
+import { attachWorkImport } from '/work-import.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
@@ -18,7 +21,7 @@ let peer, peerOrigin, session, ready = false, live = false, lastSeen = 0, isPick
 let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, layers, layouts, detailsExpanded = false;
 let fixtureBusy = false, fixtureSupported = false;
 let fixtureState, awaitingFirstPreview = false, connectorCapabilities;
-let themeAnalysis, coDesign, artworks;
+let themeAnalysis, coDesign, artworks, workImport, inspector, hostViewport, exporter;
 function updateFixture(fixture) {
   if (fixture) fixtureState = fixture;
   fixtureSupported = fixture?.supported === true;
@@ -39,7 +42,8 @@ async function command(value) {
     const data = await res.json();
     previewProject = null;
     if (!res.ok) { if ([403, 409, 428].includes(res.status)) await refreshSession(); render(); preview(); throw new Error(data.error); }
-    receiveState(data); return data;
+    if (data.sessionId !== state.sessionId) await refreshSession(); else receiveState(data);
+    return data;
   };
   const task = commandQueue.then(run); commandQueue = task.catch(() => {});
   try { return await task; } catch (e) { $('#save-status').textContent = '保存失败'; toast(e.message, true); throw e; }
@@ -56,33 +60,34 @@ function refreshSession() {
   sessionRefresh = (async () => {
     const response = await fetch('/api/session'), data = await response.json();
     if (!response.ok) throw new Error(data.error || '本地服务无法连接。');
-    token = data.token; state = data; previewProject = null; render(); preview();
+    const changedWork = state?.projectId !== data.projectId;
+    token = data.token; state = data; previewProject = null;
+    if (changedWork) {
+      inspection = undefined; selected = 'assistant'; scope = 'base';
+      for (const dialog of document.querySelectorAll('dialog:modal')) if (dialog.id !== 'work-import-dialog') dialog.close();
+      setPicking(false); send('decoration-edit-stop');
+      $('#match-count').textContent = '正在读取…'; send('select', { target: selected });
+    }
+    render(); preview();
   })().finally(() => { sessionRefresh = null; });
   return sessionRefresh;
 }
-function fieldValue(field) {
-  const own = state.project.rules[scope][selected]?.[field.key];
-  const inherited = scope === 'mobile' ? state.project.rules.base[selected]?.[field.key] : undefined;
-  const actual = inspection?.id === selected ? inspection.values?.[field.key] : undefined;
-  return { own, value: own ?? inherited ?? actual, source: own !== undefined ? '已修改' : inherited !== undefined ? '继承基础' : actual !== undefined ? '当前效果' : '未覆盖' };
+function renderFields() { inspector?.render(); }
+function setScope(next) {
+  if (!Object.hasOwn(state.project.rules, next)) return;
+  scope = next;
+  if (!live) setDevice(scope === 'base' ? 'desktop' : 'mobile');
+  render();
 }
-function colorHex(value, fallback) {
-  if (/^#[a-f\d]{6}/i.test(value)) return value.slice(0, 7);
-  const nums = String(value).match(/[\d.]+/g);
-  if (String(value).startsWith('rgb') && nums?.length >= 3) return '#' + nums.slice(0, 3).map(n => Math.round(Number(n)).toString(16).padStart(2, '0')).join('');
-  return fallback;
-}
-function renderFields() {
-  for (const field of FIELDS) {
-    const { own, value, source } = fieldValue(field);
-    const row = document.getElementById(`field-${field.key}`), input = row.querySelector('input'), output = row.querySelector('output');
-    row.classList.toggle('modified', own !== undefined); row.querySelector('.field-source').textContent = source;
-    row.querySelector('.reset-property').disabled = own === undefined;
-    if (document.activeElement === input && previewProject) continue;
-    if (field.type === 'color') { input.value = colorHex(value, field.fallback); output.textContent = value || '未覆盖'; }
-    else { const n = parseFloat(value); input.value = Number.isFinite(n) ? Math.min(field.max, Math.max(field.min, n)) : field.fallback; output.textContent = value ? (Number.isFinite(n) && !String(value).includes(' ') ? `${Math.round(n * 100) / 100}${field.unit}` : value) : '未覆盖'; }
-    output.title = value || '未覆盖';
+function renderScope() {
+  const choices = [{ id: 'base', name: '所有尺寸' }, ...state.project.breakpoints];
+  const controls = $('#scope-controls'); controls.replaceChildren();
+  for (const item of choices) {
+    const button = document.createElement('button'); button.dataset.scope = item.id; button.textContent = item.name;
+    button.classList.toggle('active', item.id === scope); button.setAttribute('aria-pressed', String(item.id === scope)); controls.append(button);
   }
+  const breakpoint = state.project.breakpoints.find(b => b.id === scope);
+  $('#scope-hint').textContent = !breakpoint ? '作用于所有尺寸；局部尺寸设置可覆盖。' : breakpoint.condition.replace('(max-width: ', '仅宽度不超过 ').replace('(min-width: ', '仅宽度不少于 ').replace('px)', ' px') + (hostViewport && !matchesWidth(breakpoint.condition, hostViewport.width) ? ' · 当前画面未进入此尺寸' : '');
 }
 function render() {
   if (!state) return;
@@ -99,11 +104,12 @@ function render() {
   $('#target-select').value = selected;
   $('#storage-location').textContent = `自动保存在本机：${state.dataDir || '当前服务的数据目录'}`;
   $('#selected-name').textContent = target.name; $('#selected-selector').textContent = target.selector; $('#selected-note').textContent = target.note;
-  $('#selection-breadcrumb').textContent = `${live ? '真实酒馆' : '示例场景'} / ${target.name} / ${scope === 'base' ? '所有尺寸' : '仅手机'}`;
+  $('#selection-breadcrumb').textContent = `${live ? '真实酒馆' : '示例场景'} / ${target.name} / ${scope === 'base' ? '所有尺寸' : state.project.breakpoints.find(b => b.id === scope)?.name}`;
   $('#rule-count').textContent = `${ruleCount(state.project)} 项样式修改`;
   $('#css-badge').textContent = state.project.customCss.trim() ? '●' : '';
-  renderFields(); advanced?.render(); workflow?.render(); source?.render(); layers?.render(); layouts?.render(); artworks?.render();
+  renderScope(); renderFields(); advanced?.render(); workflow?.render(); source?.render(); layers?.render(); layouts?.render(); artworks?.render();
   themeAnalysis?.render();
+  workImport?.render();
   coDesign?.render();
 }
 function setSelected(id) { showEditor(); selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
@@ -156,12 +162,14 @@ window.addEventListener('message', event => {
   layers?.receive(data);
   layouts?.receive(data);
   themeAnalysis?.receive(data);
+  workImport?.receive(data);
+  exporter?.receive(data);
   switch (data.type) {
     case 'ready': {
       connectorCapabilities = data.capabilities;
-      if (data.capabilities?.projectSchema !== 3 || (state.project.recipe && data.capabilities?.decorations !== 1)) {
+      if (data.capabilities?.projectSchema !== 3 || data.capabilities?.directEditing !== 1 || (state.project.recipe && data.capabilities?.decorations !== 1)) {
         ready = false; $('#connection-caption').textContent = '连接器需要更新';
-        toast('此工程使用 v3。请安装新版连接器，再刷新专用测试标签。', true); break;
+        toast('请安装与工作台配套的新版连接器，再刷新专用测试标签。工程会保留。', true); break;
       }
       const first = !ready; ready = true; clearInterval(helloTimer); connectedTheme = data.theme;
       if (first) awaitingFirstPreview = data.capabilities?.decorationEditor === 1;
@@ -171,13 +179,14 @@ window.addEventListener('message', event => {
       if (live && first) {
         $('#live-details').textContent = `已识别 ${data.targets.filter(x => x.count).length} / ${TARGETS.length} 类部件 · ${data.hostName}`;
         if (!ruleCount(state.project) && !state.project.customCss && state.project.baseTheme.name === '新主题') act({ type: 'base-theme', theme: data.theme });
-        else if (!state.sourceBound && JSON.stringify(state.project.baseTheme) !== JSON.stringify(data.theme)) $('#base-dialog').showModal();
       }
       layers?.capabilities(data.capabilities); updateFixture(data.fixture); preview(); send('select', { target: selected }); workflow?.ready(); break;
     }
     case 'inspection': inspection = data.inspection; if (inspection.id === selected) { $('#match-count').textContent = inspection.visible ? `匹配 ${inspection.count} 个 · ${inspection.pseudo ? '附着元素 ' : ''}${inspection.rect.width} × ${inspection.rect.height}` : `匹配 ${inspection.count} 个 · 当前不可见`; renderFields(); } break;
+    case 'viewport': hostViewport = data; renderScope(); break;
+    case 'pick-unsupported': toast(data.message); break;
     case 'diagnosis': case 'audit-result': advanced?.receive(data); break;
-    case 'picked': setPicking(false); setSelected(data.target); toast(`已选中${TARGETS.find(x => x.id === data.target)?.name || '部件'}`); break;
+    case 'picked': setPicking(false); setSelected(data.target); if (document.body.classList.contains('embedded') && innerHeight < 600) $('#property-fields').scrollIntoView({ block: 'start' }); toast(`已选中${TARGETS.find(x => x.id === data.target)?.name || '部件'}`); break;
     case 'pick-cancelled': setPicking(false); break;
     case 'theme': act({ type: 'base-theme', theme: data.theme }); break;
     case 'fixture-status': fixtureBusy = false; updateFixture(data.fixture); break;
@@ -202,29 +211,18 @@ function buildControls() {
     const count = document.createElement('span'); count.className = 'target-count';
     button.append(icon, name, count); button.addEventListener('click', () => setSelected(target.id)); $('#target-list').append(button);
   }
-  let group;
-  const editingOrder = ['文字', '形状与留白', '色彩'];
-  for (const field of FIELDS.toSorted((a,b) => editingOrder.indexOf(a.group)-editingOrder.indexOf(b.group))) {
-    if (field.group !== group) { group = field.group; const h = document.createElement('h3'); h.textContent = group; $('#property-fields').append(h); }
-    const row = document.createElement('div'); row.className = 'field'; row.id = `field-${field.key}`;
-    const labelRow = document.createElement('div'); labelRow.className = 'field-label';
-    const label = document.createElement('label'); label.htmlFor = `prop-${field.key}`; label.textContent = field.label;
-    const source = document.createElement('span'); source.className = 'field-source';
-    labelRow.append(label, source);
-    const inputRow = document.createElement('div'); inputRow.className = 'field-input';
-    const input = document.createElement('input'); input.id = `prop-${field.key}`; input.type = field.type; input.setAttribute('aria-label', field.label);
-    if (field.type === 'range') { input.min = field.min; input.max = field.max; input.step = field.step; }
-    const output = document.createElement('output'); output.htmlFor = input.id;
-    const reset = document.createElement('button'); reset.className = 'reset-property'; reset.textContent = '↺'; reset.setAttribute('aria-label', `还原${field.label}`); reset.title = '删除此覆盖，恢复底层样式';
-    const value = () => field.type === 'color' ? input.value : `${input.value}${field.unit}`;
-    input.addEventListener('input', () => {
-      const cmd = { type: 'set', target: selected, scope, property: field.key, value: value() };
-      try { previewProject = applyCommand(state.project, cmd); output.textContent = value(); source.textContent = '预览中'; preview(); } catch (e) { toast(e.message, true); }
-    });
-    input.addEventListener('change', () => act({ type: 'set', target: selected, scope, property: field.key, value: value() }));
-    reset.addEventListener('click', () => act({ type: 'set', target: selected, scope, property: field.key, value: null }));
-    inputRow.append(input, output, reset); row.append(labelRow, inputRow); $('#property-fields').append(row);
-  }
+}
+function buildInspector() {
+  inspector = attachInspector({
+    getContext: () => ({ project: state.project, target: selected, scope, inspection, comparing: $('#compare').checked, drafting: !!previewProject }),
+    select: setSelected,
+    openLayer: id => layers.open(id).catch(e => toast(e.message, true)),
+    change: (property, value, draft) => {
+      const cmd = { type: 'set', target: selected, scope, property, value };
+      try { if (draft) { previewProject = applyCommand(state.project, cmd); preview(); } else act(cmd); }
+      catch (e) { toast(e.message, true); renderFields(); }
+    }
+  });
 }
 function bindControls() {
   $('#target-select').addEventListener('change', () => setSelected($('#target-select').value));
@@ -241,7 +239,7 @@ function bindControls() {
   $('#project-name').addEventListener('change', () => act({ type: 'rename', name: $('#project-name').value }));
   $('#undo').addEventListener('click', () => act({ type: 'undo' })); $('#redo').addEventListener('click', () => act({ type: 'redo' }));
   $('#reset-target').addEventListener('click', () => act({ type: 'reset-target', target: selected, scope }));
-  $('#scope-controls').addEventListener('click', e => { const next = e.target.dataset.scope; if (!next) return; scope = next; for (const b of $('#scope-controls').children) { b.classList.toggle('active', b.dataset.scope === scope); b.setAttribute('aria-pressed', String(b.dataset.scope === scope)); } $('#scope-hint').textContent = scope === 'mobile' ? '仅宽度不超过 767 px 时覆盖基础样式。' : '基础样式作用于所有屏幕尺寸。'; if (!live) setDevice(scope === 'mobile' ? 'mobile' : 'desktop'); render(); });
+  $('#scope-controls').addEventListener('click', e => { if (e.target.dataset.scope) setScope(e.target.dataset.scope); });
   $('#device-controls').addEventListener('click', e => { if (e.target.dataset.device) setDevice(e.target.dataset.device); });
   $('#pick-button').addEventListener('click', () => { if (!ready) return toast('请等待预览连接。', true); setPicking(!isPicking); if (live && isPicking) peer.focus(); });
   $('#focus-host').addEventListener('click', () => { if (ready) { setPicking(true); peer.focus(); } else toast('请从酒馆扩展面板重新打开工作台。', true); });
@@ -251,32 +249,34 @@ function bindControls() {
   const exportFile = async (url, suffix, message) => {
     try { await commandQueue; const response = await fetch(url), data = await response.json(); if (!response.ok) throw new Error(data.error); download(data, suffix); toast(message); } catch (e) { toast(e.message, true); }
   };
-  attachExport({ download, toast, settled: () => commandQueue, getName: () => state.project.name });
+  exporter = attachExport({ download, toast, settled: () => commandQueue, getName: () => state.project.name, connection: () => ({ ready, live, capabilities: connectorCapabilities }), send, onApplied: () => { $('#compare').checked = false; preview(); renderFields(); toast('主题已保存到酒馆，可关闭工作台继续使用。'); } });
   $('#save-project').addEventListener('click', () => exportFile('/api/backup', '.studio', '工程备份已导出，包含本地素材。'));
   $('#import-file').addEventListener('change', async e => {
-    try { const file = e.target.files[0]; if (!file) return; if (file.size > 48 * 1024 * 1024) throw new Error('工程导入上限 48 MiB；更大素材请单独上传或使用外链。'); const data = JSON.parse(await file.text()); await command(data.schemaVersion !== undefined ? { type: 'import-project', project: data } : { type: 'import-theme', theme: data }); $('#files-dialog').close(); toast('已导入。旧工程已保存在“保存 / 恢复版本”。'); } catch (error) { toast(error.message, true); } finally { e.target.value = ''; }
+    try { const file = e.target.files[0]; if (!file) return; if (file.size > 48 * 1024 * 1024) throw new Error('工程导入上限 48 MiB；更大素材请单独上传或使用外链。'); const data = JSON.parse(await file.text()); $('#files-dialog').close(); if (data.schemaVersion === undefined) { await workImport.open(data); return; } await command({ type: 'import-project', project: data }); toast('已恢复工程，恢复前的草稿已留快照。'); } catch (error) { toast(error.message, true); } finally { e.target.value = ''; }
   });
   $('#advanced-button').addEventListener('click', () => { $('#css-editor').value = state.project.customCss; $('#css-editor').readOnly = false; $('#css-dialog-title').textContent = '高级 CSS'; $('#save-css').hidden = false; $('#css-help').textContent = '在可视化规则之后应用。可覆盖部件设置；外部资源引用会由浏览器加载。'; $('#css-dialog').showModal(); });
   $('#view-css').addEventListener('click', () => { $('#css-editor').value = compileOverrides(state.project) || '/* 尚未添加样式修改 */'; $('#css-editor').readOnly = true; $('#css-dialog-title').textContent = '生成的 CSS'; $('#save-css').hidden = true; $('#css-help').textContent = '由部件规则和高级 CSS 生成。导出的主题还会保留原主题 CSS。'; $('#css-dialog').showModal(); });
   $('#save-css').addEventListener('click', async () => { try { await command({ type: 'custom-css', css: $('#css-editor').value }); $('#css-dialog').close(); } catch {} });
   $('#capture-theme').addEventListener('click', () => { if (connectedTheme) act({ type: 'base-theme', theme: connectedTheme }); $('#base-dialog').close(); });
-  document.addEventListener('keydown', e => { if (e.target.matches('input, textarea, [contenteditable]') || document.querySelector('dialog:modal')) return; if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); act({ type: e.shiftKey ? 'redo' : 'undo' }); } if (e.key === 'Escape') setPicking(false); });
+  document.addEventListener('keydown', e => { if (e.target.matches('input:not([type=range]):not([type=color]), textarea, [contenteditable]') || document.querySelector('dialog:modal')) return; if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); act({ type: e.shiftKey ? 'redo' : 'undo' }); } if (e.key === 'Escape') setPicking(false); });
   new ResizeObserver(resizePreview).observe($('#canvas'));
 }
 try {
   const response = await fetch('/api/session'); if (!response.ok) throw new Error('本地服务无法连接。');
   const data = await response.json(); token = data.token; state = data;
-  buildControls(); bindControls();
+  buildControls(); buildInspector(); bindControls();
   advanced = attachAdvanced({ getState: () => state, command, preview, send, toast, getSelected: () => selected, isLive: () => live, isReady: () => ready, setDevice, getDevice: () => device });
   workflow = attachWorkflow({ getState: () => state, getToken: () => token, getScope: () => scope, command, send, toast, isReady: () => ready, stopPicking: () => setPicking(false), download });
   attachSetup(() => ({ ready, live, capabilities: connectorCapabilities, fixture: $('#fixture-status').textContent }));
   source = attachSource({ getState: () => state, getToken: () => token, toast });
-  layers = attachLayers({ getState: () => state, command, preview, toast, send });
-  themeAnalysis = attachThemeAnalysis({ getState: () => state, getToken: () => token, command, send, toast, connection: () => ({ ready, live, capabilities: connectorCapabilities }) });
-  layouts = attachLayouts({ getState: () => state, command, toast, getSelected: () => selected });
+  layers = attachLayers({ getState: () => state, command, preview, toast, send, getScope: () => scope, setScope });
+  themeAnalysis = attachThemeAnalysis({ openLayer: id => layers.open(id), openAssets: item => workflow.openAssets(item), getState: () => state, getToken: () => token, command, send, toast, connection: () => ({ ready, live, capabilities: connectorCapabilities }) });
+  workImport = attachWorkImport({ getState: () => state, command, send, toast, connection: () => ({ ready, live, capabilities: connectorCapabilities }), settled: () => commandQueue });
+  layouts = attachLayouts({ getState: () => state, command, toast, getSelected: () => selected, getScope: () => scope, setScope });
   coDesign = attachCoDesign({ getState: () => state, connection: () => ({ ready, live, fixtureActive: fixtureSupported && fixtureState?.active && !fixtureBusy && !awaitingFirstPreview }), selectTarget: setSelected, stopPicking: () => setPicking(false), toast });
-  artworks = attachArtworks({ getState: () => state, getToken: () => token, settled: () => commandQueue, toast });
+  artworks = attachArtworks({ getState: () => state, getToken: () => token, settled: () => commandQueue, toast, command, newWork: () => workImport.open().catch(e => toast(e.message, true)) });
   attachNavigation(); render(); connect();
+  $('#artworks-button').click();
   const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };
   window.addEventListener('pagehide', () => { events.close(); clearInterval(helloTimer); clearInterval(heartbeat); }, { once: true });
   workflow.events(events);

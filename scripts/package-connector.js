@@ -9,6 +9,7 @@ files['shared/migrations.js'] = 'shared/migrations.js';
 files['shared/decorations.js'] = 'shared/decorations.js';
 files['shared/layouts.js'] = 'shared/layouts.js';
 files['connector/decoration-editor.js'] = 'connector/decoration-editor.js';
+for (const file of ['connector/picking.js', 'connector/native-theme.js', 'shared/editing.js']) files[file] = file;
 for (const file of ['shared/version.js', 'LICENSE', 'THIRD-PARTY-NOTICES.md']) files[file] = file;
 // Standard ZIP, store method. No runtime or packaging dependencies.
 const table = Array.from({ length: 256 }, (_, n) => { for (let k = 0; k < 8; k++) n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1; return n >>> 0; });
