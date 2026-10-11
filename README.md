@@ -2,7 +2,7 @@
 
 **和 Agent 从一个想法做出美化，在真实酒馆里边看边改。** 从认识界面、看图讨论方向开始，逐步完成原生主题；也可以直接调整现有主题的颜色、圆角、间距和装饰。满意后直接应用到酒馆，或下载主题 JSON 分享。
 
-当前源码 **0.11.0** · Windows 双击启动 · 已实测 SillyTavern **1.19.0 / 06bde939f** · [MIT 代码许可](LICENSE)
+当前版本 **0.11.0** · Windows 双击启动 · 已实测 SillyTavern **1.19.0 / 06bde939f** · [MIT 代码许可](LICENSE)
 
 **Windows：双击 `start.cmd` 安装并启动，双击 `update.cmd` 更新后启动。** 首次选择一次酒馆目录，之后自动同步连接器；缺少 Node 时自动准备便携运行环境。详见 [一键安装与更新](docs/install-update.md)。
 
@@ -10,7 +10,7 @@
 
 [下载核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/latest) · [浏览源码](https://github.com/demilich1117/tavern-theme-studio) · [自动检查](https://github.com/demilich1117/tavern-theme-studio/actions/workflows/ci.yml)
 
-当前公开 Release 安装包为 **0.9.2**；本页介绍 **0.11.0** 的源码与本地候选包，新入口不在旧包中。正式安装包请选 Release 附件中的 `tavern-theme-studio-<version>-core.zip`；`update.cmd` 只下载已发布的正式核心包，不会把源码版本降级。Git 克隆的源码目录通过快进合并更新。
+普通用户下载 [0.11.0 核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/download/v0.11.0/tavern-theme-studio-0.11.0-core.zip)，完整解压后双击 `start.cmd`；不必下载 GitHub 自动生成的 Source code 压缩包。校验文件和更新说明见 [v0.11.0 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.11.0)。以后双击 `update.cmd` 获取更高版本的正式安装包；Git 克隆的源码目录通过快进合并更新。
 
 电脑上运行工作台，酒馆里安装连接器。日常入口是「作品」「编辑」「素材」「修改意见」；还没有设计方案时，打开「从零共创」。在「作品」继续编辑、保存定稿或打开作品文件夹，详见 [固定作品目录](docs/work-folders.md)。
 
