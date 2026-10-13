@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, mkdir, rm, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { execFile } from 'node:child_process';
@@ -8,7 +8,9 @@ import { createHash } from 'node:crypto';
 import { STUDIO_VERSION } from '../shared/version.js';
 import { readGeneratedZip } from './zip.js';
 import { validateCoreZip } from '../src/update-service.js';
-const root = path.resolve(import.meta.dirname, '..'), temp = await mkdtemp(path.join(os.tmpdir(), 'tts-package-'));
+// Hosted Windows runners may expose TEMP through an 8.3 alias. Compare the
+// canonical paths reported by the data lock, not the spelling of that alias.
+const root = path.resolve(import.meta.dirname, '..'), temp = await realpath(await mkdtemp(path.join(os.tmpdir(), 'tts-package-')));
 const testEnv = { ...process.env, STUDIO_RUNTIME_HOME: path.join(temp, 'runtime-registry') };
 try {
   const zip = await readFile(path.join(root, `output/releases/tavern-theme-studio-${STUDIO_VERSION}-core.zip`));
@@ -85,7 +87,8 @@ try {
     assert.match(reused.stdout, /已在运行/);
     const list = await promisify(execFile)(process.execPath, ['scripts/backgrounds.js', '--json'], { cwd, env, windowsHide: true, timeout: 10000 });
     const instances = JSON.parse(list.stdout).instances;
-    assert.ok(instances.some(r => r.pid === running.pid && r.dataDir === dataDir));
+    const canonicalData = await realpath(dataDir);
+    assert.ok(instances.some(r => r.pid === running.pid && r.dataDir === canonicalData), JSON.stringify({ expectedPid: running.pid, expectedDataDir: canonicalData, instances }));
     const stopArgs = process.platform === 'win32' ? ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(cwd, 'scripts/windows-launcher.ps1'), '-Mode', 'stop'] : ['scripts/backgrounds.js', '--stop-all'];
     const stopped = await promisify(execFile)(process.platform === 'win32' ? 'powershell.exe' : process.execPath, stopArgs, { cwd, env, windowsHide: true, timeout: 45000 });
     assert.match(stopped.stdout, /已关闭全部/);
@@ -135,4 +138,4 @@ try {
   assert.equal(await readFile(path.join(host, 'data/default-user/extensions/other-extension/manifest.json'), 'utf8'), '{"keep":true}');
   console.log('Clean package uninstall preview, removal, backups and user-data preservation: OK');
   } finally { if (manual.exitCode === null) { manual.kill(); await manualClosed; } }
-} finally { assert.equal(path.dirname(temp), path.resolve(os.tmpdir())); assert.ok(path.basename(temp).startsWith('tts-package-')); await rm(temp, { recursive: true, force: true }); }
+} finally { assert.equal(path.dirname(temp), await realpath(os.tmpdir())); assert.ok(path.basename(temp).startsWith('tts-package-')); await rm(temp, { recursive: true, force: true }); }
