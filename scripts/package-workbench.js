@@ -27,6 +27,7 @@ paths.add('docs/direct-editing.md');
 paths.add('docs/validation-0.10.md');
 paths.add('docs/install-update.md');
 paths.add('docs/validation-0.11.md');
+paths.add('docs/validation-0.11.1.md');
 // Preserve the earlier comic in source history; ship the current flow only.
 paths.delete('docs/assets/doublecheese/03-co-design.png');
 paths.delete('docs/assets/doublecheese/03-co-design-v2.png');

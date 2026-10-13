@@ -2,7 +2,7 @@
 
 **和 Agent 从一个想法做出美化，在真实酒馆里边看边改。** 从认识界面、看图讨论方向开始，逐步完成原生主题；也可以直接调整现有主题的颜色、圆角、间距和装饰。满意后直接应用到酒馆，或下载主题 JSON 分享。
 
-当前版本 **0.11.0** · Windows 双击启动 · 已实测 SillyTavern **1.19.0 / 06bde939f** · [MIT 代码许可](LICENSE)
+当前版本 **0.11.1** · Windows 双击启动 · 已实测 SillyTavern **1.19.0 / 06bde939f** · [MIT 代码许可](LICENSE)
 
 **Windows：双击 `start.cmd` 安装并启动，双击 `update.cmd` 更新后启动。** 首次选择一次酒馆目录，之后自动同步连接器；缺少 Node 时自动准备便携运行环境。详见 [一键安装与更新](docs/install-update.md)。
 
@@ -10,9 +10,19 @@
 
 [下载核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/latest) · [浏览源码](https://github.com/demilich1117/tavern-theme-studio) · [自动检查](https://github.com/demilich1117/tavern-theme-studio/actions/workflows/ci.yml)
 
-普通用户下载 [0.11.0 核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/download/v0.11.0/tavern-theme-studio-0.11.0-core.zip)，完整解压后双击 `start.cmd`；不必下载 GitHub 自动生成的 Source code 压缩包。校验文件和更新说明见 [v0.11.0 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.11.0)。以后双击 `update.cmd` 获取更高版本的正式安装包；Git 克隆的源码目录通过快进合并更新。
+普通用户下载 [0.11.1 核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/download/v0.11.1/tavern-theme-studio-0.11.1-core.zip)，完整解压后双击 `start.cmd`；不必下载 GitHub 自动生成的 Source code 压缩包。校验文件和更新说明见 [v0.11.1 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.11.1)。以后双击 `update.cmd` 获取更高版本的正式安装包；Git 克隆的源码目录通过快进合并更新。
 
 电脑上运行工作台，酒馆里安装连接器。日常入口是「作品」「编辑」「素材」「修改意见」；还没有设计方案时，打开「从零共创」。在「作品」继续编辑、保存定稿或打开作品文件夹，详见 [固定作品目录](docs/work-folders.md)。
+
+## 0.11.1 更新
+
+本次整理共创制作规范：补充长消息装饰的伸展方式、分块素材的接口设计与自然融合验收。编辑器和安装器沿用 0.11 的功能。
+
+[真实酒馆展示与短视频](docs/showcase.md) · [可复制的 Discord 帖子](docs/discord-post.md) · [验证记录](docs/validation-0.11.1.md)
+
+![在真实酒馆中拾取与微调消息正文](docs/assets/showcase/studio-01-editor.png)
+
+想先试一套成品，可以看看 [云间 · Cloud Correspondence](https://github.com/demilich1117/cloud-correspondence)：浅深色软气泡、配色与阅读设置、手机折叠菜单。云间可独立使用，也能接入工作台继续微调。
 
 ## 选一条路线
 
