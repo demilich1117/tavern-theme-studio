@@ -7,7 +7,7 @@ import { setTimeout } from 'node:timers/promises';
 import { createServer } from '../server.js';
 import { scanVariables } from '../shared/variables.js';
 import { buildFolio } from '../scripts/folio-build.mjs';
-import { readBuildCandidate } from '../build-service.js';
+import { readBuildCandidate } from '../src/build-service.js';
 async function temp(fn) {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'tts-build-'));
   try { await fn(dir); } finally { assert.equal(path.dirname(path.resolve(dir)), path.resolve(os.tmpdir())); assert.ok(path.basename(dir).startsWith('tts-build-')); await rm(dir, { recursive: true, force: true }); }

@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { migrateWork, selectWork } from '../work-migration.js';
+import { migrateWork, selectWork } from '../src/work-migration.js';
 const [action, ...args] = process.argv.slice(2);
 try {
   if (action === 'copy' && args.length === 2) console.log(JSON.stringify(await migrateWork({ dataDir: path.resolve(args[0]), destination: path.resolve(args[1]) }), null, 2));

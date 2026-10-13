@@ -7,14 +7,15 @@ import { promisify } from 'node:util';
 import { createHash } from 'node:crypto';
 import { STUDIO_VERSION } from '../shared/version.js';
 import { readGeneratedZip } from './zip.js';
-import { validateCoreZip } from '../update-service.js';
+import { validateCoreZip } from '../src/update-service.js';
 const root = path.resolve(import.meta.dirname, '..'), temp = await mkdtemp(path.join(os.tmpdir(), 'tts-package-'));
+const testEnv = { ...process.env, STUDIO_RUNTIME_HOME: path.join(temp, 'runtime-registry') };
 try {
   const zip = await readFile(path.join(root, `output/releases/tavern-theme-studio-${STUDIO_VERSION}-core.zip`));
   const files = readGeneratedZip(zip);
   assert.equal(validateCoreZip(zip, STUDIO_VERSION).size, files.length, 'Release updater accepts the exact built package');
   // Co-design must remain usable without the author's parent workspace skills.
-  for (const file of ['AGENTS.md', 'skills/tavern-theme-studio/SKILL.md', 'docs/co-design.md', 'docs/host-reference.md', 'docs/co-design-brief.template.md', 'docs/native-lab.md']) {
+  for (const file of ['AGENTS.md', 'skills/tavern-theme-studio/SKILL.md', 'docs/co-design.md', 'docs/host-reference.md', 'docs/co-design-brief.template.md', 'docs/native-lab.md', 'manage.cmd', 'stop.cmd', 'uninstall.cmd', 'scripts/backgrounds.js', 'scripts/uninstall.js', 'docs/backgrounds-uninstall.md']) {
     assert.ok(files.some(([name]) => name === `tavern-theme-studio/${file}`), `Missing co-design resource: ${file}`);
   }
   for (const [name, bytes] of files) {
@@ -49,7 +50,7 @@ try {
     }finally{await app.close()}
     const reopened=await createServer({port:0,seedPath:'dist/missing-old-example.json'});await reopened.close();
     console.log('Clean package startup, commands, export and restart: OK');`;
-  const { stdout } = await promisify(execFile)(process.execPath, ['--input-type=module', '-e', script], { cwd, windowsHide: true, timeout: 30000 });
+  const { stdout } = await promisify(execFile)(process.execPath, ['--input-type=module', '-e', script], { cwd, env: testEnv, windowsHide: true, timeout: 30000 });
   console.log(stdout.trim());
   // Exercise the shipped launcher in isolation, not the developer checkout or
   // an installed personal host. The fake host only supplies installation paths.
@@ -61,12 +62,12 @@ try {
     'data/default-user/settings.json': '{"keep":"host settings"}',
     'data/default-user/extensions/other-extension/manifest.json': '{"keep":true}',
   })) { const target = path.join(host, file); await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, text); }
-  const env = { ...process.env, STUDIO_PORT: '0', STUDIO_DATA_DIR: dataDir, STUDIO_TAVERN_DIR: host, STUDIO_TAVERN_DATA_DIR: '', STUDIO_NO_BROWSER: '1' };
+  const env = { ...testEnv, STUDIO_PORT: '0', STUDIO_DATA_DIR: dataDir, STUDIO_TAVERN_DIR: host, STUDIO_TAVERN_DATA_DIR: '', STUDIO_NO_BROWSER: '1' };
   const setupArgs = ['scripts/launcher.js', '--tavern', host, '--profile', 'default-user', '--setup-only', '--no-browser'];
   await promisify(execFile)(process.execPath, setupArgs, { cwd, env, windowsHide: true, timeout: 30000 });
   const repeat = await promisify(execFile)(process.execPath, setupArgs, { cwd, env, windowsHide: true, timeout: 30000 });
   assert.match(repeat.stdout, /连接器已就绪/);
-  const { readLauncher, stopLauncher } = await import('../launcher-service.js');
+  const { readLauncher, stopLauncher } = await import('../src/launcher-service.js');
   const child = process.platform === 'win32'
     ? execFile('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(cwd, 'scripts/windows-launcher.ps1'), '-Mode', 'start'], { cwd, env, windowsHide: true })
     : execFile(process.execPath, ['scripts/launcher.js', '--no-browser'], { cwd, env, windowsHide: true });
@@ -82,7 +83,12 @@ try {
     assert.ok(running, 'Packaged launcher becomes ready');
     const reused = await promisify(execFile)(process.execPath, ['scripts/launcher.js', '--no-browser'], { cwd, env, windowsHide: true, timeout: 10000 });
     assert.match(reused.stdout, /已在运行/);
-    assert.equal(await stopLauncher(cwd), true);
+    const list = await promisify(execFile)(process.execPath, ['scripts/backgrounds.js', '--json'], { cwd, env, windowsHide: true, timeout: 10000 });
+    const instances = JSON.parse(list.stdout).instances;
+    assert.ok(instances.some(r => r.pid === running.pid && r.dataDir === dataDir));
+    const stopArgs = process.platform === 'win32' ? ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(cwd, 'scripts/windows-launcher.ps1'), '-Mode', 'stop'] : ['scripts/backgrounds.js', '--stop-all'];
+    const stopped = await promisify(execFile)(process.platform === 'win32' ? 'powershell.exe' : process.execPath, stopArgs, { cwd, env, windowsHide: true, timeout: 45000 });
+    assert.match(stopped.stdout, /已关闭全部/);
     assert.equal((await closed).code, 0);
     assert.equal(await readFile(path.join(host, 'data/default-user/settings.json'), 'utf8'), '{"keep":"host settings"}');
     assert.equal(await readFile(path.join(host, 'data/default-user/extensions/other-extension/manifest.json'), 'utf8'), '{"keep":true}');
@@ -100,4 +106,33 @@ try {
     }
   }
   console.log(`Core ZIP ${files.length} files; connector ${connector.length} files; hashes and import graph: OK`);
+  // Exercise uninstall from its extracted package, including deleting its own
+  // loaded modules. Only the throwaway host and package are within this scope.
+  await writeFile(path.join(cwd, 'personal-note.txt'), 'keep');
+  const manual = execFile(process.execPath, ['server.js'], { cwd, env, windowsHide: true });
+  const manualClosed = new Promise(resolve => manual.once('exit', code => resolve(code)));
+  try {
+  const { listRuntimes } = await import('../src/runtime-service.js');
+  let active;
+  for (let attempt = 0; attempt < 100; attempt++) {
+    if (manual.exitCode !== null) throw new Error('Manual package start failed');
+    active = (await listRuntimes({ home: testEnv.STUDIO_RUNTIME_HOME })).find(r => r.pid === manual.pid && r.status === 'running');
+    if (active) break;
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  assert.ok(active, 'Uninstall test starts with a live manual background');
+  const preview = await promisify(execFile)(process.execPath, ['scripts/uninstall.js', '--dry-run'], { cwd, env, windowsHide: true, timeout: 30000 });
+  assert.match(preview.stdout, /原版文件/);
+  assert.ok(await readFile(path.join(cwd, 'server.js')));
+  const removed = await promisify(execFile)(process.execPath, ['scripts/uninstall.js', '--yes'], { cwd, env, windowsHide: true, timeout: 45000 });
+  assert.match(removed.stdout, /已移除 1 处连接器/);
+  assert.equal(await manualClosed, 0);
+  await assert.rejects(readFile(path.join(cwd, 'server.js')), { code: 'ENOENT' });
+  await assert.rejects(readFile(path.join(host, 'data/default-user/extensions/tavern-theme-studio-connector/manifest.json')), { code: 'ENOENT' });
+  assert.equal(await readFile(path.join(cwd, 'personal-note.txt'), 'utf8'), 'keep');
+  assert.ok(await readFile(path.join(dataDir, 'project.json')));
+  assert.equal(await readFile(path.join(host, 'data/default-user/settings.json'), 'utf8'), '{"keep":"host settings"}');
+  assert.equal(await readFile(path.join(host, 'data/default-user/extensions/other-extension/manifest.json'), 'utf8'), '{"keep":true}');
+  console.log('Clean package uninstall preview, removal, backups and user-data preservation: OK');
+  } finally { if (manual.exitCode === null) { manual.kill(); await manualClosed; } }
 } finally { assert.equal(path.dirname(temp), path.resolve(os.tmpdir())); assert.ok(path.basename(temp).startsWith('tts-package-')); await rm(temp, { recursive: true, force: true }); }

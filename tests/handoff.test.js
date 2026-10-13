@@ -6,7 +6,7 @@ import os from 'node:os';
 import { createServer } from '../server.js';
 import { formatAgentHandoff } from '../shared/handoff.js';
 import { validateTicketResult } from '../shared/tickets.js';
-import { readArtifact } from '../ticket-review.js';
+import { readArtifact } from '../src/ticket-review.js';
 const anchor = { target: 'assistant', occurrence: 0, point: { x: .5, y: .5 }, viewport: { width: 1440, height: 900 }, rect: { left: 0, top: 10, width: 900, height: 60 }, fixture: true };
 test('handoff copies only explicit receipts with complete CLI context and excludes secrets/chat/HTML', () => {
   const id = 'a'.repeat(32), other = 'b'.repeat(32);

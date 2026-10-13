@@ -2,17 +2,23 @@ import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { acquireDataLock } from '../data-lock.js';
-import { exists, recoverInstalls } from '../install-service.js';
-import { latestPackage, applyCoreUpdate } from '../update-service.js';
-import { stopLauncher, requireStopped } from '../launcher-service.js';
-import { resolveDataDirectory } from '../work-location.js';
+import { acquireDataLock } from '../src/data-lock.js';
+import { exists, recoverInstalls } from '../src/install-service.js';
+import { latestPackage, applyCoreUpdate } from '../src/update-service.js';
+import { stopLauncher, requireStopped } from '../src/launcher-service.js';
+import { resolveDataDirectory } from '../src/work-location.js';
+import { stopRuntimes } from '../src/runtime-service.js';
+import { findLegacyRuntimes } from '../src/legacy-runtime.js';
+import { realpath } from 'node:fs/promises';
 
 const root = path.resolve(import.meta.dirname, '..');
 const run = promisify(execFile);
 const git = async args => (await run('git', args, { cwd: root, windowsHide: true, timeout: 120000 })).stdout.trim();
 async function stop() {
+  const results = await stopRuntimes({ root: await realpath(root) });
+  if (results.some(r => r.status !== 'stopped')) throw new Error('部分后台无法安全关闭，请先通过 manage.cmd 检查。');
   await stopLauncher(root);
+  if ((await findLegacyRuntimes(root)).length) throw new Error('仍有旧后台占用作品，请通过 manage.cmd 查看后关闭。');
   await requireStopped([await resolveDataDirectory(), path.join(root, '.local'), path.join(root, '.local/native-lab')]);
 }
 async function main() {

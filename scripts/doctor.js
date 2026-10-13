@@ -1,7 +1,7 @@
 import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
 import { STUDIO_VERSION } from '../shared/version.js';
-import { resolveDataDirectory } from '../work-location.js';
+import { resolveDataDirectory } from '../src/work-location.js';
 const root = path.resolve(import.meta.dirname, '..'), checks = [];
 checks.push({ name: 'Node.js', status: Number(process.versions.node.split('.')[0]) >= 22 ? 'passed' : 'failed', detail: process.version + '（需要 >=22）' });
 try { await import('css-tree'); checks.push({ name: '运行依赖', status: 'passed', detail: '已安装' }); }

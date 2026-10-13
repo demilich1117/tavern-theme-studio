@@ -8,7 +8,7 @@ import { deflateSync } from 'node:zlib';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createServer } from '../server.js';
-import { createAssetStore } from '../asset-store.js';
+import { createAssetStore } from '../src/asset-store.js';
 import { createProject } from '../shared/core.js';
 const exec = promisify(execFile);
 const table = Array.from({ length: 256 }, (_, n) => { for (let i = 0; i < 8; i++) n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1; return n >>> 0; });

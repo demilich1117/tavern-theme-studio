@@ -4,9 +4,9 @@ import { spawn } from 'node:child_process';
 import { randomUUID, createHash } from 'node:crypto';
 import path from 'node:path';
 import { atomicJson } from './storage-migrations.js';
-import { validateTheme } from './shared/core.js';
-import { validateBuiltCss } from './shared/css-validation.js';
-import { validateRecipe } from './shared/decorations.js';
+import { validateTheme } from '../shared/core.js';
+import { validateBuiltCss } from '../shared/css-validation.js';
+import { validateRecipe } from '../shared/decorations.js';
 import { MAX_ASSET_BYTES, MAX_IMPORT_BYTES } from './asset-store.js';
 
 const excluded = new Set(['.git', '.local', 'dist', 'output', 'node_modules', '.playwright-cli', 'cache', '.cache', 'history', 'logs']);
@@ -121,7 +121,7 @@ export async function createBuildService({ dataDir, getProjectId, commit, publis
       let output = '', error = '', timedOut = false;
       const args = config.args.map(a => a.replaceAll('{output}', directory).replaceAll('{mode}', config.mode));
       const builtin = config.program === '$STUDIO_THEME';
-      child = spawn(builtin ? process.execPath : config.program, builtin ? [path.join(import.meta.dirname, 'scripts/build-theme.js')] : args, { cwd: config.root, windowsHide: true, shell: false, env: { ...process.env, STUDIO_BUILD_OUTPUT: directory, STUDIO_ASSET_MODE: config.mode }, stdio: ['ignore', 'pipe', 'pipe'] });
+      child = spawn(builtin ? process.execPath : config.program, builtin ? [path.join(import.meta.dirname, '../scripts/build-theme.js')] : args, { cwd: config.root, windowsHide: true, shell: false, env: { ...process.env, STUDIO_BUILD_OUTPUT: directory, STUDIO_ASSET_MODE: config.mode }, stdio: ['ignore', 'pipe', 'pipe'] });
       const processChild = child;
       processChild.stdout.on('data', bytes => { output = (output + bytes.toString()).slice(-8000); });
       processChild.stderr.on('data', bytes => { error = (error + bytes.toString()).slice(-8000); });

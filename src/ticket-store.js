@@ -1,7 +1,7 @@
 import { readFile, writeFile, rename } from 'node:fs/promises';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
-import { validateAnchor, ticketText, TICKET_STATES, validateTicketResult } from './shared/tickets.js';
+import { validateAnchor, ticketText, TICKET_STATES, validateTicketResult } from '../shared/tickets.js';
 
 export async function createTicketStore(dataDir) {
   const file = path.join(dataDir, 'tickets.json'); let tickets = [];

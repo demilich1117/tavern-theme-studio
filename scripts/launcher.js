@@ -3,10 +3,10 @@ import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createInterface } from 'node:readline/promises';
-import { exists, inspectTavern, installConnector, recoverInstalls } from '../install-service.js';
-import { readLauncher, manageLauncher } from '../launcher-service.js';
-import { acquireDataLock } from '../data-lock.js';
-import { openFolder } from '../open-folder.js';
+import { exists, inspectTavern, installConnector, recoverInstalls } from '../src/install-service.js';
+import { readLauncher, manageLauncher } from '../src/launcher-service.js';
+import { acquireDataLock } from '../src/data-lock.js';
+import { openFolder } from '../src/open-folder.js';
 
 const root = path.resolve(import.meta.dirname, '..'), settingsFile = path.join(root, '.local/installation.json');
 const args = process.argv.slice(2), option = name => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : undefined; };

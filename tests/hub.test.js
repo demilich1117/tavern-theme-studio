@@ -5,8 +5,8 @@ import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { createAssetStore } from '../asset-store.js';
-import { createHubClient } from '../hub-client.js';
+import { createAssetStore } from '../src/asset-store.js';
+import { createHubClient } from '../src/hub-client.js';
 
 test('Hub caches verified immutable bytes, rejects corrupt data, strips tokens and survives offline restart', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'tts-hub-'));

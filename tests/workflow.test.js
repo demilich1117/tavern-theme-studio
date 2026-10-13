@@ -4,7 +4,7 @@ import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { createServer } from '../server.js';
-import { createAssetStore, mapProjectCss } from '../asset-store.js';
+import { createAssetStore, mapProjectCss } from '../src/asset-store.js';
 import { createProject, exportTheme } from '../shared/core.js';
 import { scanVariables } from '../shared/variables.js';
 import { resolveAssetUrls, externalImageUrl } from '../shared/assets.js';

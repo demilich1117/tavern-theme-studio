@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { createRunner } from '../runner-service.js';
+import { createRunner } from '../src/runner-service.js';
 const wait = async (runner, state) => { for (let i = 0; i < 100; i++) { if (runner.status().tasks.at(-1)?.state === state) return; await new Promise(r => setTimeout(r, 30)); } assert.fail(JSON.stringify(runner.status())); };
 test('generic CLI lifecycle uses structured input, rejects stale config, requires results, cancels and restores interruptions', async () => {
   const dataDir = await mkdtemp(path.join(os.tmpdir(), 'tts-runner-')); let runner; const completed = new Set();

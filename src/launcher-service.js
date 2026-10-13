@@ -35,7 +35,7 @@ export async function stopLauncher(root) {
 }
 export async function manageLauncher({ root, app, url, version }) {
   root = await realpath(root);
-  const token = randomBytes(32).toString('hex'); let closing;
+  const token = randomBytes(32).toString('hex'); let closing, cleanupPromise;
   const info = { root, pid: process.pid, url, version };
   const server = http.createServer((req, res) => {
     const supplied = Buffer.from(String(req.headers['x-studio-launcher'] || ''));
@@ -52,11 +52,13 @@ export async function manageLauncher({ root, app, url, version }) {
     await writeFile(temporary, JSON.stringify(record), { mode: 0o600, flag: 'wx' });
     await rename(temporary, recordPath(root));
   } catch (e) { await new Promise(resolve => server.close(resolve)); throw e; }
-  function close() { return closing ||= (async () => {
-    await app.close();
+  function cleanup() { return cleanupPromise ||= (async () => {
     await new Promise(resolve => server.close(resolve));
-    if (JSON.parse(await readFile(recordPath(root), 'utf8')).token === token) await unlink(recordPath(root));
+    try { if (JSON.parse(await readFile(recordPath(root), 'utf8')).token === token) await unlink(recordPath(root)); }
+    catch (e) { if (e.code !== 'ENOENT') throw e; }
   })(); }
+  app.onClose?.(cleanup);
+  function close() { return closing ||= (async () => { await app.close(); await cleanup(); })(); }
   return { close, record };
 }
 

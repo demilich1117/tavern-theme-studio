@@ -3,7 +3,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { atomicJson } from './storage-migrations.js';
-import { validateTicketResult } from './shared/tickets.js';
+import { validateTicketResult } from '../shared/tickets.js';
 
 export async function createRunner({ dataDir, getProjectId, publish = () => {} }) {
   const file = path.join(dataDir, 'runner.json'), folder = path.join(dataDir, 'tasks'); await mkdir(folder, { recursive: true });

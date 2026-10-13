@@ -6,9 +6,9 @@ import { createHash } from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { createServer } from '../server.js';
-import { createAssetStore } from '../asset-store.js';
-import { createHubClient } from '../hub-client.js';
-import { createExportService, dependencies, referenceIndex } from '../export-service.js';
+import { createAssetStore } from '../src/asset-store.js';
+import { createHubClient } from '../src/hub-client.js';
+import { createExportService, dependencies, referenceIndex } from '../src/export-service.js';
 import { createProject } from '../shared/core.js';
 const temp = () => mkdtemp(path.join(os.tmpdir(), 'tts-release-'));
 const image = n => Buffer.concat([Buffer.from('GIF89a'), Buffer.from([n, 0, 1, 0, 0, 0, 0])]);
@@ -45,7 +45,7 @@ test('data directory rejects a second writer and releases locks after close or s
 test('a dead lock owner is recovered without deleting project data', async () => {
   const dir = await temp(); let app;
   try {
-    execFileSync(process.execPath, ['--input-type=module', '-e', `import {acquireDataLock} from ${JSON.stringify(new URL('../data-lock.js', import.meta.url).href)}; await acquireDataLock(${JSON.stringify(dir)});`], { windowsHide: true });
+    execFileSync(process.execPath, ['--input-type=module', '-e', `import {acquireDataLock} from ${JSON.stringify(new URL('../src/data-lock.js', import.meta.url).href)}; await acquireDataLock(${JSON.stringify(dir)});`], { windowsHide: true });
     app = await createServer({ dataDir: dir, port: 0 });
     assert.equal((await fetch(app.address + '/api/project')).status, 200);
   } finally { await app?.close(); await rm(dir, { recursive: true, force: true }); }

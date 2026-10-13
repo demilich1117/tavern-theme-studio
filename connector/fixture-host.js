@@ -1,4 +1,5 @@
 import { createFixture, fixtureCharacter, isFixtureCharacter, isFixtureChat, FIXTURE_SCENES } from '../shared/fixture.js';
+import { nativeHost } from './host-adapter.js';
 
 const KEY = 'tts_native_fixture';
 const identity = context => JSON.stringify([context.groupId ?? null, context.characters[context.characterId]?.avatar ?? null, context.chatId ?? null]);
@@ -67,13 +68,11 @@ export function createFixtureHost({ getContext, request, assertIdle, assetBase, 
 }
 
 export function nativeFixtureHost() {
-  const getContext = () => SillyTavern.getContext();
+  const getContext = nativeHost.getContext;
   return createFixtureHost({
     getContext, assetBase: new URL('./assets/', import.meta.url).href,
     async assertIdle() {
-      // Verified against SillyTavern 1.19.0. Keep private module access here.
-      const { isGenerating } = await import('/script.js');
-      if (isGenerating()) throw new Error('请等待当前生成结束后再打开测试对话。');
+      if (await nativeHost.isGenerating()) throw new Error('请等待当前生成结束后再打开测试对话。');
       if (document.querySelector('#send_textarea')?.value?.trim() || document.querySelector('.edit_textarea, .reasoning_edit_textarea')) throw new Error('当前有未提交的输入或编辑，请先完成，或在新标签打开测试工作台。');
     },
     async request(path, body, format = 'json') {

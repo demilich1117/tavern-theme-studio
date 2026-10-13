@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 import { parse, walk, generate } from 'css-tree';
 import { scanCssDependencies } from './css-dependencies.js';
-import { rewriteVariables } from './shared/variables.js';
-import { compileOverrides } from './shared/core.js';
+import { rewriteVariables } from '../shared/variables.js';
+import { compileOverrides } from '../shared/core.js';
 
 const digest = value => createHash('sha256').update(value).digest('hex').slice(0, 20);
 const short = value => value.replace(/data:image\/[^\s"')]+/gi, 'data:image/…（内嵌素材）').slice(0, 800);

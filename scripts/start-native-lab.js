@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { readFile, realpath } from 'node:fs/promises';
 import { createServer } from '../server.js';
-import { resolveDataDirectory } from '../work-location.js';
+import { resolveDataDirectory } from '../src/work-location.js';
 import { pathToFileURL } from 'node:url';
 
 const root = path.resolve(import.meta.dirname, '..');

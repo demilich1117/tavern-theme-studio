@@ -1,7 +1,7 @@
 import { readFile, realpath, lstat } from 'node:fs/promises';
 import path from 'node:path';
 
-export const studioRoot = import.meta.dirname;
+export const studioRoot = path.resolve(import.meta.dirname, '..');
 export const workPointer = path.join(studioRoot, '.local', 'workspace-location.json');
 export const inside = (parent, child) => child === parent || child.startsWith(parent + path.sep);
 

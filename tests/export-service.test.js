@@ -4,8 +4,8 @@ import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createProject } from '../shared/core.js';
-import { createAssetStore } from '../asset-store.js';
-import { createExportService, referenceIndex } from '../export-service.js';
+import { createAssetStore } from '../src/asset-store.js';
+import { createExportService, referenceIndex } from '../src/export-service.js';
 import { captureLocation, locationStatus } from '../shared/ticket-location.js';
 test('strict offline export rejects missing network dependencies and file backup preserves immutable bytes', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'tts-export-'));

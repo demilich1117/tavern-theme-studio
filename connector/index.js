@@ -1,6 +1,7 @@
 import { attachBridge } from './bridge.js';
 import { nativeFixtureHost, focusFixtureScene } from './fixture-host.js';
 import { applyNativeTheme, canApplyNativeTheme } from './native-theme.js';
+import { nativeHost } from './host-adapter.js';
 
 const ID = 'tts-connector';
 let bridge, studioWindow, dock, drawerObserver;
@@ -22,12 +23,7 @@ const settingsCss = `
 #tts-connector .tts-actions > .menu_button:disabled { opacity:.45; cursor:default; }
 #tts-connector .tts-status { display:block; margin:0; font-size:12px; line-height:1.5; opacity:.75; overflow-wrap:anywhere; writing-mode:horizontal-tb; }
 `;
-async function readTheme() {
-  // Verified against SillyTavern 1.19.0, 06bde939f. Keep internal imports here.
-  const { getThemeObject } = await import('/scripts/power-user.js');
-  const context = SillyTavern.getContext();
-  return getThemeObject(context.powerUserSettings.theme || '酒馆当前主题');
-}
+const readTheme = () => nativeHost.readTheme();
 function mount() {
   if (document.getElementById(ID)) return;
   const container = document.createElement('div'); container.id = ID; container.dataset.ttsUi = '';

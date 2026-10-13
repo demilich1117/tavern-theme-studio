@@ -2,9 +2,11 @@
 
 **和 Agent 从一个想法做出美化，在真实酒馆里边看边改。** 从认识界面、看图讨论方向开始，逐步完成原生主题；也可以直接调整现有主题的颜色、圆角、间距和装饰。满意后直接应用到酒馆，或下载主题 JSON 分享。
 
-当前版本 **0.11.1** · Windows 双击启动 · 已实测 SillyTavern **1.19.0 / 06bde939f** · [MIT 代码许可](LICENSE)
+当前源码 **0.12.0** · Windows 双击启动 · 适配 SillyTavern **1.14 起** · [版本兼容与验证范围](docs/compatibility.md) · [MIT 代码许可](LICENSE)
 
 **Windows：双击 `start.cmd` 安装并启动，双击 `update.cmd` 更新后启动。** 首次选择一次酒馆目录，之后自动同步连接器；缺少 Node 时自动准备便携运行环境。详见 [一键安装与更新](docs/install-update.md)。
+
+查看 / 关闭后台用 `manage.cmd`，关闭全部用 `stop.cmd`，卸载用 `uninstall.cmd`。其余服务代码已集中到 `src/`；各目录用途见[文件夹说明](docs/project-layout.md)。
 
 编辑沿用原来的拾取和属性面板，支持透明度、四边间距、手机半屏编辑与直接应用到酒馆；见 [直接编辑指南](docs/direct-editing.md)。
 
@@ -13,6 +15,14 @@
 普通用户下载 [0.11.1 核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/download/v0.11.1/tavern-theme-studio-0.11.1-core.zip)，完整解压后双击 `start.cmd`；不必下载 GitHub 自动生成的 Source code 压缩包。校验文件和更新说明见 [v0.11.1 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.11.1)。以后双击 `update.cmd` 获取更高版本的正式安装包；Git 克隆的源码目录通过快进合并更新。
 
 电脑上运行工作台，酒馆里安装连接器。日常入口是「作品」「编辑」「素材」「修改意见」；还没有设计方案时，打开「从零共创」。在「作品」继续编辑、保存定稿或打开作品文件夹，详见 [固定作品目录](docs/work-folders.md)。
+
+## 0.12.0 兼容、后台管理与目录整理（发行候选）
+
+连接器最低版本降至 SillyTavern 1.14.0，补齐 1.14 的生成状态检查和 1.14–1.16 的主题读取；保留当前未保存的 CSS、外观设置与原生主题导入流程。1.14–1.19 六个正式标签已核对接口，真实运行范围见[兼容记录](docs/compatibility.md)。上面的在线下载仍为已发布的 0.11.1；本地候选包位于 `output/releases/tavern-theme-studio-0.12.0-core.zip`，尚未发布到 GitHub。
+
+新增「后台管理」查看作品、端口、PID 和占用目录，可单独关闭或关闭全部；双击 `manage.cmd` / `stop.cmd` 也能管理命令行和 Agent 启动的后台。双击 `uninstall.cmd` 可卸载当前安装及连接器，保留作品、备份和本地改动，详见[后台管理与卸载](docs/backgrounds-uninstall.md)。
+
+服务模块统一放入 `src/`，根目录只保留常用入口和项目元数据。原有 `node server.js`、npm 命令及作品位置保持兼容。
 
 ## 0.11.1 更新
 
@@ -218,7 +228,7 @@ SillyTavern/
 
 ## 支持范围与文档
 
-支持消息、头像、输入区等常用原生部件，以及变量、图层、容器和断点编辑。已接入的部件和装饰可以直接调整；任意 CSS、复杂伪元素和第三方组件仍可能需要源码适配。已实测的宿主是 **SillyTavern 1.19.0 / 06bde939f**；其他版本、实体手机、群聊和真实流式需要另行验证。
+支持消息、头像、输入区等常用原生部件，以及变量、图层、容器和断点编辑。已接入的部件和装饰可以直接调整；任意 CSS、复杂伪元素和第三方组件仍可能需要源码适配。连接器面向 **SillyTavern 1.14 及更新版本**，已核对 1.14–1.19 正式标签；详细实测和限制见[兼容记录](docs/compatibility.md)。工作台可连接不代表某个主题 CSS 适用于所有版本；实体手机、群聊和真实流式仍需专项验证。
 
 导入主题的完整原生字段会保留到导出。临时预览可呈现聊天布局、头像样式等已支持的外观字段，不写入酒馆设置；未覆盖的原生行为需应用后检查。一个工作台服务只有一个当前工程，多个页面和 CLI 会共享它。
 

@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir, readdir, lstat, realpath, rename, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
-import { connectorFiles } from './scripts/connector-files.js';
+import { connectorFiles } from '../scripts/connector-files.js';
 
 export const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 export async function exists(file) { try { await lstat(file); return true; } catch (e) { if (e.code === 'ENOENT') return false; throw e; } }
@@ -123,7 +123,7 @@ export async function inspectTavern(directory, { dataRoot, url } = {}) {
   host.hash = '';
   return { root, dataRoot: data, profiles: profiles.sort(), url: host.href };
 }
-export async function installConnector({ studioRoot, tavern, profile, backupHome }) {
+export async function installConnector({ studioRoot, tavern, profile, backupHome, receiptHome = path.join(studioRoot, '.local/connector-installs') }) {
   if (!tavern.profiles.includes(profile)) throw new Error('请选择酒馆中已有的用户。');
   const relative = `${profile}/extensions/tavern-theme-studio-connector`;
   const target = await safeTarget(tavern.dataRoot, relative);
@@ -136,5 +136,11 @@ export async function installConnector({ studioRoot, tavern, profile, backupHome
   await recoverInstalls(backupHome, target);
   const files = await Promise.all(Object.entries(connectorFiles).map(async ([destination, source]) => [destination, await readFile(path.join(studioRoot, source))]));
   const result = await applyFiles({ root: target, files, backupHome });
+  // Keep every configured host/profile, not only the most recent selection.
+  await mkdir(receiptHome, { recursive: true });
+  await json(path.join(receiptHome, digest(Buffer.from(await realpath(target))) + '.json'), {
+    format: 'tts-connector-install-v1', tavernRoot: tavern.root, dataRoot: tavern.dataRoot, profile, target: await realpath(target),
+    files: files.map(([file, bytes]) => ({ file, sha256: digest(bytes) })),
+  });
   return { ...result, target };
 }

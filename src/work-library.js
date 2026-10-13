@@ -1,6 +1,6 @@
 import { mkdir, readdir, readFile, writeFile, rename, realpath } from 'node:fs/promises';
 import path from 'node:path';
-import { createProject, validateProject } from './shared/core.js';
+import { createProject, validateProject } from '../shared/core.js';
 import { atomicJson } from './storage-migrations.js';
 import { createAssetStore } from './asset-store.js';
 import { readManagedWork, inside, studioRoot } from './work-location.js';

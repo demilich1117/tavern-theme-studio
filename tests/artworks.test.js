@@ -7,12 +7,12 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createHash } from 'node:crypto';
 import { createServer } from '../server.js';
-import { createArtworkService } from '../artwork-service.js';
-import { createAssetStore } from '../asset-store.js';
-import { createExportService } from '../export-service.js';
+import { createArtworkService } from '../src/artwork-service.js';
+import { createAssetStore } from '../src/asset-store.js';
+import { createExportService } from '../src/export-service.js';
 import { createProject } from '../shared/core.js';
-import { projectFingerprint } from '../storage-migrations.js';
-import { sourceFingerprint } from '../build-service.js';
+import { projectFingerprint } from '../src/storage-migrations.js';
+import { sourceFingerprint } from '../src/build-service.js';
 
 const exec = promisify(execFile);
 async function cleanup(root) {

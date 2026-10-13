@@ -7,7 +7,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { createProject, applyCommand } from '../shared/core.js';
 import { scanVariables } from '../shared/variables.js';
-import { analyzeTheme, analysisHandoff } from '../theme-analysis.js';
+import { analyzeTheme, analysisHandoff } from '../src/theme-analysis.js';
 import { createServer } from '../server.js';
 const exec = promisify(execFile);
 const theme = css => createProject({ name: '陌生主题', custom_css: css });

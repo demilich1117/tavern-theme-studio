@@ -1,5 +1,5 @@
-import { exportTheme } from './shared/core.js';
-import { ASSET_RE } from './shared/assets.js';
+import { exportTheme } from '../shared/core.js';
+import { ASSET_RE } from '../shared/assets.js';
 import { createHash } from 'node:crypto';
 import { dependencies, scanCssDependencies, rewriteDependencies } from './css-dependencies.js';
 export { dependencies } from './css-dependencies.js';

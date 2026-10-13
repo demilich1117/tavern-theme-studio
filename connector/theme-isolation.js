@@ -21,7 +21,7 @@ export function createThemeIsolation(getStyle) {
   };
 }
 
-// Native appearance classes verified against SillyTavern 1.19.0 power-user.js.
+// Native appearance classes checked against SillyTavern 1.14–1.19 power-user.js.
 // Preview changes DOM presentation only, not power_user or settings controls.
 export function createThemePresentation(getBody, getComposer) {
   const originals = new Map();

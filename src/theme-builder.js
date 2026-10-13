@@ -2,10 +2,10 @@ import { readFile, writeFile, mkdir, realpath, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import * as csstree from 'css-tree';
-import { validateTheme } from './shared/core.js';
-import { validateBuiltCss } from './shared/css-validation.js';
+import { validateTheme } from '../shared/core.js';
+import { validateBuiltCss } from '../shared/css-validation.js';
 import { MAX_ASSET_BYTES } from './asset-store.js';
-import { validateRecipe } from './shared/decorations.js';
+import { validateRecipe } from '../shared/decorations.js';
 
 // The work owns declarative input; the installed tool owns build dependencies.
 export async function buildThemeSource(directory, output) {

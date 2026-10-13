@@ -1,8 +1,8 @@
 import { readFile, writeFile, mkdir, readdir, rename } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
-import { validateProject, createProject } from './shared/core.js';
-import { migrateProject } from './shared/migrations.js';
+import { validateProject, createProject } from '../shared/core.js';
+import { migrateProject } from '../shared/migrations.js';
 
 export const projectFingerprint = project => createHash('sha256').update(JSON.stringify(project)).digest('hex');
 export async function atomicJson(file, value) {

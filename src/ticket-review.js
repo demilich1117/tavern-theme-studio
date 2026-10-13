@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { realpath, stat, readFile } from 'node:fs/promises';
-import { diffProjects } from './shared/diff.js';
+import { diffProjects } from '../shared/diff.js';
 
 const types = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.json': 'application/json', '.md': 'text/plain', '.txt': 'text/plain' };
 const inside = (parent, child) => { const rel = path.relative(parent, child); return rel && rel !== '..' && !rel.startsWith('..' + path.sep) && !path.isAbsolute(rel); };

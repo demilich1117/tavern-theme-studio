@@ -1,4 +1,4 @@
-﻿param([ValidateSet('start', 'update')][string]$Mode = 'start')
+﻿param([ValidateSet('start', 'update', 'manage', 'stop', 'uninstall')][string]$Mode = 'start')
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
 $studioRoot = Split-Path -Parent $PSScriptRoot
@@ -78,6 +78,13 @@ function Install-StudioDependencies([string]$Node, [bool]$Force) {
 }
 try {
     $studioNode = Find-StudioNode
+    if ($Mode -in @('manage', 'stop', 'uninstall')) {
+        if (-not $studioNode) { throw '未找到已有 Node.js 22+。管理和卸载不会下载或重装依赖；请先恢复原便携运行环境或使用系统 Node。' }
+        if ($Mode -eq 'uninstall') { & $studioNode (Join-Path $studioRoot 'scripts\uninstall.js') }
+        elseif ($Mode -eq 'stop') { & $studioNode (Join-Path $studioRoot 'scripts\backgrounds.js') --stop-all }
+        else { & $studioNode (Join-Path $studioRoot 'scripts\backgrounds.js') }
+        exit $LASTEXITCODE
+    }
     if (-not $studioNode) { $studioNode = Install-StudioNode }
     $env:PATH = (Split-Path -Parent $studioNode) + [IO.Path]::PathSeparator + $env:PATH
     if ($Mode -eq 'update') {

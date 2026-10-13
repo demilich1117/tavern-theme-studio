@@ -3,7 +3,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { acquireDataLock } from './data-lock.js';
 import { atomicJson, projectFingerprint } from './storage-migrations.js';
-import { validateProject } from './shared/core.js';
+import { validateProject } from '../shared/core.js';
 import { createArtworkService } from './artwork-service.js';
 import { createAssetStore } from './asset-store.js';
 import { createExportService } from './export-service.js';

@@ -5,10 +5,10 @@ import path from 'node:path';
 import os from 'node:os';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { applyFiles, exists, digest, inspectTavern, installConnector, recoverInstalls, safeRelative } from '../install-service.js';
-import { validateCoreZip, applyCoreUpdate, latestPackage, compareVersions } from '../update-service.js';
+import { applyFiles, exists, digest, inspectTavern, installConnector, recoverInstalls, safeRelative } from '../src/install-service.js';
+import { validateCoreZip, applyCoreUpdate, latestPackage, compareVersions } from '../src/update-service.js';
 import { zipFiles } from '../scripts/zip.js';
-import { manageLauncher, readLauncher, stopLauncher, requireStopped } from '../launcher-service.js';
+import { manageLauncher, readLauncher, stopLauncher, requireStopped } from '../src/launcher-service.js';
 import { createServer } from '../server.js';
 const studioRoot = path.resolve(import.meta.dirname, '..');
 async function temp(fn) {
@@ -36,8 +36,8 @@ function core(version, extra = {}) {
 test('one-time host selection respects custom data root, user accounts and existing connector data', () => temp(async root => {
   const tavern = await host(path.join(root, 'Silly Tavern'));
   assert.equal(tavern.url, 'http://127.0.0.1:8123/'); assert.deepEqual(tavern.profiles, ['default-user']);
-  const options = { studioRoot, tavern, profile: 'default-user', backupHome: path.join(root, 'backups') };
-  const first = await installConnector(options); assert.equal(first.changed, 26);
+  const options = { studioRoot, tavern, profile: 'default-user', backupHome: path.join(root, 'backups'), receiptHome: path.join(root, 'receipts') };
+  const first = await installConnector(options); assert.equal(first.changed, 27);
   await put(first.target, 'personal-note.txt', 'keep');
   const second = await installConnector(options); assert.equal(second.changed, 0);
   await put(first.target, 'connector/index.js', '// old connector');

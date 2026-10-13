@@ -6,7 +6,7 @@ import path from 'node:path';
 import { createProject, validateProject, exportTheme, applyCommand } from '../shared/core.js';
 import { scanVariables } from '../shared/variables.js';
 import { mergeSourceTheme } from '../shared/migrations.js';
-import { migrateStorage, projectFingerprint } from '../storage-migrations.js';
+import { migrateStorage, projectFingerprint } from '../src/storage-migrations.js';
 import { createServer } from '../server.js';
 
 async function temp(fn) {

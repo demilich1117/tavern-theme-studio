@@ -1,8 +1,8 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
-import { ASSET_ID, ASSET_RE, assetReference, externalImageUrl } from './shared/assets.js';
-import { scanVariables } from './shared/variables.js';
+import { ASSET_ID, ASSET_RE, assetReference, externalImageUrl } from '../shared/assets.js';
+import { scanVariables } from '../shared/variables.js';
 import { atomicJson } from './storage-migrations.js';
 import { serialQueue } from './serial-queue.js';
 import { dependencies, rewriteDependencies } from './css-dependencies.js';

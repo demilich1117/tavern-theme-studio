@@ -9,6 +9,7 @@ import { attachLayers } from '/layers.js';
 import { attachLayouts } from '/layouts.js';
 import { attachExport } from '/export.js';
 import { attachSetup } from '/setup.js';
+import { attachRuntimeManager } from '/runtime-manager.js';
 import { attachThemeAnalysis } from '/theme-analysis.js';
 import { attachCoDesign } from '/co-design.js';
 import { attachNavigation, showEditor } from '/panels.js';
@@ -22,6 +23,7 @@ let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, he
 let fixtureBusy = false, fixtureSupported = false;
 let fixtureState, awaitingFirstPreview = false, connectorCapabilities;
 let themeAnalysis, coDesign, artworks, workImport, inspector, hostViewport, exporter;
+let runtimeClosing = false;
 function updateFixture(fixture) {
   if (fixture) fixtureState = fixture;
   fixtureSupported = fixture?.supported === true;
@@ -36,6 +38,7 @@ function toast(text, error = false) { clearTimeout(toastTimer); $('#toast').text
 function send(type, payload = {}) { if (peer) peer.postMessage({ channel: CHANNEL, session, type, ...payload }, peerOrigin); }
 function preview(project = previewProject || state?.project) { if (ready && project) send('preview', { project, basis: { projectId: state.projectId, sessionId: state.sessionId, revision: state.revision, fingerprint: state.fingerprint }, enabled: !$('#compare').checked }); }
 async function command(value) {
+  if (runtimeClosing) throw new Error('后台正在关闭，请重新启动工作台后编辑。');
   $('#save-status').textContent = '保存中…';
   const run = async () => {
     const res = await fetch('/api/commands', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Studio-Token': token }, body: JSON.stringify({ revision: state.revision, sessionId: state.sessionId, projectId: state.projectId, fingerprint: state.fingerprint, command: value }) });
@@ -155,6 +158,7 @@ function connect() {
   }, 4000);
 }
 window.addEventListener('message', event => {
+  if (runtimeClosing) return;
   const data = event.data;
   if (event.source !== peer || event.origin !== peerOrigin || data?.channel !== CHANNEL || data?.session !== session) return;
   lastSeen = Date.now();
@@ -268,6 +272,7 @@ try {
   advanced = attachAdvanced({ getState: () => state, command, preview, send, toast, getSelected: () => selected, isLive: () => live, isReady: () => ready, setDevice, getDevice: () => device });
   workflow = attachWorkflow({ getState: () => state, getToken: () => token, getScope: () => scope, command, send, toast, isReady: () => ready, stopPicking: () => setPicking(false), download });
   attachSetup(() => ({ ready, live, capabilities: connectorCapabilities, fixture: $('#fixture-status').textContent }));
+  const runtimeManager = attachRuntimeManager({ getToken: () => token, settled: () => commandQueue });
   source = attachSource({ getState: () => state, getToken: () => token, toast });
   layers = attachLayers({ getState: () => state, command, preview, toast, send, getScope: () => scope, setScope });
   themeAnalysis = attachThemeAnalysis({ openLayer: id => layers.open(id), openAssets: item => workflow.openAssets(item), getState: () => state, getToken: () => token, command, send, toast, connection: () => ({ ready, live, capabilities: connectorCapabilities }) });
@@ -278,6 +283,11 @@ try {
   attachNavigation(); render(); connect();
   $('#artworks-button').click();
   const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };
+  events.addEventListener('runtime-closing', () => {
+    runtimeClosing = true; send('disconnect'); ready = false;
+    clearInterval(helloTimer); clearInterval(heartbeat); events.close();
+    $('#save-status').textContent = '后台正在关闭'; runtimeManager.stopping();
+  });
   window.addEventListener('pagehide', () => { events.close(); clearInterval(helloTimer); clearInterval(heartbeat); }, { once: true });
   workflow.events(events);
   source.events(events);

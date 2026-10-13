@@ -7,8 +7,8 @@ import { colorParts, colorValue, paddingSides, activeRules, supportsField, sameV
 import { createProject, applyCommand, exportTheme, ProjectHistory } from '../shared/core.js';
 import { pickCandidates } from '../connector/picking.js';
 import { createServer } from '../server.js';
-import { buildThemeSource } from '../theme-builder.js';
-import { sourceFingerprint } from '../build-service.js';
+import { buildThemeSource } from '../src/theme-builder.js';
+import { sourceFingerprint } from '../src/build-service.js';
 
 test('color edits preserve alpha; four-side padding remains one reversible edit', () => {
   const { hex, alpha } = colorParts('rgba(34, 51, 68, 0.25)');

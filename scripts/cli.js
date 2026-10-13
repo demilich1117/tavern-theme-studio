@@ -1,10 +1,10 @@
 import { readFile, writeFile, mkdir, realpath } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { referenceIndex } from '../export-service.js';
+import { referenceIndex } from '../src/export-service.js';
 import path from 'node:path';
 import { TARGETS, FIELDS } from '../shared/core.js';
 import { formatAgentHandoff } from '../shared/handoff.js';
-import { resolveDataDirectory } from '../work-location.js';
+import { resolveDataDirectory } from '../src/work-location.js';
 const args = process.argv.slice(2), commandName = args.shift();
 try {
   if (!commandName || commandName === 'help') {

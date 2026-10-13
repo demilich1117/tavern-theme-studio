@@ -4,12 +4,12 @@ import { mkdtemp, mkdir, readFile, writeFile, rm, access } from 'node:fs/promise
 import path from 'node:path';
 import os from 'node:os';
 import { createServer } from '../server.js';
-import { migrateWork } from '../work-migration.js';
-import { resolveDataDirectory } from '../work-location.js';
-import { buildThemeSource } from '../theme-builder.js';
-import { projectFingerprint } from '../storage-migrations.js';
+import { migrateWork } from '../src/work-migration.js';
+import { resolveDataDirectory } from '../src/work-location.js';
+import { buildThemeSource } from '../src/theme-builder.js';
+import { projectFingerprint } from '../src/storage-migrations.js';
 import { createProject } from '../shared/core.js';
-import { createWorkLibrary } from '../work-library.js';
+import { createWorkLibrary } from '../src/work-library.js';
 
 async function fixture() {
   const root = await mkdtemp(path.join(os.tmpdir(), 'tts-work-'));

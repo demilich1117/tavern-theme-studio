@@ -3,7 +3,7 @@ import { validateTheme } from '../shared/core.js';
 export function canApplyNativeTheme() {
   return !!document.getElementById('ui_preset_import_file') && !!document.getElementById('themes') && typeof DataTransfer === 'function';
 }
-// SillyTavern 1.19.0: retain its import validation, warnings, persistence and
+// SillyTavern 1.14–1.19: retain native import validation, warnings, persistence and
 // theme list. No private theme arrays or host files are modified directly.
 export async function applyNativeTheme(value) {
   const theme = validateTheme(value), input = document.getElementById('ui_preset_import_file'), select = document.getElementById('themes');

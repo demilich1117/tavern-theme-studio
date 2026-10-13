@@ -1,7 +1,7 @@
 import { readFile, lstat } from 'node:fs/promises';
 import path from 'node:path';
 import { inflateRawSync } from 'node:zlib';
-import { crc32 } from './scripts/zip.js';
+import { crc32 } from '../scripts/zip.js';
 import { applyFiles, digest, exists, safeRelative } from './install-service.js';
 
 const repository = 'demilich1117/tavern-theme-studio';

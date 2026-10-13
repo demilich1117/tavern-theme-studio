@@ -7,8 +7,8 @@ import { zipFiles } from './zip.js';
 const root = path.resolve(import.meta.dirname, '..');
 execFileSync(process.execPath, ['scripts/package-connector.js'], { cwd: root, stdio: 'inherit', windowsHide: true });
 const paths = new Set(['package.json', 'package-lock.json', 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md', 'AGENTS.md', 'start.cmd', 'examples/starter.theme.json', 'dist/tavern-theme-studio-connector.zip']);
-paths.add('update.cmd');
-for (const file of ['connector-files.js', 'launcher.js', 'update.js', 'zip.js', 'windows-launcher.ps1', 'select-tavern.ps1']) paths.add('scripts/' + file);
+for (const file of ['update.cmd', 'manage.cmd', 'stop.cmd', 'uninstall.cmd']) paths.add(file);
+for (const file of ['connector-files.js', 'launcher.js', 'update.js', 'backgrounds.js', 'uninstall.js', 'zip.js', 'windows-launcher.ps1', 'select-tavern.ps1']) paths.add('scripts/' + file);
 for (const f of await readdir(root)) if (f.endsWith('.js')) paths.add(f);
 for (const f of await readdir(path.join(root, 'public'))) if (f.endsWith('.js') || ['index.html', 'style.css', 'workspace.css', 'favicon.svg', 'demo.html', 'demo.css'].includes(f)) paths.add('public/' + f);
 async function tree(folder) {
@@ -18,7 +18,7 @@ async function tree(folder) {
     if (item.isDirectory()) await tree(file); else paths.add(file);
   }
 }
-for (const folder of ['shared', 'connector', 'skills']) await tree(folder);
+for (const folder of ['src', 'shared', 'connector', 'skills']) await tree(folder);
 for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md', 'theme-analysis.md', 'advanced-guide.md', 'co-design.md', 'co-design-brief.template.md', 'comic-guide.md', 'validation-0.9.2.md', 'artwork-history.md']) paths.add('docs/' + file);
 await tree('docs/assets/doublecheese');
 paths.add('docs/work-folders.md');
@@ -28,6 +28,10 @@ paths.add('docs/validation-0.10.md');
 paths.add('docs/install-update.md');
 paths.add('docs/validation-0.11.md');
 paths.add('docs/validation-0.11.1.md');
+paths.add('docs/compatibility.md');
+paths.add('docs/backgrounds-uninstall.md');
+paths.add('docs/validation-0.12.md');
+paths.add('docs/project-layout.md');
 // Preserve the earlier comic in source history; ship the current flow only.
 paths.delete('docs/assets/doublecheese/03-co-design.png');
 paths.delete('docs/assets/doublecheese/03-co-design-v2.png');

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { createAssetStore } from '../asset-store.js';
-import { createVariants } from '../asset-variants.js';
+import { createAssetStore } from '../src/asset-store.js';
+import { createVariants } from '../src/asset-variants.js';
 test('static variants preserve originals and immutable identity; animations are not flattened', async () => {
   const dataDir = await mkdtemp(path.join(os.tmpdir(), 'tts-variants-'));
   try {
