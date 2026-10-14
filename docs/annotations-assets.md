@@ -29,9 +29,15 @@ node scripts/cli.js ticket-review <id> 'my-agent' output/result.txt
 
 结果也支持 UTF-8 JSON 文件，包含 `summary`、`baseline: {projectId,revision,fingerprint,snapshotId?,sourceFingerprint?}`、`checks: [{name,status,detail}]`、`unverified: [文本]` 和 `artifacts: [{label,reference}]`。status 为 passed/failed/skipped。baseline 记录实际使用的基线，提交还需最新写入基线，两者不要混淆。UI 分别显示实际检查、未验证项和截图/报告路径；进程成功或回写不等于用户验收。旧文本结果继续兼容。
 
+## 多部件蓝图小票
+
+画布「保存整张蓝图」进入同一评论窗口，保存后自动选中新票。`canvas.kind = blueprint` 包含 `viewport` 与 `items[]`，每项有 `anchor`、`before`、`after`、`note`；新版还包含 `scope`、`props`、`appliesTo: matching-elements`。关联目标只是整图的代表定位，不能用票面单一断点替代每项的范围。
+
+Agent 逐项读取、核对 `basis.snapshotId` 和当前工程，保留用户后续微调后落实。`props` 是候选规则，矩形是几何意图，不是已发布的 CSS；实际布局调整则已经在工程中。旧单部件 `layout-intent` 与没有 `props` 的早期蓝图继续可读，按记录的视口和意图实现。详细规则见 [画布模式](canvas-mode.md)。
+
 ## 大装饰
 
-「装饰素材」支持上传 PNG / JPEG / WebP / GIF、添加图片直链、提取已有内嵌图片、替换图片变量。自由布局通过「复制 CSS」值配合高级 CSS 完成；目前没有自由拖拽变形画布。
+「装饰素材」支持上传 PNG / JPEG / WebP / GIF、添加图片直链、提取已有内嵌图片、替换图片变量。自由布局通过「复制 CSS」值配合高级 CSS 完成；原生部件位置和尺寸可用 [共创画布](canvas-mode.md)，装饰继续使用原有可调装饰工具。
 
 本地图片按 SHA-256 去重，保存到当前数据目录的 `assets/`。工程用 `tts-asset://<hash>.<扩展名>` 引用，连接器解析为当前工作台地址。图片有不可变缓存，调颜色/间距不再重复传 base64。提取会重映射变量编号，并可撤销。保留素材文件，以免撤销或旧快照断图；没有自动清理。
 

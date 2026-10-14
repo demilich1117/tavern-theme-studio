@@ -9,6 +9,7 @@ export function attachCanvas({ getState, getScope, connection, command, settled,
   let active = false, pending = false, lastProject, lastScope, screenshot, receipts = [], context, selected = new Set(), rendered, imageUrl, operation = 0;
   let status = '点击部件选择，再用手柄调整；与属性面板共用保存和撤销。';
   let round, roundKey, starting = false, startTimer, startError = '';
+  let mode='layout',canUndoBlueprint=false,canRedoBlueprint=false;
   const toggle = $('#canvas-mode'), dialog = $('#canvas-share-dialog'), hint = $('#canvas-mode-hint');
   const restore = $('#canvas-restore'), roundHint = $('#canvas-round-hint');
   function persistRound() { try { if (roundKey) sessionStorage.setItem(roundKey, JSON.stringify(round)); } catch {} }
@@ -36,7 +37,9 @@ export function attachCanvas({ getState, getScope, connection, command, settled,
     hint.textContent = starting ? '正在准备虚构测试对话，完成后自动进入画布…' : startError || availability.reason || status;
     const plan = canvasRestorePlan(round, s), canRestore = !!plan.changes.length && !pending && !starting;
     restore.disabled = !canRestore;
-    $('#canvas-round-controls').hidden = !round;
+    $('#canvas-round-controls').hidden = !round?.entries.length || (active&&mode==='intent');
+    $('#undo').disabled=active&&mode==='intent'?!canUndoBlueprint:!s.canUndo;
+    $('#redo').disabled=active&&mode==='intent'?!canRedoBlueprint:!s.canRedo;
     roundHint.textContent = plan.changes.length ? `本轮 ${plan.changes.length} 项位置 / 尺寸调整，可一次还原。` : '本轮没有待还原的拖动调整。';
     if (plan.conflicts.length) roundHint.textContent += ` ${plan.conflicts.length} 项后续修改将保留。`;
     send('canvas-round-state', { canRestore });
@@ -75,7 +78,7 @@ export function attachCanvas({ getState, getScope, connection, command, settled,
   function enable(value) { for (const id of ['canvas-copy-image', 'canvas-copy-receipt', 'canvas-download-image', 'canvas-download-receipt']) $('#'+id).disabled = !value; }
   const chosen = () => receipts.filter(t => selected.has(t.id));
   function receiptText() {
-    const tickets = chosen(), prefix = `画布截图交接 · ${screenshot.name}\n截图基线：${screenshot.basis.projectId} / revision ${screenshot.basis.revision}\n截图来源：${screenshot.source}\n截图是讨论证据，不代表全部尺寸和状态已验收。\n摆放提案的 before/after 是该视口中的矩形，尚未写入 CSS。请核对工程与真实布局后落实。\n`;
+    const tickets = chosen(), prefix = `画布截图交接 · ${screenshot.name}\n截图基线：${screenshot.basis.projectId} / revision ${screenshot.basis.revision}\n截图来源：${screenshot.source}\n截图是讨论证据，不代表全部尺寸和状态已验收。\n蓝图包含多个部件的 items[]；每项 scope、props 和 appliesTo 描述同类调整，before/after 是原视口中的几何意图，尚未写入主题。请核对工程快照与真实布局后落实。\n`;
     return prefix + (tickets.length ? '\n' + formatAgentHandoff(tickets, context) : '\n本次未附修改小票，请结合对话说明处理。');
   }
   function wrap(ctx, text, width) {
@@ -122,9 +125,10 @@ export function attachCanvas({ getState, getScope, connection, command, settled,
   $('#canvas-download-image').addEventListener('click', () => { if (rendered) downloadBlob(rendered, 'tavern-canvas.png'); });
   $('#canvas-download-receipt').addEventListener('click', () => { if (screenshot) downloadBlob(new Blob([JSON.stringify({ schemaVersion: 1, kind: 'tavern-canvas-handoff', image: 'tavern-canvas.png', basis: screenshot.basis, source: screenshot.source, tickets: chosen().map(publicReceipt), handoff: receiptText() }, null, 2)], { type: 'application/json' }), 'tavern-canvas.tickets.json'); });
   $('#canvas-download-css').addEventListener('click', run(async () => { await settled(); const result = await read('/api/export?mode=standard'); downloadBlob(new Blob([result.theme.custom_css], { type: 'text/css;charset=utf-8' }), 'tavern-theme.css'); toast('已下载当前主题 CSS；原生外观设置请用「应用 / 导出」保存主题 JSON。'); }));
-  return { render, receive(data) {
+  return { render, history(action){if(active&&mode==='intent'){send('blueprint-history',{action});return true;}return false;}, receive(data) {
     if (data.type === 'canvas-status') {
       active = data.active;
+      mode=data.mode||mode;canUndoBlueprint=data.canUndoBlueprint===true;canRedoBlueprint=data.canRedoBlueprint===true;
       if (active && starting) { finishStarting(); round = createCanvasRound(getState()); persistRound(); }
       if (data.message) status = data.message; render();
     }

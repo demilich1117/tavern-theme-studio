@@ -28,6 +28,25 @@ test('compact handoff retains explicit IDs, live-read instructions and fixture b
   for (const text of [ticket.id, 'basis.snapshotId', '#fixture-status', '不遍历其他票', '不发真实消息', '修改圆角', '待验收']) assert.ok(compact.includes(text), text);
   assert.ok(compact.length < formatAgentHandoff([ticket], context).length);
 });
+
+test('blueprint handoff preserves per-item scopes and class-wide intent in full and compact formats', () => {
+  const canvas = { kind: 'blueprint', viewport: anchor.viewport, items: ['avatar', 'name'].map((target, i) => ({
+    id: `part-${i}`, anchor: { ...anchor, target }, scope: i ? 'base' : 'mobile',
+    props: { 'margin-left': `${8 + i}px` }, before: anchor.rect, after: { ...anchor.rect, left: 8 + i }, note: `调整 ${target}`,
+  })) };
+  const ticket = { id: 'f'.repeat(32), number: 1, comment: '调整整张蓝图', state: 'open', anchor, canvas, basis: { projectId: 'p' } };
+  const context = { current: { projectId: 'p' }, address: 'http://127.0.0.1:19323', projectPath: '/theme', studioPath: '/studio' };
+  const full = formatAgentHandoff([ticket], context);
+  const receipt = JSON.parse(full.split('```json\n')[1].split('\n```')[0])[0];
+  assert.deepEqual(receipt.canvas.items.map(i => [i.scope, i.props, i.appliesTo]), [
+    ['mobile', { 'margin-left': '8px' }, 'matching-elements'], ['base', { 'margin-left': '9px' }, 'matching-elements'],
+  ]);
+  for (const compact of [false, true]) {
+    const handoff = formatAgentHandoff([ticket], context, { compact });
+    for (const concept of ['docs/canvas-mode.md', 'items[]', 'scope', 'props', 'matching-elements', 'layout-intent', '不重复应用']) assert.ok(handoff.includes(concept), concept);
+  }
+  assert.equal(canvas.items[0].appliesTo, undefined, 'handoff must not mutate the source draft');
+});
 test('artifact preview rejects arbitrary files, traversal and active document types', async () => {
   const root = path.resolve(import.meta.dirname, '..');
   for (const reference of ['package.json', 'output/../package.json', '../outside.png', 'https://example.org/x.png', 'output/page.html', 'output/script.svg']) {

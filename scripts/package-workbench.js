@@ -32,6 +32,9 @@ paths.add('docs/compatibility.md');
 paths.add('docs/backgrounds-uninstall.md');
 paths.add('docs/validation-0.12.md');
 paths.add('docs/project-layout.md');
+paths.add('docs/canvas-mode.md');
+paths.add('docs/validation-canvas.md');
+paths.add('docs/validation-0.13.md');
 // Preserve the earlier comic in source history; ship the current flow only.
 paths.delete('docs/assets/doublecheese/03-co-design.png');
 paths.delete('docs/assets/doublecheese/03-co-design-v2.png');

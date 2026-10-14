@@ -55,7 +55,7 @@ export function createAnnotationPins({ send, fixtureActive, onReveal, getBasis =
         button.setAttribute('aria-label', `打开标注小票 ${ticket.number}`); button.title = `标注 #${ticket.number}`;
         button.addEventListener('click', () => { onReveal(); send('annotation-ticket', { id: ticket.id }); });
         let proposal, canvas;
-        if (ticket.canvas) { canvas = validateCanvasProposal(ticket.canvas); proposal = document.createElement('div'); proposal.className = 'proposal'; proposal.hidden = true; const label = document.createElement('span'); label.textContent = `#${ticket.number} 布局提案`; proposal.append(label); shadow.append(proposal); }
+        if (ticket.canvas && ticket.canvas.kind !== 'blueprint') { canvas = validateCanvasProposal(ticket.canvas); proposal = document.createElement('div'); proposal.className = 'proposal'; proposal.hidden = true; const label = document.createElement('span'); label.textContent = `#${ticket.number} 布局提案`; proposal.append(label); shadow.append(proposal); }
         shadow.append(button); entries.push({ anchor, button, id: ticket.id, proposal, canvas, basis: ticket.basis });
       }
       schedule();

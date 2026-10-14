@@ -3,6 +3,7 @@ import { readFile, realpath } from 'node:fs/promises';
 import { createServer } from '../server.js';
 import { resolveDataDirectory } from '../src/work-location.js';
 import { pathToFileURL } from 'node:url';
+import { workspaceUrl } from '../shared/workspace.js';
 
 const root = path.resolve(import.meta.dirname, '..');
 export async function startNativeLab({ seedPath } = {}) {
@@ -26,9 +27,9 @@ catch (error) {
   } catch { throw error; }
 }
 const host = new URL(process.env.TAVERN_URL || 'http://127.0.0.1:8000');
-host.hash = new URLSearchParams({ 'tts-lab': '', studio: app.address }).toString();
-console.log(`Native test workbench: ${host.href}\nStudio API: ${app.address}\nProject: ${dataDir}`);
-return { ...app, url: host.href };
+const url = workspaceUrl(host.href, app.address);
+console.log(`Design workspace: ${url}\nStudio API: ${app.address}\nProject: ${dataDir}`);
+return { ...app, url };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
 const app = await startNativeLab({ seedPath: process.argv[2] });

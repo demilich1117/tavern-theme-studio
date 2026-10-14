@@ -17,7 +17,7 @@ try {
   const files = readGeneratedZip(zip);
   assert.equal(validateCoreZip(zip, STUDIO_VERSION).size, files.length, 'Release updater accepts the exact built package');
   // Co-design must remain usable without the author's parent workspace skills.
-  for (const file of ['AGENTS.md', 'skills/tavern-theme-studio/SKILL.md', 'docs/co-design.md', 'docs/host-reference.md', 'docs/co-design-brief.template.md', 'docs/native-lab.md', 'manage.cmd', 'stop.cmd', 'uninstall.cmd', 'scripts/backgrounds.js', 'scripts/uninstall.js', 'docs/backgrounds-uninstall.md']) {
+  for (const file of ['AGENTS.md', 'skills/tavern-theme-studio/SKILL.md', 'docs/co-design.md', 'docs/host-reference.md', 'docs/co-design-brief.template.md', 'docs/native-lab.md', 'docs/canvas-mode.md', 'docs/validation-0.13.md', 'connector/responsive.html', 'connector/responsive.js', 'connector/blueprint-editor.js', 'shared/blueprint.js', 'shared/workspace.js', 'manage.cmd', 'stop.cmd', 'uninstall.cmd', 'scripts/backgrounds.js', 'scripts/uninstall.js', 'docs/backgrounds-uninstall.md']) {
     assert.ok(files.some(([name]) => name === `tavern-theme-studio/${file}`), `Missing co-design resource: ${file}`);
   }
   for (const [name, bytes] of files) {

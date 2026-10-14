@@ -46,7 +46,7 @@ export function inspectTarget(id, preferred) {
   const visible = !target.pseudo || (!['none', 'normal'].includes(computed.content) && computed.display !== 'none');
   return { id, count: matches.length, visible, pseudo: target.pseudo || null, values, rect: { width: Math.round(el.getBoundingClientRect().width), height: Math.round(el.getBoundingClientRect().height) } };
 }
-export function attachBridge({ peer, origin, session, readTheme, applyNativeTheme, hostName = 'SillyTavern', isDemo = false, fixture, onFixtureScene = () => {}, onCollapse = () => {}, onScene = () => {}, onClose = () => {}, onPickChange = () => {} }) {
+export function attachBridge({ peer, origin, transportOrigin = origin, session, readTheme, applyNativeTheme, hostName = 'SillyTavern', isDemo = false, fixture, onFixtureScene = () => {}, onCollapse = () => {}, onScene = () => {}, onClose = () => {}, onPickChange = () => {} }) {
   if (!peer || !/^https?:\/\//.test(origin) || !session) throw new Error('连接信息不完整。');
   let picking = false, annotating = false, selected = 'assistant', lastSeen = Date.now(), closed = false, pending = false;
   let currentProject, previewEnabled = true, pickedElement, applying = false, canvasLaunch = 0;
@@ -54,7 +54,7 @@ export function attachBridge({ peer, origin, session, readTheme, applyNativeThem
   const presentation = createThemePresentation(() => isDemo ? null : document.body, () => isDemo ? null : document.getElementById('send_form'));
   const headObserver = new MutationObserver(() => isolation.refresh());
   headObserver.observe(document.head, { childList: true, subtree: true, characterData: true });
-  const send = (type, payload = {}) => peer.postMessage({ channel: CHANNEL, session, type, ...payload }, origin);
+  const send = (type, payload = {}) => peer.postMessage({ channel: CHANNEL, session, type, ...payload }, transportOrigin);
   const pins = createAnnotationPins({ send, fixtureActive: () => fixture?.status().active === true, onReveal: () => onPickChange(false), getBasis: () => currentBasis });
   const variables = document.createElement('style'); variables.id = VARS_ID;
   document.getElementById(VARS_ID)?.remove(); document.head.append(variables);
@@ -91,8 +91,18 @@ export function attachBridge({ peer, origin, session, readTheme, applyNativeThem
     send('decoration-status', { issues });
   }
   let currentBasis;
+  let canvasInspectionFrame = 0;
+  function renderCanvasPreview(project) {
+    renderPreview(project, previewEnabled);
+    // Geometry drafts replace only the style element in <head>, outside the
+    // body observer. Refresh computed values after both preview and restore.
+    if (!canvasInspectionFrame && !closed) canvasInspectionFrame = requestAnimationFrame(() => {
+      canvasInspectionFrame = 0;
+      if (!closed) inspect();
+    });
+  }
   const editor = createDecorationEditor({ getProject: () => currentProject, getBasis: () => currentBasis, renderPreview: project => renderPreview(project, previewEnabled), isBlocked: id => hostBlocked.has(id), send, onActive: onPickChange });
-  const canvasEditor = createCanvasEditor({ getProject: () => currentProject, getBasis: () => currentBasis, getSelection: () => ({ id: selected, element: pickedElement }), select: hit => { selected = hit.target.id; pickedElement = hit.el; send('picked', { target: selected }); inspect(); onPickChange(false); }, renderPreview: project => renderPreview(project, previewEnabled), send, fixtureActive: () => fixture?.status().active === true, isDemo, onActive: onPickChange });
+  const canvasEditor = createCanvasEditor({ getProject: () => currentProject, getBasis: () => currentBasis, getSelection: () => ({ id: selected, element: pickedElement }), select: hit => { selected = hit.target.id; pickedElement = hit.el; send('picked', { target: selected }); inspect(); onPickChange(false); }, renderPreview: renderCanvasPreview, send, fixtureActive: () => fixture?.status().active === true, isDemo, onActive: onPickChange });
   const viewport = () => { send('viewport', { width: innerWidth, height: innerHeight }); editor.refresh(); canvasEditor.refresh(); };
   window.addEventListener('resize', viewport);
   const overlay = document.createElement('div'); overlay.id = OVERLAY_ID;
@@ -143,11 +153,11 @@ export function attachBridge({ peer, origin, session, readTheme, applyNativeThem
   const key = event => { if (event.key === 'Escape' && picking) { picking = annotating = false; pickHint.hidden = true; overlay.style.display = 'none'; onPickChange(false); send('pick-cancelled'); } };
   async function message(event) {
     const data = event.data;
-    if (event.source !== peer || event.origin !== origin || data?.channel !== CHANNEL || data?.session !== session) return;
+    if (event.source !== peer || event.origin !== transportOrigin || data?.channel !== CHANNEL || data?.session !== session) return;
     lastSeen = Date.now();
     try {
       switch (data.type) {
-        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, themeAnalysis: 1, directEditing: 1, canvasEditor: 1, canvasWorkflow: 1, nativeThemeApply: !!applyNativeTheme }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
+        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, themeAnalysis: 1, directEditing: 1, canvasEditor: 1, canvasWorkflow: 1, blueprint: 1, nativeThemeApply: !!applyNativeTheme }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
         case 'ping': send('pong', { fixture: fixture?.status() }); break;
         case 'preview': {
           if (applying) break;
@@ -196,6 +206,7 @@ export function attachBridge({ peer, origin, session, readTheme, applyNativeThem
         case 'canvas-cancel-gesture': canvasEditor.cancelGesture(); break;
         case 'canvas-restored': canvasEditor.restored(data); break;
         case 'canvas-configure': canvasEditor.configure(data); break;
+        case 'blueprint-history': canvasEditor.history(data.action); break;
         case 'canvas-commit-result': canvasEditor.result(data); break;
         case 'canvas-proposal-saved': canvasEditor.proposalSaved(); break;
         case 'decoration-edit': canvasEditor.stop(); picking = annotating = false; overlay.style.display = 'none'; editor.start(data); break;
@@ -245,7 +256,7 @@ export function attachBridge({ peer, origin, session, readTheme, applyNativeThem
   const timer = setInterval(() => { if (peer.closed || Date.now() - lastSeen > 30000) dispose(); }, 3000);
   function dispose() {
     if (closed) return; closed = true;
-    send('disconnected'); clearInterval(timer); observer.disconnect(); headObserver.disconnect(); isolation.dispose(); presentation.restore();
+    send('disconnected'); clearInterval(timer); cancelAnimationFrame(canvasInspectionFrame); observer.disconnect(); headObserver.disconnect(); isolation.dispose(); presentation.restore();
     window.removeEventListener('message', message); window.removeEventListener('pagehide', dispose);
     document.removeEventListener('pointermove', move, true); document.removeEventListener('click', click, true); document.removeEventListener('keydown', key, true);
     window.removeEventListener('resize', viewport); editor.dispose(); canvasEditor.dispose();

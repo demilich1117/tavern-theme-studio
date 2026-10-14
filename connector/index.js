@@ -2,9 +2,10 @@ import { attachBridge } from './bridge.js';
 import { nativeFixtureHost, focusFixtureScene } from './fixture-host.js';
 import { applyNativeTheme, canApplyNativeTheme } from './native-theme.js';
 import { nativeHost } from './host-adapter.js';
+import { workspaceUrl } from '../shared/workspace.js';
 
 const ID = 'tts-connector';
-let bridge, studioWindow, dock, drawerObserver;
+let bridge, drawerObserver;
 let labStarted = false;
 const fixture = nativeFixtureHost();
 // A compact native settings drawer. Layout rules are scoped to this connector;
@@ -26,6 +27,11 @@ const settingsCss = `
 const readTheme = () => nativeHost.readTheme();
 function mount() {
   if (document.getElementById(ID)) return;
+  const params = new URLSearchParams(location.hash.slice(1));
+  if (params.has('tts-lab') && !params.has('tts-responsive')) {
+    try { location.replace(workspaceUrl(location.href, params.get('studio') || 'http://127.0.0.1:19323', new URL('./responsive.html', import.meta.url))); return; }
+    catch { /* Invalid old links fall back to the settings entry below. */ }
+  }
   const container = document.createElement('div'); container.id = ID; container.dataset.ttsUi = '';
   const style = document.createElement('style'); style.textContent = settingsCss;
   const drawer = document.createElement('div'); drawer.className = 'inline-drawer';
@@ -37,76 +43,23 @@ function mount() {
   const content = document.createElement('div'); content.id = 'tts-settings-content'; content.className = 'inline-drawer-content'; content.style.display = 'none';
   const body = document.createElement('div'); body.className = 'tts-settings-body';
   const addressLabel = document.createElement('label'); addressLabel.className = 'tts-url-label'; addressLabel.htmlFor = 'tts-address'; addressLabel.textContent = '工作台地址';
-  const input = document.createElement('input'); input.id = 'tts-address'; input.type = 'url'; input.value = 'http://127.0.0.1:19323'; input.className = 'text_pole tts-address';
+  const input = document.createElement('input'); input.id = 'tts-address'; input.type = 'url'; input.value = params.get('studio') || 'http://127.0.0.1:19323'; input.className = 'text_pole tts-address';
   const actions = document.createElement('div'); actions.className = 'tts-actions';
-  const lab = document.createElement('a'); lab.className = 'menu_button'; lab.textContent = '在新标签打开测试工作台'; lab.target = '_blank'; lab.rel = 'noopener';
-  const labUrl = new URL(location.pathname, location.origin); labUrl.hash = 'tts-lab'; lab.href = labUrl.href;
-  const open = document.createElement('button'); open.type = 'button'; open.className = 'menu_button'; open.textContent = '打开可视化工作台';
-  const popup = document.createElement('button'); popup.type = 'button'; popup.className = 'menu_button'; popup.textContent = '在独立窗口中打开';
-  const stop = document.createElement('button'); stop.type = 'button'; stop.className = 'menu_button'; stop.textContent = '停止预览'; stop.disabled = true;
-  const status = document.createElement('small'); status.className = 'tts-status'; status.setAttribute('role', 'status'); status.textContent = '先启动本地工作台，再连接。预览不会保存到酒馆设置。';
-  actions.append(open, popup, lab, stop); body.append(addressLabel, input, actions, status); content.append(body); drawer.append(toggle, content); container.append(style, drawer);
+  const open = document.createElement('a'); open.className = 'menu_button'; open.textContent = '打开设计工作台 ↗'; open.target = '_blank'; open.rel = 'noopener';
+  const status = document.createElement('small'); status.className = 'tts-status'; status.setAttribute('role', 'status');
+  const updateEntry = () => {
+    try { open.href = workspaceUrl(location.href, input.value, new URL('./responsive.html', import.meta.url)); open.removeAttribute('aria-disabled'); status.textContent = '在同一页预览电脑 / 手机、调整布局、共创与应用导出。自动使用虚构测试对话。'; }
+    catch (error) { open.removeAttribute('href'); open.setAttribute('aria-disabled', 'true'); status.textContent = error.message; }
+  };
+  input.addEventListener('input', updateEntry); updateEntry();
+  const connection = document.createElement('details'), summary = document.createElement('summary'); summary.textContent = '连接设置';
+  connection.append(summary, addressLabel, input);
+  actions.append(open); body.append(actions, status, connection); content.append(body); drawer.append(toggle, content); container.append(style, drawer);
   // SillyTavern's delegated handler performs the only toggle. Observe its icon
   // state solely to expose the expanded state to assistive technology.
   drawerObserver = new MutationObserver(() => toggle.setAttribute('aria-expanded', String(icon.classList.contains('up'))));
   drawerObserver.observe(icon, { attributes: true, attributeFilter: ['class'] });
   (document.getElementById('extensions_settings2') || document.getElementById('extensions_settings') || document.body).append(container);
-  const launch = (embedded) => {
-    try {
-      const url = new URL(input.value);
-      if (url.protocol !== 'http:' || !['127.0.0.1', 'localhost'].includes(url.hostname)) throw new Error('第一版仅支持本机 HTTP 工作台。');
-      bridge?.dispose();
-      let collapseDock = () => {};
-      let disposeDock = () => {};
-      const session = crypto.randomUUID();
-      url.pathname = '/'; url.search = ''; url.hash = new URLSearchParams({ origin: location.origin, session }).toString();
-      dock?.remove();
-      if (embedded) {
-        dock = document.createElement('div'); dock.id = 'tts-dock'; dock.dataset.ttsUi = '';
-        Object.assign(dock.style, { position: 'fixed', right: '0', top: '0', height: '100dvh', width: 'min(440px, 100vw)', zIndex: '2147483640', background: '#17191d', boxShadow: '-8px 0 32px #0006', display: 'flex', flexDirection: 'column' });
-        const bar = document.createElement('div'); Object.assign(bar.style, { display: 'flex', justifyContent: 'space-between', padding: '4px 8px', background: '#25282e', color: '#e7e8ea' });
-        const label = document.createElement('span'); label.textContent = '主题工作台 · 实时预览'; label.style.fontSize = '12px';
-        const close = document.createElement('button'); close.type = 'button'; close.textContent = '关闭并恢复原样'; close.style.cssText = 'font:12px sans-serif;color:#e7e8ea;background:transparent;border:0;cursor:pointer;padding:6px'; close.addEventListener('click', () => bridge?.dispose());
-        bar.append(label, close);
-        const frame = document.createElement('iframe'); frame.title = '酒馆主题工作台编辑面板'; frame.src = url.href; frame.allow = 'clipboard-write'; Object.assign(frame.style, { width: '100%', flex: '1', minHeight: '0', border: '0' });
-        const resize = document.createElement('div'); resize.setAttribute('role','separator'); resize.setAttribute('aria-label','调整工作台宽度'); resize.setAttribute('aria-orientation','vertical'); resize.tabIndex=0;
-        resize.style.cssText='position:absolute;left:0;top:32px;bottom:0;width:7px;cursor:ew-resize;touch-action:none;background:linear-gradient(90deg,#e6aa6440,transparent);';
-        let panelWidth = 440, panelHeight, resizing, collapsed = false;
-        const mobile = () => innerWidth <= 640;
-        const fold = document.createElement('button'); fold.type = 'button'; fold.style.cssText = close.style.cssText;
-        const layout = () => {
-          const sheet = mobile(), size = sheet ? Math.max(180, Math.min(innerHeight * .82, panelHeight ?? innerHeight * .48)) : Math.max(Math.min(320,innerWidth), Math.min(900,innerWidth,panelWidth));
-          frame.style.display = collapsed ? 'none' : '';
-          Object.assign(dock.style, { height: collapsed ? 'auto' : sheet ? size+'px' : '100dvh', width: collapsed ? 'auto' : sheet ? '100vw' : size+'px', top: collapsed || sheet ? '100dvh' : '0', bottom: 'auto', transform: collapsed || sheet ? 'translateY(-100%)' : 'none' });
-          resize.hidden = collapsed; resize.setAttribute('aria-orientation', sheet ? 'horizontal' : 'vertical'); resize.setAttribute('aria-label', sheet ? '调整工作台高度' : '调整工作台宽度');
-          resize.setAttribute('aria-valuenow', Math.round(size)); resize.setAttribute('aria-valuemin', sheet ? 180 : Math.min(320,innerWidth)); resize.setAttribute('aria-valuemax', Math.round(sheet ? innerHeight*.82 : Math.min(900,innerWidth)));
-          resize.style.cssText = sheet ? 'position:absolute;left:30%;right:30%;top:-6px;height:12px;cursor:ns-resize;touch-action:none;background:#e6aa6480;border-radius:6px' : 'position:absolute;left:0;top:32px;bottom:0;width:7px;cursor:ew-resize;touch-action:none;background:linear-gradient(90deg,#e6aa6440,transparent)';
-          label.hidden = collapsed; close.hidden = collapsed; fold.textContent = collapsed ? '显示工作台' : '收起面板'; fold.setAttribute('aria-expanded', String(!collapsed));
-        };
-        resize.addEventListener('pointerdown',e=>{if(e.button!==0)return;resizing={x:e.clientX,y:e.clientY,width:panelWidth,height:panelHeight ?? innerHeight * .48};resize.setPointerCapture(e.pointerId);e.preventDefault();});
-        resize.addEventListener('pointermove',e=>{if(!resizing)return;if(mobile())panelHeight=Math.max(180,Math.min(innerHeight*.82,resizing.height+resizing.y-e.clientY));else panelWidth=Math.max(320,Math.min(900,resizing.width+resizing.x-e.clientX));layout();});
-        resize.addEventListener('pointerup',()=>{resizing=undefined;});resize.addEventListener('pointercancel',()=>{resizing=undefined;});
-        resize.addEventListener('keydown',e=>{const keys=mobile()?['ArrowUp','ArrowDown']:['ArrowLeft','ArrowRight'];if(!keys.includes(e.key))return;e.preventDefault();e.stopPropagation();const delta=(e.key===keys[0]?1:-1)*(e.shiftKey?50:10);if(mobile())panelHeight=Math.max(180,Math.min(innerHeight*.82,(panelHeight ?? innerHeight * .48)+delta));else panelWidth=Math.max(320,Math.min(900,panelWidth+delta));layout();});
-        window.addEventListener('resize',layout);disposeDock=()=>window.removeEventListener('resize',layout);
-        collapseDock = () => { collapsed = !collapsed; layout(); };
-        fold.addEventListener('click', collapseDock); bar.prepend(fold);
-        dock.append(bar, frame, resize); document.body.append(dock); layout(); studioWindow = frame.contentWindow;
-      } else {
-        studioWindow = window.open(url.href, 'tavern-theme-studio', 'popup,width=1440,height=960');
-        if (!studioWindow) throw new Error('浏览器阻止了新窗口，可使用酒馆内的面板入口。');
-      }
-      bridge = attachBridge({ peer: studioWindow, origin: url.origin, session, readTheme, fixture, applyNativeTheme: canApplyNativeTheme() ? applyNativeTheme : undefined,
-        onFixtureScene: id => focusFixtureScene(fixture, id), onCollapse: collapseDock,
-        onPickChange: picking => { if (embedded && dock) dock.style.visibility = picking ? 'hidden' : 'visible'; },
-        onClose: () => { disposeDock(); dock?.remove(); dock = undefined; stop.disabled = true; status.textContent = '预览已停止，酒馆恢复原样。'; } });
-      stop.disabled = false; status.textContent = '已打开工作台，等待连接。';
-    } catch (e) { status.textContent = e.message; }
-  };
-  open.addEventListener('click', () => launch(true)); popup.addEventListener('click', () => launch(false));
-  input.addEventListener('change', () => {
-    try { const url = new URL(input.value); if (url.protocol !== 'http:' || !['127.0.0.1', 'localhost'].includes(url.hostname)) return; labUrl.hash = new URLSearchParams({ 'tts-lab': '', studio: url.origin }).toString(); lab.href = labUrl.href; } catch {}
-  });
-  stop.addEventListener('click', () => bridge?.dispose());
   if (!labStarted && new URLSearchParams(location.hash.slice(1)).has('tts-lab')) {
     labStarted = true;
     const shield = document.createElement('div'); shield.id = 'tts-lab-startup'; shield.dataset.ttsUi = '';
@@ -127,14 +80,24 @@ function mount() {
         textarea = document.getElementById('send_textarea'); draft = textarea?.value;
         if (textarea) textarea.value = '';
         await fixture.open();
-        shield.remove();
         const address = new URLSearchParams(location.hash.slice(1)).get('studio');
         if (address) input.value = address;
         document.title = '酒馆主题工作台 · 原生测试对话';
-        launch(true);
+        const responsive = new URLSearchParams(location.hash.slice(1)).get('tts-responsive');
+        if (responsive && window.parent !== window) {
+          // The host may suppress document.referrer. Same-origin parent access
+          // verifies the actual container without relying on that header.
+          const parentUrl = new URL(window.parent.location.href); if(parentUrl.origin!==location.origin || !parentUrl.pathname.endsWith('/connector/responsive.html'))throw new Error('设计工作台来源无效。');
+          const studio = new URL(input.value); if(studio.protocol!=='http:'||!['127.0.0.1','localhost'].includes(studio.hostname))throw new Error('工作台地址无效。');
+          bridge?.dispose(); bridge = attachBridge({peer:window.parent,origin:studio.origin,transportOrigin:location.origin,session:responsive,readTheme,fixture,applyNativeTheme:canApplyNativeTheme()?applyNativeTheme:undefined,onFixtureScene:id=>focusFixtureScene(fixture,id)});
+          window.parent.postMessage({channel:'tavern-theme-studio/v1',session:responsive,type:'responsive-host-ready'},location.origin);
+        } else throw new Error('请从设计工作台打开测试对话。');
+        shield.remove();
       } catch (error) {
         if (textarea && !textarea.value && draft !== undefined) textarea.value = draft;
         progress.textContent = error.message; retry.hidden = false; status.textContent = error.message;
+        const responsive = new URLSearchParams(location.hash.slice(1)).get('tts-responsive');
+        if (responsive && window.parent !== window) window.parent.postMessage({channel:'tavern-theme-studio/v1',session:responsive,type:'responsive-host-error',error:error.message},location.origin);
       }
     };
     retry.addEventListener('click', launchLab);
@@ -143,7 +106,7 @@ function mount() {
     ctx.eventSource.once(ctx.event_types.APP_READY, () => { void launchLab(); });
   }
 }
-export function disable() { bridge?.dispose(); dock?.remove(); drawerObserver?.disconnect(); drawerObserver = undefined; document.getElementById(ID)?.remove(); }
+export function disable() { bridge?.dispose(); drawerObserver?.disconnect(); drawerObserver = undefined; document.getElementById(ID)?.remove(); }
 export function activate() { mount(); }
 if (globalThis.SillyTavern) {
   const { eventSource, event_types } = SillyTavern.getContext();

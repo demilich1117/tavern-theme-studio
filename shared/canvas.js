@@ -1,5 +1,6 @@
+import { validateBlueprint } from './blueprint.js';
 // Geometry uses the same rules, scopes and history as the property inspector.
-export const CANVAS_TARGETS = ['stage', 'chat', 'composer', 'input', 'assistant', 'user', 'avatar', 'message-text', 'left', 'right', 'reasoning', 'quote', 'code'];
+export const CANVAS_TARGETS = ['stage', 'chat', 'composer', 'input', 'assistant', 'user', 'avatar', 'message-text', 'name', 'left', 'right', 'reasoning', 'quote', 'code'];
 export const CANVAS_PROPERTIES = ['margin-left', 'margin-top', 'width', 'min-height'];
 export const sameCanvasBasis = (a, b) => !!a && !!b && ['projectId', 'sessionId', 'revision', 'fingerprint'].every(key => a[key] === b[key]);
 export function canvasAvailability(connection) {
@@ -46,6 +47,7 @@ export function canvasPatch(initial, kind, dx, dy, snap = false) {
 }
 export function validateCanvasProposal(value) {
   if (value == null) return undefined;
+  if (value.kind === 'blueprint') return validateBlueprint(value);
   if (value.kind !== 'layout-intent') throw new Error('画布提案类型无效。');
   const rect = input => Object.fromEntries(['left', 'top', 'width', 'height'].map(key => {
     const n = input?.[key];

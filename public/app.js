@@ -85,11 +85,12 @@ function renderFields() { inspector?.render(); }
 function setScope(next) {
   if (!Object.hasOwn(state.project.rules, next)) return;
   scope = next;
-  if (!live) setDevice(scope === 'base' ? 'desktop' : 'mobile');
+  if (!live) setDevice(scope === 'base' || state.project.breakpoints.find(b=>b.id===scope)?.condition.includes('min-width') ? 'desktop' : 'mobile');
   render();
 }
 function renderScope() {
   const choices = [{ id: 'base', name: '所有尺寸' }, ...state.project.breakpoints];
+  if (!state.project.breakpoints.some(b=>b.condition==='(min-width: 768px)')) choices.push({id:'__desktop',name:'仅电脑'});
   const controls = $('#scope-controls'); controls.replaceChildren();
   for (const item of choices) {
     const button = document.createElement('button'); button.dataset.scope = item.id; button.textContent = item.name;
@@ -250,9 +251,10 @@ function bindControls() {
   $('#component-count').textContent = TARGETS.length;
   $('#toggle-details').addEventListener('click', () => { detailsExpanded = !detailsExpanded; $('#toggle-details').textContent = detailsExpanded ? '收起消息细节与装饰' : '展开消息细节与装饰'; render(); });
   $('#project-name').addEventListener('change', () => act({ type: 'rename', name: $('#project-name').value }));
-  $('#undo').addEventListener('click', () => act({ type: 'undo' })); $('#redo').addEventListener('click', () => act({ type: 'redo' }));
+  const editHistory=action=>{if(!canvasEditor?.history(action))act({type:action});};
+  $('#undo').addEventListener('click', () => editHistory('undo')); $('#redo').addEventListener('click', () => editHistory('redo'));
   $('#reset-target').addEventListener('click', () => act({ type: 'reset-target', target: selected, scope }));
-  $('#scope-controls').addEventListener('click', e => { if (e.target.dataset.scope) setScope(e.target.dataset.scope); });
+  $('#scope-controls').addEventListener('click', async e => { let next=e.target.dataset.scope; if(!next)return;try{if(next==='__desktop'){const existing=state.project.breakpoints.find(b=>b.condition==='(min-width: 768px)');next=existing?.id||'desktop-'+crypto.randomUUID();if(!existing)await command({type:'breakpoints',breakpoints:[...state.project.breakpoints,{id:next,name:'仅电脑',condition:'(min-width: 768px)'}]});}setScope(next);}catch(error){toast(error.message,true);} });
   $('#device-controls').addEventListener('click', e => { if (e.target.dataset.device) setDevice(e.target.dataset.device); });
   $('#pick-button').addEventListener('click', () => { if (!ready) return toast('请等待预览连接。', true); setPicking(!isPicking); if (live && isPicking) peer.focus(); });
   $('#focus-host').addEventListener('click', () => { if (ready) { setPicking(true); peer.focus(); } else toast('请从酒馆扩展面板重新打开工作台。', true); });
@@ -271,7 +273,7 @@ function bindControls() {
   $('#view-css').addEventListener('click', () => { $('#css-editor').value = compileOverrides(state.project) || '/* 尚未添加样式修改 */'; $('#css-editor').readOnly = true; $('#css-dialog-title').textContent = '生成的 CSS'; $('#save-css').hidden = true; $('#css-help').textContent = '由部件规则和高级 CSS 生成。导出的主题还会保留原主题 CSS。'; $('#css-dialog').showModal(); });
   $('#save-css').addEventListener('click', async () => { try { await command({ type: 'custom-css', css: $('#css-editor').value }); $('#css-dialog').close(); } catch {} });
   $('#capture-theme').addEventListener('click', () => { if (connectedTheme) act({ type: 'base-theme', theme: connectedTheme }); $('#base-dialog').close(); });
-  document.addEventListener('keydown', e => { if (e.target.matches('input:not([type=range]):not([type=color]), textarea, [contenteditable]') || document.querySelector('dialog:modal')) return; if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); act({ type: e.shiftKey ? 'redo' : 'undo' }); } if (e.key === 'Escape') setPicking(false); });
+  document.addEventListener('keydown', e => { if (e.target.matches('input:not([type=range]):not([type=color]), textarea, [contenteditable]') || document.querySelector('dialog:modal')) return; if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); editHistory(e.shiftKey ? 'redo' : 'undo'); } if (e.key === 'Escape') setPicking(false); });
   new ResizeObserver(resizePreview).observe($('#canvas'));
 }
 try {

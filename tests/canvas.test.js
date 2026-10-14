@@ -7,6 +7,7 @@ import { canvasPatch, sameCanvasBasis, validateCanvasProposal, canvasAvailabilit
 import { ProjectHistory, createProject, applyCommand, exportTheme, validateProject } from '../shared/core.js';
 import { createServer } from '../server.js';
 import { publicReceipt } from '../shared/handoff.js';
+import { blueprintProject } from '../shared/blueprint.js';
 
 const initial = { scaleX: .5, scaleY: .5, parentWidth: 800, width: 640, height: 200, marginLeft: 0, marginTop: 16 };
 test('canvas availability explains stale host scripts, comparison and disconnected preview', () => {
@@ -77,6 +78,12 @@ test('canvas, inspector and exported CSS share one reversible state across respo
   h.execute({ type: 'undo' }, 2); assert.equal(h.project.rules.mobile.assistant['margin-left'], '16px');
   h.execute({ type: 'undo' }, 3); assert.deepEqual(h.project.rules.mobile, {});
   h.execute({ type: 'redo' }, 4); assert.equal(h.project.rules.mobile.assistant.width, '88%');
+  h.execute({type:'breakpoints',breakpoints:[...h.project.breakpoints,{id:'desktop',name:'仅电脑',condition:'(min-width: 768px)'}]},5);
+  h.execute({type:'canvas-set',target:'assistant',scope:'desktop',props:{width:'68%','margin-left':'32px'}},6);
+  assert.equal(h.project.rules.mobile.assistant.width,'88%');
+  assert.equal(h.project.rules.desktop.assistant.width,'68%');
+  assert.match(exportTheme(h.project).custom_css,/@media \(min-width: 768px\)/);
+  h.execute({type:'undo'},7);assert.deepEqual(h.project.rules.desktop,{});assert.equal(h.project.rules.mobile.assistant.width,'88%');
   assert.throws(() => applyCommand(h.project, { type: 'canvas-set', target: 'global', props: { 'margin-left': '20px' } }));
   assert.throws(() => applyCommand(h.project, { type: 'canvas-set', target: 'assistant', props: { position: 'absolute' } }));
   assert.throws(() => applyCommand(h.project, { type: 'canvas-set', target: 'assistant', props: { 'margin-top': '9000px' } }));
@@ -87,6 +94,20 @@ test('avatar geometry never translates both image and container; basis compariso
   assert.doesNotMatch(exportTheme(p).custom_css, /img/);
   const basis = { projectId: 'a', sessionId: 'b', revision: 1, fingerprint: 'c' };
   assert(sameCanvasBasis(basis, { ...basis })); assert(!sameCanvasBasis(basis, { ...basis, revision: 2 })); assert(!sameCanvasBasis(null, basis));
+});
+
+test('blueprint drafts use identical class-wide CSS and scoped geometry commands without changing the saved project',()=>{
+  const project=createProject(),before=structuredClone(project);
+  const items=[{scope:'mobile',anchor:{target:'avatar'},props:{'margin-left':'16px',width:'72px'}},{scope:'mobile',anchor:{target:'name'},props:{'margin-top':'8px'}}];
+  const actual=items.reduce((p,i)=>applyCommand(p,{type:'canvas-set',scope:i.scope,target:i.anchor.target,props:i.props}),project);
+  const draft=blueprintProject(project,items);
+  assert.deepEqual(draft,actual);assert.deepEqual(project,before);
+  const css=exportTheme(draft).custom_css;
+  assert.match(css,/#chat \.mes \.avatar \{\n  margin-left: 16px/);
+  assert.match(css,/#chat \.mes \.name_text \{\n  margin-top: 8px/);
+  assert.match(css,/@media \(max-width: 767px\)/);assert.doesNotMatch(css,/mesid|nth-child/);
+  assert.deepEqual(blueprintProject(project,items.slice(0,1)).rules.mobile.name,undefined);
+  assert.equal(exportTheme(blueprintProject(project,[])).custom_css,exportTheme(before).custom_css);
 });
 test('layout proposals persist with tickets and handoff but never enter theme CSS', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'tts-canvas-')); let app;
@@ -104,4 +125,22 @@ test('layout proposals persist with tickets and handoff but never enter theme CS
     await app.close(); app = await createServer({ dataDir: dir, port: 0, runtimeHome: path.join(dir, 'runtime') });
     assert.equal((await get('/api/tickets'))[0].canvas.after.width, 180);
   } finally { await app?.close(); assert.equal(path.dirname(dir), os.tmpdir()); assert(path.basename(dir).startsWith('tts-canvas-')); await rm(dir, { recursive: true, force: true }); }
+});
+
+test('multi-part blueprints retain all anchors and notes across persistence without HTML or CSS changes', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'tts-blueprint-')); let app;
+  try {
+    app = await createServer({ dataDir: dir, port: 0, runtimeHome: path.join(dir, 'runtime') });
+    const s = await (await fetch(app.address + '/api/session')).json();
+    const rect = {left:10,top:180,width:120,height:80};
+    const anchor = target => ({target,occurrence:0,fixture:true,point:{x:.5,y:.5},viewport:{width:390,height:844},rect});
+    const canvas = {kind:'blueprint',viewport:{width:390,height:844},appearance:'content',html:'private markup',items:['avatar','name','message-text'].map((target,i)=>({id:'part-'+i,scope:'mobile',props:{'margin-left':`${i*8}px`},anchor:anchor(target),before:rect,after:{...rect,left:i*80,top:200+i*100},note:'部件 '+i,html:'not stored',image:'data:image/png;base64,ignored'}))};
+    const response = await fetch(app.address + '/api/tickets',{method:'POST',headers:{'Content-Type':'application/json','X-Studio-Token':s.token},body:JSON.stringify({revision:s.revision,projectId:s.projectId,sessionId:s.sessionId,fingerprint:s.fingerprint,anchor:anchor('avatar'),canvas,comment:'手机整图布局'})});
+    assert.equal(response.status,200);const ticket=await response.json();assert.equal(ticket.canvas.items.length,3);assert.equal(publicReceipt(ticket).canvas.items[2].note,'部件 2');
+    assert.equal(ticket.canvas.items[1].appliesTo,'matching-elements');assert.equal(ticket.canvas.items[1].scope,'mobile');assert.deepEqual(ticket.canvas.items[1].props,{'margin-left':'8px'});
+    assert.throws(()=>validateCanvasProposal({...canvas,items:[{...canvas.items[0],props:{position:'fixed'}}]}));
+    assert(!JSON.stringify(ticket.canvas).includes('private markup'));assert(!JSON.stringify(ticket.canvas).includes('data:image'));assert.equal((await (await fetch(app.address+'/api/project')).json()).fingerprint,s.fingerprint);
+    assert.throws(()=>validateCanvasProposal({...canvas,items:[]}));assert.throws(()=>validateCanvasProposal({...canvas,items:[canvas.items[0],canvas.items[0]]}));assert.throws(()=>validateCanvasProposal({...canvas,viewport:{width:-1,height:844}}));assert.throws(()=>validateCanvasProposal({...canvas,items:[{...canvas.items[0],anchor:anchor('invalid')}] }));
+    await app.close();app=await createServer({dataDir:dir,port:0,runtimeHome:path.join(dir,'runtime')});const saved=(await (await fetch(app.address+'/api/tickets')).json())[0];assert.deepEqual(saved.canvas,validateCanvasProposal(canvas));
+  } finally {await app?.close();assert.equal(path.dirname(dir),os.tmpdir());assert(path.basename(dir).startsWith('tts-blueprint-'));await rm(dir,{recursive:true,force:true});}
 });

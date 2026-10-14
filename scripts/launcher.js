@@ -27,7 +27,7 @@ async function pickTavern() {
 async function main() {
   const running = await readLauncher(root);
   if (running && !args.includes('--configure')) {
-    console.log('工作台已在运行，正在打开测试页。'); if (!quietBrowser) await openFolder(running.url); return;
+    console.log('工作台已在运行，正在打开设计工作台。'); if (!quietBrowser) await openFolder(running.url); return;
   }
   const maintenance = await acquireDataLock(path.join(root, '.local/maintenance'));
   let app, manager;
