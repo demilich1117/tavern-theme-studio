@@ -8,6 +8,8 @@ export function attachExport({ download, toast, settled, getName, connection, se
     <details class="export-details"><summary>工程备份</summary><button id="export-portable">单文件工程备份</button><p>大工程可用 CLI 分文件备份，目标目录必须尚不存在：</p><pre>node scripts/cli.js backup-files output/my-backup
 node scripts/cli.js restore-files output/my-backup</pre><p>先设置 STUDIO_URL。工程备份含素材，不含小票和本机执行配置；完整历史请保留数据目录。</p></details></div>`;
   document.body.append(dialog);
+  const css = document.createElement('button'); css.id = 'canvas-download-css'; css.textContent = '仅下载 CSS';
+  dialog.querySelector('.export-choice').append(css);
   const $ = s => dialog.querySelector(s);
   const apply = document.createElement('button'); apply.id = 'export-apply'; apply.className = 'primary'; apply.textContent = '应用到酒馆';
   $('#export-standard').before(apply); $('#export-standard').classList.remove('primary');

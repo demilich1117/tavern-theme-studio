@@ -1,3 +1,4 @@
+import { CANVAS_TARGETS } from './canvas.js';
 // Small, DOM-free contracts shared by the inspector and the native connector.
 export function matchesWidth(condition, width) {
   const match = /^\((min|max)-width: (\d+)px\)$/.exec(condition || '');
@@ -24,6 +25,7 @@ export function paddingSides(value) {
 const textOnly = new Set(['name', 'timestamp']);
 const noText = new Set(['avatar', 'assistant-before', 'assistant-after']);
 export function supportsField(target, key) {
+  if (['margin-left', 'margin-top', 'min-height'].includes(key)) return CANVAS_TARGETS.includes(target);
   if (textOnly.has(target)) return ['color', 'font-size', 'line-height', 'opacity', 'margin-bottom'].includes(key);
   if (noText.has(target) && ['color', 'font-size', 'line-height'].includes(key)) return false;
   return true;

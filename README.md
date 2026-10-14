@@ -10,6 +10,8 @@
 
 编辑沿用原来的拾取和属性面板，支持透明度、四边间距、手机半屏编辑与直接应用到酒馆；见 [直接编辑指南](docs/direct-editing.md)。
 
+源码新增 **共创画布**：在「从零共创」或编辑页进入，直接拖动 / 调整部件尺寸，与原有拾取、属性面板和撤销共用工程；自由摆放提案保存为评论小票，支持截图交接和下载 CSS。使用前同步工作台及连接器，详见 [画布模式](docs/canvas-mode.md)。
+
 [下载核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/latest) · [浏览源码](https://github.com/demilich1117/tavern-theme-studio) · [自动检查](https://github.com/demilich1117/tavern-theme-studio/actions/workflows/ci.yml)
 
 普通用户下载 [0.12.0 核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/download/v0.12.0/tavern-theme-studio-0.12.0-core.zip)，完整解压后双击 `start.cmd`；不必下载 GitHub 自动生成的 Source code 压缩包。校验文件和更新说明见 [v0.12.0 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.12.0)。以后双击 `update.cmd` 获取更高版本的正式安装包；Git 克隆的源码目录通过快进合并更新。
@@ -249,4 +251,3 @@ SillyTavern/
 源码仓库还保留 [月弧浮页示例 · 2.2.4](examples/moonveil-crescent-folio/README.md)。需要制作该示例时，优先使用「源码同步」中的配方；候选与冻结发行物的关系见 [源码同步说明](docs/source-build.md)。核心安装包提供通用起点主题，不包含大型月誓示例素材。
 
 代码采用 [MIT](LICENSE)。运行依赖、示例素材和 DOUBLECHEESE 漫画的范围见 [第三方声明](THIRD-PARTY-NOTICES.md)。发行包与后续更新见 [GitHub Releases](https://github.com/demilich1117/tavern-theme-studio/releases)。
-

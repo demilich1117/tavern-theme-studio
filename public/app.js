@@ -15,6 +15,8 @@ import { attachCoDesign } from '/co-design.js';
 import { attachNavigation, showEditor } from '/panels.js';
 import { attachArtworks } from '/artworks.js';
 import { attachWorkImport } from '/work-import.js';
+import { attachCanvas } from '/canvas.js';
+import { sameCanvasBasis } from '/shared/canvas.js';
 const $ = s => document.querySelector(s);
 const CHANNEL = 'tavern-theme-studio/v1';
 let state, token, selected = 'assistant', scope = 'base', device = 'desktop', inspection;
@@ -22,25 +24,29 @@ let peer, peerOrigin, session, ready = false, live = false, lastSeen = 0, isPick
 let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, heartbeat, advanced, workflow, source, layers, layouts, detailsExpanded = false;
 let fixtureBusy = false, fixtureSupported = false;
 let fixtureState, awaitingFirstPreview = false, connectorCapabilities;
-let themeAnalysis, coDesign, artworks, workImport, inspector, hostViewport, exporter;
+let themeAnalysis, coDesign, artworks, workImport, inspector, hostViewport, exporter, canvasEditor;
 let runtimeClosing = false;
 function updateFixture(fixture) {
   if (fixture) fixtureState = fixture;
   fixtureSupported = fixture?.supported === true;
   $('#fixture-tools').hidden = !live;
+  $('#native-preview-controls').hidden = !live;
+  $('#fixture-open').hidden = fixture?.active === true;
   $('#fixture-open').disabled = !ready || !fixtureSupported || fixtureBusy;
   $('#fixture-fresh').disabled = !ready || !fixtureSupported || fixtureBusy;
   $('#fixture-scene').disabled = !ready || !fixture?.active || fixtureBusy;
-  $('#fixture-status').textContent = fixtureBusy ? '正在打开原生测试对话…' : !ready ? '酒馆连接已断开' : awaitingFirstPreview ? '正在应用主题预览…' : !fixtureSupported ? '更新连接器后可使用原生测试对话。' : fixture.active ? '当前为虚构测试对话 · 使用酒馆原生控件' : '测试对话独立保存；已有输入或编辑会阻止切换。';
+  $('#fixture-status').textContent = fixtureBusy ? '正在打开原生测试对话…' : !ready ? '酒馆连接已断开' : awaitingFirstPreview ? '正在应用主题预览…' : !fixtureSupported ? '更新连接器后可使用原生测试对话。' : fixture.active ? '当前为虚构测试对话 · 使用酒馆原生控件' : '连接已就绪 · 进入画布时自动打开测试对话';
   coDesign?.render();
+  canvasEditor?.render();
 }
 function toast(text, error = false) { clearTimeout(toastTimer); $('#toast').textContent = text; $('#toast').classList.toggle('error', error); $('#toast').hidden = false; toastTimer = setTimeout(() => $('#toast').hidden = true, 5000); }
 function send(type, payload = {}) { if (peer) peer.postMessage({ channel: CHANNEL, session, type, ...payload }, peerOrigin); }
 function preview(project = previewProject || state?.project) { if (ready && project) send('preview', { project, basis: { projectId: state.projectId, sessionId: state.sessionId, revision: state.revision, fingerprint: state.fingerprint }, enabled: !$('#compare').checked }); }
-async function command(value) {
+async function command(value, expectedBasis) {
   if (runtimeClosing) throw new Error('后台正在关闭，请重新启动工作台后编辑。');
   $('#save-status').textContent = '保存中…';
   const run = async () => {
+    if (expectedBasis && !sameCanvasBasis(expectedBasis, state)) throw new Error('工程已更新，此次拖动未保存，请重新操作。');
     const res = await fetch('/api/commands', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Studio-Token': token }, body: JSON.stringify({ revision: state.revision, sessionId: state.sessionId, projectId: state.projectId, fingerprint: state.fingerprint, command: value }) });
     const data = await res.json();
     previewProject = null;
@@ -68,7 +74,7 @@ function refreshSession() {
     if (changedWork) {
       inspection = undefined; selected = 'assistant'; scope = 'base';
       for (const dialog of document.querySelectorAll('dialog:modal')) if (dialog.id !== 'work-import-dialog') dialog.close();
-      setPicking(false); send('decoration-edit-stop');
+      setPicking(false); send('decoration-edit-stop'); send('canvas-stop');
       $('#match-count').textContent = '正在读取…'; send('select', { target: selected });
     }
     render(); preview();
@@ -114,6 +120,7 @@ function render() {
   themeAnalysis?.render();
   workImport?.render();
   coDesign?.render();
+  canvasEditor?.render();
 }
 function setSelected(id) { showEditor(); selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
 function setDevice(next) {
@@ -153,7 +160,7 @@ function connect() {
   }, 500);
   heartbeat = setInterval(() => {
     if (!ready) return;
-    if (peer.closed || Date.now() - lastSeen > 16000) { ready = false; $('#connection-caption').textContent = '连接已断开'; $('#connection-dot').classList.remove('connected'); toast('预览连接已断开，工程仍保存在本机。', true); }
+    if (peer.closed || Date.now() - lastSeen > 16000) { ready = false; updateFixture(); $('#connection-caption').textContent = '连接已断开'; $('#connection-dot').classList.remove('connected'); toast('预览连接已断开，工程仍保存在本机。', true); }
     else send('ping');
   }, 4000);
 }
@@ -168,11 +175,13 @@ window.addEventListener('message', event => {
   themeAnalysis?.receive(data);
   workImport?.receive(data);
   exporter?.receive(data);
+  canvasEditor?.receive(data);
   switch (data.type) {
     case 'ready': {
       connectorCapabilities = data.capabilities;
       if (data.capabilities?.projectSchema !== 3 || data.capabilities?.directEditing !== 1 || (state.project.recipe && data.capabilities?.decorations !== 1)) {
         ready = false; $('#connection-caption').textContent = '连接器需要更新';
+        canvasEditor?.render();
         toast('请安装与工作台配套的新版连接器，再刷新专用测试标签。工程会保留。', true); break;
       }
       const first = !ready; ready = true; clearInterval(helloTimer); connectedTheme = data.theme;
@@ -184,7 +193,7 @@ window.addEventListener('message', event => {
         $('#live-details').textContent = `已识别 ${data.targets.filter(x => x.count).length} / ${TARGETS.length} 类部件 · ${data.hostName}`;
         if (!ruleCount(state.project) && !state.project.customCss && state.project.baseTheme.name === '新主题') act({ type: 'base-theme', theme: data.theme });
       }
-      layers?.capabilities(data.capabilities); updateFixture(data.fixture); preview(); send('select', { target: selected }); workflow?.ready(); break;
+      layers?.capabilities(data.capabilities); updateFixture(data.fixture); preview(); send('select', { target: selected }); workflow?.ready(); canvasEditor?.render(); break;
     }
     case 'inspection': inspection = data.inspection; if (inspection.id === selected) { $('#match-count').textContent = inspection.visible ? `匹配 ${inspection.count} 个 · ${inspection.pseudo ? '附着元素 ' : ''}${inspection.rect.width} × ${inspection.rect.height}` : `匹配 ${inspection.count} 个 · 当前不可见`; renderFields(); } break;
     case 'viewport': hostViewport = data; renderScope(); break;
@@ -247,7 +256,7 @@ function bindControls() {
   $('#device-controls').addEventListener('click', e => { if (e.target.dataset.device) setDevice(e.target.dataset.device); });
   $('#pick-button').addEventListener('click', () => { if (!ready) return toast('请等待预览连接。', true); setPicking(!isPicking); if (live && isPicking) peer.focus(); });
   $('#focus-host').addEventListener('click', () => { if (ready) { setPicking(true); peer.focus(); } else toast('请从酒馆扩展面板重新打开工作台。', true); });
-  $('#compare').addEventListener('change', () => { preview(); $('#canvas').classList.toggle('comparing', $('#compare').checked); });
+  $('#compare').addEventListener('change', () => { preview(); canvasEditor?.render(); $('#canvas').classList.toggle('comparing', $('#compare').checked); });
   $('#scene').addEventListener('change', () => send('scene', { scene: $('#scene').value }));
   $('#files-button').addEventListener('click', () => $('#files-dialog').showModal()); $('#connect-button').addEventListener('click', () => $('#connect-dialog').showModal());
   const exportFile = async (url, suffix, message) => {
@@ -279,6 +288,7 @@ try {
   workImport = attachWorkImport({ getState: () => state, command, send, toast, connection: () => ({ ready, live, capabilities: connectorCapabilities }), settled: () => commandQueue });
   layouts = attachLayouts({ getState: () => state, command, toast, getSelected: () => selected, getScope: () => scope, setScope });
   coDesign = attachCoDesign({ getState: () => state, connection: () => ({ ready, live, fixtureActive: fixtureSupported && fixtureState?.active && !fixtureBusy && !awaitingFirstPreview }), selectTarget: setSelected, stopPicking: () => setPicking(false), toast });
+  canvasEditor = attachCanvas({ getState: () => state, getScope: () => scope, connection: () => ({ ready, live, capabilities: connectorCapabilities, comparing: $('#compare').checked, fixtureActive: fixtureState?.active && !fixtureBusy && !awaitingFirstPreview }), command, settled: () => commandQueue, send, preview, preparePreview: () => { $('#compare').checked = false; $('#canvas').classList.remove('comparing'); preview(); renderFields(); }, stopPicking: () => setPicking(false), toast });
   artworks = attachArtworks({ getState: () => state, getToken: () => token, settled: () => commandQueue, toast, command, newWork: () => workImport.open().catch(e => toast(e.message, true)) });
   attachNavigation(); render(); connect();
   $('#artworks-button').click();

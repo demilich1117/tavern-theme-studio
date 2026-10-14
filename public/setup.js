@@ -15,6 +15,7 @@ export function attachSetup(getConnection) {
         ['本机服务', `${service.version} · Node ${service.node} · 数据目录已独占`],
         ['真实酒馆', connection.ready && connection.live ? '已连接' : '未连接；请在酒馆扩展中打开工作台'],
         ['连接器', connection.ready && connection.live ? `${connection.capabilities?.connectorVersion || '旧版未报告版本'} · 工程协议 v${connection.capabilities?.projectSchema || '?'}` : '尚未检测'],
+        ['画布功能', !connection.ready ? '等待预览连接' : connection.capabilities?.canvasEditor === 1 && connection.capabilities?.canvasWorkflow === 1 ? '已加载' : '当前标签尚未加载，请更新连接器并刷新整个酒馆标签'],
         ['测试对话', connection.fixture],
         ['源码同步', service.sourceBound ? '已绑定；详见源码面板' : '可选：尚未绑定'],
         ['本机 CLI', service.runner.configured ? '已配置；实际验证状态见小票中的 CLI 面板' : '可选：未配置。复制交接仍可直接使用'],

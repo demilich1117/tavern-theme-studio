@@ -2,6 +2,7 @@ import { readFile, writeFile, rename } from 'node:fs/promises';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { validateAnchor, ticketText, TICKET_STATES, validateTicketResult } from '../shared/tickets.js';
+import { validateCanvasProposal } from '../shared/canvas.js';
 
 export async function createTicketStore(dataDir) {
   const file = path.join(dataDir, 'tickets.json'); let tickets = [];
@@ -12,7 +13,7 @@ export async function createTicketStore(dataDir) {
     list: () => structuredClone(tickets),
     async create(input, basis) {
       const ticket = { schemaVersion: 1, id: randomBytes(16).toString('hex'), number: tickets.length + 1, version: 1, state: 'open',
-        comment: ticketText(input.comment, 4000, '修改意见'), anchor: validateAnchor(input.anchor), basis,
+        comment: ticketText(input.comment, 4000, '修改意见'), anchor: validateAnchor(input.anchor), basis, ...(input.canvas && { canvas: validateCanvasProposal(input.canvas) }),
         scope: input.location?.scope || (input.scope === 'mobile' ? 'mobile' : 'base'), ...(input.location && { location: structuredClone(input.location) }), createdAt: new Date().toISOString(), result: '', owner: '' };
       await persist([...tickets, ticket]); return ticket;
     },

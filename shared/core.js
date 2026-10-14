@@ -2,6 +2,7 @@ import { rewriteVariables, scanVariables, validateVariableValue } from './variab
 import { migrateProject, bindingRecords, mergeSourceTheme, newProjectId, defaultBreakpoints } from './migrations.js';
 import { validateRecipe, validateLayer, validateLayerProps, layersFromRecipe, mergeRecipe, compileDecorations, layerAsset } from './decorations.js';
 import { LAYOUT_FIELDS, LAYOUT_TARGETS, normalizeLayoutValue } from './layouts.js';
+import { CANVAS_TARGETS, CANVAS_PROPERTIES } from './canvas.js';
 // Self-contained illustrated themes embed raster assets in their base CSS.
 export const MAX_THEME_CSS_LENGTH = 1_000_000;
 export const TARGETS = [
@@ -38,6 +39,9 @@ export const FIELDS = [
   { key: 'border-radius', label: '圆角', type: 'range', group: '形状与留白', min: 0, max: 48, step: 1, unit: 'px', fallback: 12 },
   { key: 'padding', label: '内边距', type: 'range', group: '形状与留白', min: 0, max: 64, step: 1, unit: 'px', fallback: 16 },
   { key: 'margin-bottom', label: '下方间距', type: 'range', group: '形状与留白', min: 0, max: 48, step: 1, unit: 'px', fallback: 8 },
+  { key: 'margin-left', label: '左侧外边距', type: 'range', group: '位置与尺寸', min: -2048, max: 2048, step: 1, unit: 'px', fallback: 0 },
+  { key: 'margin-top', label: '上方外边距', type: 'range', group: '位置与尺寸', min: -2048, max: 2048, step: 1, unit: 'px', fallback: 0 },
+  { key: 'min-height', label: '最小高度', type: 'range', group: '位置与尺寸', min: 0, max: 4096, step: 1, unit: 'px', fallback: 0 },
   { key: 'border-width', label: '边框粗细', type: 'range', group: '形状与留白', min: 0, max: 8, step: 1, unit: 'px', fallback: 0 },
   { key: 'width', label: '宽度', type: 'range', group: '形状与留白', min: 20, max: 100, step: 1, unit: '%', fallback: 100 },
 ];
@@ -53,6 +57,9 @@ export function createProject(theme = { name: '新主题', custom_css: '' }, { p
   return { schemaVersion: 3, projectId, name: theme.name, baseTheme: validateTheme(theme), rules: { base: {}, mobile: {} }, variableEdits: {}, variableBindings: bindingRecords(theme.custom_css || ''), bindingConflicts: [], breakpoints: defaultBreakpoints(), recipe: null, decorations: [], assetRefs: [], customCss: '' };
 }
 export function normalizeValue(key, value) {
+  if (key === 'width' && typeof value === 'string' && /^\d+(?:\.\d+)?px$/.test(value)) {
+    const n = parseFloat(value); if (n < 8 || n > 512) throw new Error('像素宽度范围为 8–512px。'); return `${+n.toFixed(3)}px`;
+  }
   if (LAYOUT_FIELDS.some(f => f.key === key)) return normalizeLayoutValue(key, value);
   const field = FIELDS.find(x => x.key === key);
   if (!field) throw new Error('不支持的样式属性。');
@@ -116,7 +123,8 @@ export function validateProject(value) {
       if (!TARGETS.some(x => x.id === target) || !object(props)) throw new Error('样式部件无效。');
       p.rules[scope][target] = {};
       for (const [key, v] of Object.entries(props)) {
-        if (LAYOUT_FIELDS.some(f => f.key === key) && !LAYOUT_TARGETS.includes(target)) throw new Error('此部件不支持容器布局。');
+        if (['margin-left', 'margin-top', 'min-height'].includes(key) && !CANVAS_TARGETS.includes(target)) throw new Error('此部件不支持画布布局。');
+        if (key !== 'min-height' && LAYOUT_FIELDS.some(f => f.key === key) && !LAYOUT_TARGETS.includes(target)) throw new Error('此部件不支持容器布局。');
         const normalized = normalizeValue(key, v);
         if (normalized !== null) p.rules[scope][target][key] = normalized;
       }
@@ -128,6 +136,33 @@ export function applyCommand(project, command) {
   const next = validateProject(project);
   if (!object(command)) throw new Error('命令格式无效。');
   switch (command.type) {
+    case 'canvas-restore': {
+      if (!Array.isArray(command.changes) || !command.changes.length || command.changes.length > 2048) throw new Error('画布还原记录无效。');
+      const seen = new Set();
+      for (const { scope, target, property, expected, value } of command.changes) {
+        const key = `${scope}/${target}/${property}`;
+        if (!Object.hasOwn(next.rules, scope) || !CANVAS_TARGETS.includes(target) || !CANVAS_PROPERTIES.includes(property) || seen.has(key)) throw new Error('画布还原记录无效。');
+        seen.add(key);
+        if ((next.rules[scope][target]?.[property] ?? null) !== expected) throw new Error('布局已有新修改，请重新点击还原。');
+        const normalized = normalizeValue(property, value);
+        next.rules[scope][target] ??= {};
+        if (normalized === null) delete next.rules[scope][target][property]; else next.rules[scope][target][property] = normalized;
+        if (!Object.keys(next.rules[scope][target]).length) delete next.rules[scope][target];
+      }
+      break;
+    }
+    case 'canvas-set': {
+      const { target, scope = 'base', props } = command;
+      if (!CANVAS_TARGETS.includes(target) || !Object.hasOwn(next.rules, scope) || !object(props) || !Object.keys(props).length || Object.keys(props).some(k => !CANVAS_PROPERTIES.includes(k))) throw new Error('画布调整格式无效。');
+      next.rules[scope][target] ??= {};
+      for (const [key, value] of Object.entries(props)) {
+        const normalized = normalizeValue(key, value);
+        if (normalized === null) delete next.rules[scope][target][key];
+        else next.rules[scope][target][key] = normalized;
+      }
+      if (!Object.keys(next.rules[scope][target]).length) delete next.rules[scope][target];
+      break;
+    }
     case 'set': {
       const { scope = 'base', target, property, value } = command;
       if (!Object.hasOwn(next.rules, scope) || !TARGETS.some(x => x.id === target)) throw new Error('部件或范围无效。');
@@ -214,9 +249,10 @@ export function compileOverrides(project) {
   const compile = scope => TARGETS.flatMap(target => {
     const props = project.rules[scope][target.id];
     if (!props || !Object.keys(props).length) return [];
-    const declarations = Object.entries(props).map(([k, v]) => `  ${k}: ${v} !important;`);
+    const geometry = target.id === 'avatar' ? Object.entries(props).filter(([k]) => CANVAS_PROPERTIES.includes(k)) : [];
+    const declarations = Object.entries(props).filter(([k]) => !geometry.some(([g]) => g === k)).map(([k, v]) => `  ${k}: ${v} !important;`);
     if ('border-width' in props) declarations.push('  border-style: solid !important;');
-    return [`/* ${target.name} */\n${target.selector} {\n${declarations.join('\n')}\n}`];
+    return [declarations.length && `/* ${target.name} */\n${target.selector} {\n${declarations.join('\n')}\n}`, geometry.length && `/* 头像几何只作用于外框，避免图片重复偏移 */\n#chat .mes .avatar {\n${geometry.map(([k, v]) => `  ${k}: ${v} !important;`).join('\n')}\n}`, target.id === 'avatar' && props.width && '#chat .mes .avatar img { width: 100% !important; max-width: 100% !important; }'].filter(Boolean);
   }).join('\n\n');
   const base = compile('base');
   const responsive = (project.breakpoints || defaultBreakpoints()).map(b => { const css = compile(b.id); return css && `@media ${b.condition} {\n${css}\n}`; });

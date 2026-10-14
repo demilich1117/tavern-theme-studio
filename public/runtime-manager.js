@@ -5,7 +5,7 @@ const node = (tag, text, className) => {
 };
 export function attachRuntimeManager({ getToken, settled }) {
   const open = node('button', '后台管理'); open.id = 'runtime-open';
-  document.querySelector('#tools-button').before(open);
+  document.querySelector('#tool-workspace').append(open);
   const dialog = node('dialog', '', 'wide-dialog'); dialog.id = 'runtime-dialog';
   const header = node('form', '', 'dialog-header'); header.method = 'dialog';
   const dismiss = node('button', '×'); dismiss.setAttribute('aria-label', '关闭后台管理');

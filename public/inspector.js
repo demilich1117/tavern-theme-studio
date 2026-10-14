@@ -5,7 +5,7 @@ const node = (tag, className) => { const el = document.createElement(tag); if (c
 export function attachInspector({ getContext, change, select, openLayer }) {
   const host = document.querySelector('#property-fields'), rows = new Map();
   const related = node('div', 'selection-related'); related.setAttribute('aria-label', '相关部件与装饰'); host.before(related);
-  for (const group of ['文字', '形状与留白', '色彩']) {
+  for (const group of ['文字', '形状与留白', '位置与尺寸', '色彩']) {
     const section = node('section'), heading = node('h3'); heading.textContent = group; section.append(heading); host.append(section);
     for (const field of FIELDS.filter(f => f.group === group)) {
       const row = node('div', 'field'); row.id = `field-${field.key}`;
@@ -15,6 +15,8 @@ export function attachInspector({ getContext, change, select, openLayer }) {
       const exact = node('input', 'property-exact'); exact.type = field.type === 'color' ? 'text' : 'number'; exact.setAttribute('aria-label', `${field.label}精确值`);
       if (field.type === 'range') for (const control of [input, exact]) { control.min = field.min; control.max = field.max; control.step = field.step; }
       if (field.type === 'range') exact.step = 'any';
+      const unit = field.key === 'width' ? node('select', 'property-unit') : null;
+      if (unit) { unit.setAttribute('aria-label', '宽度单位'); unit.add(new Option('%', '%')); unit.add(new Option('px', 'px')); }
       const reset = node('button', 'reset-property'); reset.type = 'button'; reset.textContent = '↺'; reset.setAttribute('aria-label', `还原${field.label}`);
       const feedback = node('small', 'property-feedback'); feedback.setAttribute('aria-live', 'polite');
       const extras = node('details', 'property-details'), summary = node('summary'); extras.append(summary);
@@ -27,24 +29,30 @@ export function attachInspector({ getContext, change, select, openLayer }) {
       }
       let preciseAlpha = 1;
       const value = control => {
-        if (control === exact) return field.type === 'color' ? exact.value.trim() : `${exact.value}${field.unit}`;
+        if (control === exact) return field.type === 'color' ? exact.value.trim() : `${exact.value}${unit?.value || field.unit}`;
         if (sides?.includes(control)) return sides.map(side => `${side.value}px`).join(' ');
         if (control === alpha) preciseAlpha = +alpha.value / 100;
-        return field.type === 'color' ? colorValue(input.value, preciseAlpha) : `${input.value}${field.unit}`;
+        return field.type === 'color' ? colorValue(input.value, preciseAlpha) : `${input.value}${unit?.value || field.unit}`;
       };
       for (const control of [input, exact, alpha, ...(sides || [])].filter(Boolean)) {
         control.addEventListener('input', () => {
           if (control === exact || sides?.includes(control)) return; // Text entry commits on blur/Enter; no malformed intermediate values.
           if (alpha) alphaOutput.textContent = `${alpha.value}%`;
-          exact.value = value(control).replace(field.unit || /$^/, '');
+          exact.value = field.type === 'color' ? value(control) : parseFloat(value(control));
           source.textContent = '预览中'; change(field.key, value(control), true);
         });
         control.addEventListener('change', () => { if (control.type !== 'number' || control.validity.valid && control.value !== '') change(field.key, value(control), false); else render(); });
         if (control === exact || sides?.includes(control)) control.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); control.blur(); } });
       }
       reset.addEventListener('click', () => change(field.key, null, false));
+      unit?.addEventListener('change', () => {
+        const { inspection } = getContext(), raw = unit.value === 'px' ? inspection?.values?.['width-px'] : inspection?.values?.width;
+        const n = Number.parseFloat(raw); if (!Number.isFinite(n)) return render();
+        change(field.key, `${Math.max(unit.value === 'px' ? 8 : 20, Math.min(unit.value === 'px' ? 512 : 100, n))}${unit.value}`, false);
+      });
       controls.append(input, exact, reset); row.append(labelRow, controls, feedback); if (alpha || sides) row.append(extras); section.append(row);
-      rows.set(field.key, { row, section, input, exact, source, reset, feedback, alpha, alphaOutput, summary, sides, setAlpha: value => { preciseAlpha = value; } });
+      if (unit) controls.insertBefore(unit, reset);
+      rows.set(field.key, { row, section, input, exact, unit, source, reset, feedback, alpha, alphaOutput, summary, sides, setAlpha: value => { preciseAlpha = value; } });
     }
   }
   function render() {
@@ -56,7 +64,9 @@ export function attachInspector({ getContext, change, select, openLayer }) {
     related.hidden = !related.children.length;
     for (const field of FIELDS) {
       const view = rows.get(field.key), own = project.rules[scope]?.[target]?.[field.key], base = scope !== 'base' ? project.rules.base[target]?.[field.key] : undefined;
-      const actual = current?.values?.[field.key], value = own ?? base ?? actual;
+      const pixelWidth = field.key === 'width' && (own ?? base)?.endsWith('px');
+      const actual = current?.values?.[pixelWidth ? 'width-px' : field.key], value = own ?? base ?? actual;
+      if (view.unit) { view.unit.value = pixelWidth ? 'px' : '%'; for (const control of [view.input, view.exact]) { control.min = pixelWidth ? 8 : 20; control.max = pixelWidth ? 512 : 100; } }
       view.row.hidden = !supportsField(target, field.key) && own === undefined;
       view.row.classList.toggle('modified', own !== undefined); view.reset.disabled = own === undefined;
       view.source.textContent = own !== undefined ? '已修改' : base !== undefined ? '继承基础' : actual !== undefined ? '当前效果' : '未覆盖';

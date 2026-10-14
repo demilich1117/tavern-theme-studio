@@ -10,6 +10,7 @@ import { validateCoreZip, applyCoreUpdate, latestPackage, compareVersions } from
 import { zipFiles } from '../scripts/zip.js';
 import { manageLauncher, readLauncher, stopLauncher, requireStopped } from '../src/launcher-service.js';
 import { createServer } from '../server.js';
+import { connectorFiles } from '../scripts/connector-files.js';
 const studioRoot = path.resolve(import.meta.dirname, '..');
 async function temp(fn) {
   const root = await realpath(await mkdtemp(path.join(os.tmpdir(), 'tts-install-')));
@@ -37,7 +38,7 @@ test('one-time host selection respects custom data root, user accounts and exist
   const tavern = await host(path.join(root, 'Silly Tavern'));
   assert.equal(tavern.url, 'http://127.0.0.1:8123/'); assert.deepEqual(tavern.profiles, ['default-user']);
   const options = { studioRoot, tavern, profile: 'default-user', backupHome: path.join(root, 'backups'), receiptHome: path.join(root, 'receipts') };
-  const first = await installConnector(options); assert.equal(first.changed, 27);
+  const first = await installConnector(options); assert.equal(first.changed, Object.keys(connectorFiles).length);
   await put(first.target, 'personal-note.txt', 'keep');
   const second = await installConnector(options); assert.equal(second.changed, 0);
   await put(first.target, 'connector/index.js', '// old connector');

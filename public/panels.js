@@ -49,7 +49,11 @@ export function attachNavigation() {
   $('#scope-row').append($('#scope-controls'));
   $('#scope-row').after($('#scope-hint'));
   $('#workbench-nav').after($('#fixture-tools'));
-  $('#tools-content').append(...$('.studio-tools').children, $('#advanced-button'), $('#fixture-actions'), $('#view-css'));
+  $('#native-preview-controls').append($('#fixture-open'), $('#fixture-scene'));
+  $('#checks-button').textContent = '检查布局'; $('#preview-actions').append($('#checks-button'));
+  $('#tool-authoring').append($('#layouts-button'), $('#advanced-button'), $('#source-button'), $('#view-css'));
+  $('#tool-preview').append($('#fixture-fresh'));
+  $('#tool-workspace').append($('#connect-button'), $('#setup-open'), $('#runtime-open'));
   $('#tools-button').addEventListener('click', () => $('#tools-dialog').showModal());
   $('#tools-content').addEventListener('click', e => { if (e.target.closest('button')) $('#tools-dialog').close(); }, { capture: true });
   $('#files-dialog').addEventListener('click', e => { if (e.target.closest('#snapshots-button')) $('#files-dialog').close(); }, { capture: true });
