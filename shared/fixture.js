@@ -4,11 +4,13 @@ export const FIXTURE_VERSION = 1;
 export const FIXTURE_NAME = '主题工作台 · 测试角色';
 export const FIXTURE_SCENES = [
   { id: 'chat', label: '普通对话', message: 1 },
+  { id: 'short-assistant', label: '角色短消息', message: 2 },
   { id: 'rich', label: '引用与排版', message: 3 },
   { id: 'code', label: '代码与表格', message: 4 },
   { id: 'reasoning', label: '思考折叠', message: 5 },
   { id: 'media', label: '图片与附件', message: 6 },
   { id: 'long', label: '长文滚动', message: 7 },
+  { id: 'long-user', label: '用户长文滚动', message: 10 },
   { id: 'swipes', label: '候选回复与编辑', message: 9 },
 ];
 export function isFixtureMarker(value) { return value?.id === FIXTURE_ID && value?.version === FIXTURE_VERSION; }
@@ -52,6 +54,7 @@ export function createFixture({ assetBase, integrity }) {
     }),
     message(7, '## 长文滚动样本\n\n' + Array.from({ length: 14 }, (_, i) => `第 ${i + 1} 段 · 河水缓缓流向远处，灯影在水面上排成细碎的光点。旅人停在桥上，望着对岸安静的树林。夜风带来草木的气息，纸页在指间轻轻翻动。这里使用连续长段落检查阅读宽度、段间距、装饰覆盖和滚动条，所有内容都是虚构的。`).join('\n\n')),
     message(8, '我准备好了。最后再检查一下回复切换和消息编辑吧。', true),
+    message(10, '## 用户长文样本\n\n' + Array.from({ length: 14 }, (_, i) => `第 ${i + 1} 段 · 我把沿途看到的风景记在笔记本上。旧桥、树林和灯塔依次出现在地图里，纸页边缘留着几句补充说明。这是人工编写的用户长消息，用来检查用户气泡的边框、贴角装饰和底部留白；修改用户部件时，角色部件应保持自己的设置。`).join('\n\n'), true),
     message(9, '候选回复 A · 我们从桥边出发。可以点击左／右箭头在已有的三条回复之间切换，也可以编辑这条测试消息。'),
   ];
   messages[0].is_system = true;

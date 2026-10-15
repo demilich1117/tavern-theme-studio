@@ -3,13 +3,26 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { canvasPatch, sameCanvasBasis, validateCanvasProposal, canvasAvailability, createCanvasRound, recordCanvasRound, canvasRestorePlan } from '../shared/canvas.js';
+import { canvasPatch, sameCanvasBasis, validateCanvasProposal, canvasAvailability, createCanvasRound, recordCanvasRound, canvasRestorePlan, canvasHandleCenters } from '../shared/canvas.js';
 import { ProjectHistory, createProject, applyCommand, exportTheme, validateProject } from '../shared/core.js';
 import { createServer } from '../server.js';
 import { publicReceipt } from '../shared/handoff.js';
 import { blueprintProject } from '../shared/blueprint.js';
 
 const initial = { scaleX: .5, scaleY: .5, parentWidth: 800, width: 640, height: 200, marginLeft: 0, marginTop: 16 };
+test('canvas handles remain separate and within phone edges at fitted and enlarged zoom', () => {
+  for (const scale of [.35, .65, 1, 2]) {
+    const size=40/scale, half=size/2;
+    for (const [left,top] of [[0,0],[180,100],[380,830],[-20,-10]]) {
+      const {move,resize}=canvasHandleCenters({left,top,width:12,height:8},{width:390,height:844,size});
+      assert(Math.abs(move.x-resize.x)>=size || Math.abs(move.y-resize.y)>=size);
+      for (const point of [move,resize]) {
+        assert(point.x>=half && point.x<=390-half);
+        assert(point.y>=half && point.y<=844-half);
+      }
+    }
+  }
+});
 test('canvas availability explains stale host scripts, comparison and disconnected preview', () => {
   const connected = { ready: true, live: true, fixtureActive: true, capabilities: { canvasEditor: 1, canvasWorkflow: 1 } };
   assert.deepEqual(canvasAvailability(connected), { disabled: false, reason: '' });

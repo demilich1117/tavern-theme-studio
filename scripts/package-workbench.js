@@ -19,6 +19,7 @@ async function tree(folder) {
   }
 }
 for (const folder of ['src', 'shared', 'connector', 'skills']) await tree(folder);
+await tree('public/assets/brand');
 for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-build.md', 'resources-and-runner.md', 'layouts-and-geometry.md', 'decorations.md', 'design.md', 'release.md', 'theme-analysis.md', 'advanced-guide.md', 'co-design.md', 'co-design-brief.template.md', 'comic-guide.md', 'validation-0.9.2.md', 'artwork-history.md']) paths.add('docs/' + file);
 await tree('docs/assets/doublecheese');
 paths.add('docs/work-folders.md');
@@ -35,6 +36,12 @@ paths.add('docs/project-layout.md');
 paths.add('docs/canvas-mode.md');
 paths.add('docs/validation-canvas.md');
 paths.add('docs/validation-0.13.md');
+paths.add('docs/canvas-ux-plan.md');
+paths.add('docs/validation-canvas-ux.md');
+paths.add('docs/validation-0.14.md');
+paths.add('docs/showcase.md');
+paths.add('docs/discord-post.md');
+await tree('docs/assets/showcase/0.14.0');
 // Preserve the earlier comic in source history; ship the current flow only.
 paths.delete('docs/assets/doublecheese/03-co-design.png');
 paths.delete('docs/assets/doublecheese/03-co-design-v2.png');

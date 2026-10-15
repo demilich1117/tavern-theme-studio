@@ -46,7 +46,18 @@ export function inspectTarget(id, preferred) {
   const visible = !target.pseudo || (!['none', 'normal'].includes(computed.content) && computed.display !== 'none');
   return { id, count: matches.length, visible, pseudo: target.pseudo || null, values, rect: { width: Math.round(el.getBoundingClientRect().width), height: Math.round(el.getBoundingClientRect().height) } };
 }
-export function attachBridge({ peer, origin, transportOrigin = origin, session, readTheme, applyNativeTheme, hostName = 'SillyTavern', isDemo = false, fixture, onFixtureScene = () => {}, onCollapse = () => {}, onScene = () => {}, onClose = () => {}, onPickChange = () => {} }) {
+export function inspectDecoration(project, id) {
+  const layer = project?.decorations.find(l => l.id === id), slot = project?.recipe?.slots.find(s => s.id === layer?.slotId);
+  if (!slot) return { error: '目标插槽不存在。' };
+  const elements = [...document.querySelectorAll(slot.selector)].filter(e => !e.closest('[data-tts-ui]') && !slot.exclude?.some(s => e.matches(s)));
+  const element = elements.find(e => e.getBoundingClientRect().width && e.getBoundingClientRect().height);
+  if (!element) return { error: '当前画面没有可读取的目标。' };
+  const css = getComputedStyle(element, slot.pseudo || null);
+  // Conservative: do not rewrite the host's position just to create a frame.
+  const canFrame = slot.geometry && slot.method === 'nine-slice' && slot.position === 'absolute' && ['::before', '::after'].includes(slot.pseudo) && elements.every(e => getComputedStyle(e).position !== 'static');
+  return { count: elements.length, width: innerWidth, slice: css.borderImageSlice, edgeWidth: css.borderImageWidth, repeat: css.borderImageRepeat, canFrame, frameReason: canFrame ? '' : '目标需要自身建立定位容器；请先在配方或源码中配置，避免边框包到外层。' };
+}
+export function attachBridge({ peer, origin, transportOrigin = origin, session, readTheme, applyNativeTheme, hostName = 'SillyTavern', isDemo = false, fixture, toolbarMount, onFixtureScene = () => {}, onCollapse = () => {}, onScene = () => {}, onClose = () => {}, onPickChange = () => {} }) {
   if (!peer || !/^https?:\/\//.test(origin) || !session) throw new Error('连接信息不完整。');
   let picking = false, annotating = false, selected = 'assistant', lastSeen = Date.now(), closed = false, pending = false;
   let currentProject, previewEnabled = true, pickedElement, applying = false, canvasLaunch = 0;
@@ -102,7 +113,7 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
     });
   }
   const editor = createDecorationEditor({ getProject: () => currentProject, getBasis: () => currentBasis, renderPreview: project => renderPreview(project, previewEnabled), isBlocked: id => hostBlocked.has(id), send, onActive: onPickChange });
-  const canvasEditor = createCanvasEditor({ getProject: () => currentProject, getBasis: () => currentBasis, getSelection: () => ({ id: selected, element: pickedElement }), select: hit => { selected = hit.target.id; pickedElement = hit.el; send('picked', { target: selected }); inspect(); onPickChange(false); }, renderPreview: renderCanvasPreview, send, fixtureActive: () => fixture?.status().active === true, isDemo, onActive: onPickChange });
+  const canvasEditor = createCanvasEditor({ toolbarMount, getProject: () => currentProject, getBasis: () => currentBasis, getSelection: () => ({ id: selected, element: pickedElement }), select: hit => { selected = hit.target.id; pickedElement = hit.el; send('picked', { target: selected }); inspect(); onPickChange(false); }, renderPreview: renderCanvasPreview, send, fixtureActive: () => fixture?.status().active === true, isDemo, onActive: onPickChange, onCanvasActive: active => pins.setVisible(!active) });
   const viewport = () => { send('viewport', { width: innerWidth, height: innerHeight }); editor.refresh(); canvasEditor.refresh(); };
   window.addEventListener('resize', viewport);
   const overlay = document.createElement('div'); overlay.id = OVERLAY_ID;
@@ -122,16 +133,19 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
   }
   const inspect = () => {
     const target = TARGETS.find(t => t.id === selected), el = targetElement(target, pickedElement).element;
-    const inner = ['assistant', 'user'].includes(selected) ? TARGETS.filter(t => ['message-text', 'avatar', 'name'].includes(t.id) && targetElement(t).matches.some(child => el?.contains(child))) : [];
+    const inner = ['assistant', 'user'].includes(selected) ? TARGETS.filter(t => t.role === selected && ['message-text', 'avatar', 'name'].includes(t.part) && targetElement(t).matches.some(child => el?.contains(child))) : [];
     send('inspection', { inspection: { ...inspectTarget(selected, pickedElement), width: innerWidth,
       related: [...inner, ...pickCandidates(el).filter(hit => hit.target.id !== selected).map(hit => hit.target)].map(t => ({ id: t.id, name: t.name })),
       layers: relatedLayers(currentProject, el, condition => matchMedia(condition).matches) } });
   };
-  const move = event => { if (picking) { const hit = match(event.target); outline(hit?.el); pickHint.textContent = hit ? `${hit.target.name} · 点击选择 · Esc 退出` : '此位置暂不支持直接编辑 · 继续选择或按 Esc 退出'; } };
+  const move = event => { if (canvasEditor.active()) canvasEditor.hover(event); if (picking) { const hit = match(event.target); outline(hit?.el); pickHint.textContent = hit ? `${hit.target.name} · 点击选择 · Esc 退出` : '此位置暂不支持直接编辑 · 继续选择或按 Esc 退出'; } };
+  const contextMenu = event => { if(canvasEditor.selecting() && !event.target.closest?.('[data-tts-ui]')) canvasEditor.context(event); };
+  const pointerDown = event => { if(canvasEditor.selecting() && !event.target.closest?.('[data-tts-ui]')) { event.stopImmediatePropagation(); if(event.pointerType==='mouse')event.preventDefault(); } };
   const click = event => {
-    if (!picking && canvasEditor.active() && !event.target.closest?.('[data-tts-ui]')) {
+    if (!picking && canvasEditor.selecting() && !event.target.closest?.('[data-tts-ui]')) {
       const hit = match(event.target);
-      if (hit) { event.preventDefault(); event.stopImmediatePropagation(); canvasEditor.select(hit); }
+      event.preventDefault(); event.stopImmediatePropagation(); canvasEditor.point(event);
+      if (hit) canvasEditor.select(hit);
       return;
     }
     if (!picking) return;
@@ -157,7 +171,7 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
     lastSeen = Date.now();
     try {
       switch (data.type) {
-        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, themeAnalysis: 1, directEditing: 1, canvasEditor: 1, canvasWorkflow: 1, blueprint: 1, nativeThemeApply: !!applyNativeTheme }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
+        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, decorationTools: 1, themeAnalysis: 1, directEditing: 1, canvasEditor: 1, canvasWorkflow: 1, blueprint: 1, nativeThemeApply: !!applyNativeTheme }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
         case 'ping': send('pong', { fixture: fixture?.status() }); break;
         case 'preview': {
           if (applying) break;
@@ -183,6 +197,7 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
           }
           selected = data.target; canvasEditor.selected(); inspect(); break;
         }
+        case 'focus-selection': canvasEditor.focusSelection(); break;
         case 'pick': editor.stop(); if (data.enabled) canvasEditor.stop(); annotating = false; picking = !!data.enabled; pickHint.hidden = !picking; pickHint.textContent = '点击画面中的部件 · Esc 退出'; if (!picking) overlay.style.display = 'none'; onPickChange(picking); break;
         case 'canvas-start': {
           const request = ++canvasLaunch, projectId = currentProject?.projectId;
@@ -233,7 +248,11 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
           finally { if (!closed) send('fixture-status', { fixture: fixture.status() }); }
           if (!closed) inspect(); break;
         }
-        case 'fixture-scene': if (fixture && !isDemo) { onFixtureScene(data.scene); requestAnimationFrame(inspect); } break;
+        case 'decoration-inspect': {
+          if (!previewEnabled || (!isDemo && !fixture?.status().active) || !currentBasis || !['projectId', 'sessionId', 'revision', 'fingerprint'].every(k => data.basis?.[k] === currentBasis[k])) break;
+          send('decoration-inspection', { id: data.id, requestId: data.requestId, basis: currentBasis, inspection: hostBlocked.has(data.id) ? { error: '插槽存在占用冲突，请先修复。' } : inspectDecoration(currentProject, data.id) }); break;
+        }
+        case 'fixture-scene': if (fixture && !isDemo) { onFixtureScene(data.scene, data.position); requestAnimationFrame(inspect); } break;
         case 'collapse': onCollapse(); break;
         case 'diagnose': {
           const target = TARGETS.find(x => x.id === data.target);
@@ -253,12 +272,14 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
   observer.observe(document.body, { childList: true, subtree: true });
   window.addEventListener('message', message);
   document.addEventListener('pointermove', move, true); document.addEventListener('click', click, true); document.addEventListener('keydown', key, true);
+  document.addEventListener('contextmenu',contextMenu,true); document.addEventListener('pointerdown',pointerDown,true);
   const timer = setInterval(() => { if (peer.closed || Date.now() - lastSeen > 30000) dispose(); }, 3000);
   function dispose() {
     if (closed) return; closed = true;
     send('disconnected'); clearInterval(timer); cancelAnimationFrame(canvasInspectionFrame); observer.disconnect(); headObserver.disconnect(); isolation.dispose(); presentation.restore();
     window.removeEventListener('message', message); window.removeEventListener('pagehide', dispose);
     document.removeEventListener('pointermove', move, true); document.removeEventListener('click', click, true); document.removeEventListener('keydown', key, true);
+    document.removeEventListener('contextmenu',contextMenu,true); document.removeEventListener('pointerdown',pointerDown,true);
     window.removeEventListener('resize', viewport); editor.dispose(); canvasEditor.dispose();
     pins.dispose(); variables.remove(); style.remove(); overlay.remove(); pickHint.remove(); onPickChange(false); onClose();
   }

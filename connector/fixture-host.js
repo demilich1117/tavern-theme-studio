@@ -83,13 +83,14 @@ export function nativeFixtureHost() {
   });
 }
 
-export function focusFixtureScene(host, sceneId) {
+export function focusFixtureScene(host, sceneId, position = 'start') {
   if (!host.status().active) throw new Error('请先打开工作台测试对话。');
   const scene = FIXTURE_SCENES.find(s => s.id === sceneId);
   if (!scene) throw new Error('未知测试场景。');
+  if (!['start', 'center', 'end'].includes(position)) throw new Error('未知长文检查位置。');
   const ctx = SillyTavern.getContext();
   const index = ctx.chat.findIndex(m => m.extra?.tts_fixture?.sample === scene.message);
   const message = index < 0 ? null : document.querySelector(`#chat .mes[mesid="${index}"]`);
   if (!message) throw new Error('这个样本已修改或尚未载入。请在聊天中查看，或新建测试副本。');
-  message.scrollIntoView({ block: 'start', behavior: 'instant' });
+  message.scrollIntoView({ block: position, behavior: 'instant' });
 }

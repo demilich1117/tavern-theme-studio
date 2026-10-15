@@ -63,6 +63,8 @@ export function validateLayerProps(value) {
       result[k] = [...parts, ...(fill ? ['fill'] : [])].join(' ');
     }
     else if (k === 'fit' && ['contain', 'cover'].includes(v)) result.fit = v;
+    else if (k === 'repeat' && ['stretch', 'repeat', 'round', 'space'].includes(v)) result.repeat = v;
+    else if (k === 'frame' && v === 'container') result.frame = v;
     else throw new Error(`不支持的图层参数：${k}`);
   }
   if (result.order !== undefined && !Number.isInteger(result.order)) throw new Error('图层顺序需为整数。');
@@ -128,8 +130,9 @@ export function decorationDiagnostics(project) {
     if (slot.sourceOwned && (bindings.length !== 1 || bindings[0].ambiguous || !matches.some(r => ownedVariable.test(r.declarations)))) error('源码已改变插槽素材声明或绑定不唯一；未应用覆盖，请修复配方。');
     const occupied = r => [...r.declarations.matchAll(/(?:^|;)\s*(content|background(?:-image)?|border-image(?:-source)?)\s*:\s*([^;]*)/g)].some(m => !/^(?:none|normal)\s*(?:!important)?\s*$/.test(m[2].trim()));
     if (!slot.sourceOwned && matches.some(occupied)) error('原主题已占用此伪元素；保留原效果，请选择空闲插槽。');
-    if (!slot.geometry && [layer.props, ...Object.values(layer.overrides || {})].some(p => Object.keys(p).some(k => !['slice', 'edgeWidth', 'fit'].includes(k)))) error('此插槽附着原生控件，仅支持换图/九切片参数，不能变换整个控件。');
-    if ([layer.props, ...Object.values(layer.overrides || {})].some(p => slot.method === 'nine-slice' ? p.fit !== undefined : p.slice !== undefined || p.edgeWidth !== undefined)) error('绘制参数与插槽方式不匹配，请使用背景适配或九切片参数。');
+    if (!slot.geometry && [layer.props, ...Object.values(layer.overrides || {})].some(p => Object.keys(p).some(k => !['slice', 'edgeWidth', 'fit', 'repeat'].includes(k)))) error('此插槽附着原生控件，仅支持换图/九切片参数，不能变换整个控件。');
+    if ([layer.props, ...Object.values(layer.overrides || {})].some(p => slot.method === 'nine-slice' ? p.fit !== undefined : p.slice !== undefined || p.edgeWidth !== undefined || p.repeat !== undefined || p.frame !== undefined)) error('绘制参数与插槽方式不匹配，请使用背景适配或九切片参数。');
+    if ([layer.props, ...Object.values(layer.overrides || {})].some(p => p.frame) && (!slot.geometry || slot.position !== 'absolute' || !['::before', '::after'].includes(slot.pseudo))) error('随容器伸展需要绝对定位的独立九切片装饰，不能用于固定挂件或原生控件。');
     if (advanced.some(r => names.includes(r.selector))) result.push({ layerId: layer.id, slotId: slot.id, level: 'warning', message: '高级 CSS 也写入该插槽，最终效果可能覆盖图层参数。' });
   }
   return result;
@@ -137,11 +140,13 @@ export function decorationDiagnostics(project) {
 function declarations(slot, layer) {
   const values = [], p = layer.props, imageProperty = slot.method === 'nine-slice' ? 'border-image-source' : 'background-image';
   if (!layer.visible) return [`${imageProperty}: none !important;`];
-  if (layer.asset) values.push(`${imageProperty}: ${cssImage(layer.asset)} !important;`);
   if (!slot.sourceOwned) {
     values.push('content: "" !important;', `position: ${slot.position} !important;`, 'width: 120px !important;', 'height: 120px !important;', 'background-size: contain !important;', 'background-repeat: no-repeat !important;');
     if (slot.method === 'nine-slice') values.push('border: 12px solid transparent !important;', 'border-image-slice: 25% !important;', 'box-sizing: border-box !important;');
   }
+  // The border shorthand resets border-image-source, even with !important.
+  // Apply the selected art after default border setup so new frames are visible.
+  if (layer.asset) values.push(`${imageProperty}: ${cssImage(layer.asset)} !important;`);
   if (slot.geometry) {
     const anchor = p.anchor;
     if (anchor) values.push(`left: ${anchor.containerX * 100}% !important;`, `top: ${anchor.containerY * 100}% !important;`, 'right: auto !important;', 'bottom: auto !important;', `translate: calc(${-anchor.imageX * 100}% + ${p.x || 0}px) calc(${-anchor.imageY * 100}% + ${p.y || 0}px) !important;`);
@@ -156,6 +161,8 @@ function declarations(slot, layer) {
   if (p.fit) values.push(`background-size: ${p.fit} !important;`);
   if (p.slice) values.push(`border-image-slice: ${p.slice} !important;`);
   if (p.edgeWidth) values.push(`border-image-width: ${p.edgeWidth} !important;`);
+  if (p.repeat) values.push(`border-image-repeat: ${p.repeat} !important;`);
+  if (p.frame === 'container') values.push('position: absolute !important;', 'inset: 0 !important;', 'width: auto !important;', 'height: auto !important;', 'min-width: 0 !important;', 'min-height: 0 !important;', 'max-width: none !important;', 'max-height: none !important;', 'margin: 0 !important;', 'padding: 0 !important;', 'translate: none !important;', 'transform: none !important;', 'scale: none !important;', 'rotate: none !important;', 'aspect-ratio: auto !important;', 'box-sizing: border-box !important;');
   if (values.length && slot.pseudo !== '::-webkit-scrollbar-thumb' && slot.pseudo) values.push('pointer-events: none !important;');
   return values;
 }

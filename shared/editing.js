@@ -1,4 +1,5 @@
-import { CANVAS_TARGETS } from './canvas.js';
+import { CANVAS_TARGETS, canvasAutoHeight } from './canvas.js';
+import { messagePart } from './message-parts.js';
 // Small, DOM-free contracts shared by the inspector and the native connector.
 export function matchesWidth(condition, width) {
   const match = /^\((min|max)-width: (\d+)px\)$/.exec(condition || '');
@@ -6,6 +7,15 @@ export function matchesWidth(condition, width) {
 }
 export function activeRules(project, target, width) {
   return Object.assign({}, project?.rules.base[target], ...(project?.breakpoints || []).filter(b => matchesWidth(b.condition, width)).map(b => project.rules[b.id]?.[target]));
+}
+// This describes our own cascade, not arbitrary source/extension CSS winners.
+export function scopeExplanation(project, target, scope, width) {
+  const matching = project.breakpoints.filter(b => matchesWidth(b.condition, width));
+  const breakpoint = project.breakpoints.find(b => b.id === scope);
+  const own = project.rules[scope]?.[target] || {}, base = project.rules.base[target] || {};
+  const effective = { ...base }, sources = Object.fromEntries(Object.keys(base).map(k => [k, '基础']));
+  for (const b of matching) for (const [k, v] of Object.entries(project.rules[b.id]?.[target] || {})) { effective[k] = v; sources[k] = b.name; }
+  return { own, base, effective, sources, matching, active: scope === 'base' || matchesWidth(breakpoint?.condition, width), name: breakpoint?.name || '基础', condition: breakpoint?.condition };
 }
 export function colorParts(value, fallback = '#000000') {
   if (value === 'transparent') return { hex: '#000000', alpha: 0 };
@@ -25,15 +35,17 @@ export function paddingSides(value) {
 const textOnly = new Set(['name', 'timestamp']);
 const noText = new Set(['avatar', 'assistant-before', 'assistant-after']);
 export function supportsField(target, key) {
+  if (key === 'min-height' && canvasAutoHeight(target)) return false;
   if (['margin-left', 'margin-top', 'min-height'].includes(key)) return CANVAS_TARGETS.includes(target);
-  if (textOnly.has(target)) return ['color', 'font-size', 'line-height', 'opacity', 'margin-bottom'].includes(key);
-  if (noText.has(target) && ['color', 'font-size', 'line-height'].includes(key)) return false;
+  if (textOnly.has(messagePart(target) || target)) return ['color', 'font-size', 'line-height', 'opacity', 'margin-bottom'].includes(key);
+  if (noText.has(messagePart(target) || target) && ['color', 'font-size', 'line-height'].includes(key)) return false;
   return true;
 }
 export function sameValue(key, requested, actual) {
   if (actual === undefined || requested === undefined) return false;
   if (key.endsWith('color')) { const a = colorParts(requested), b = colorParts(actual); return a.hex === b.hex && Math.abs(a.alpha - b.alpha) < .006; }
   if (key === 'padding') { const a = paddingSides(requested), b = paddingSides(actual); return !!a && !!b && a.every((n, i) => Math.abs(n - b[i]) < .1); }
+  if (key === 'width' && String(requested).endsWith('%') !== String(actual).endsWith('%')) return false;
   const a = parseFloat(requested), b = parseFloat(actual);
   return Number.isFinite(a) && Number.isFinite(b) ? Math.abs(a - b) < (key === 'width' ? .6 : .05) : requested === actual;
 }

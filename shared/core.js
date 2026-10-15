@@ -3,6 +3,7 @@ import { migrateProject, bindingRecords, mergeSourceTheme, newProjectId, default
 import { validateRecipe, validateLayer, validateLayerProps, layersFromRecipe, mergeRecipe, compileDecorations, layerAsset } from './decorations.js';
 import { LAYOUT_FIELDS, LAYOUT_TARGETS, normalizeLayoutValue } from './layouts.js';
 import { CANVAS_TARGETS, CANVAS_PROPERTIES } from './canvas.js';
+import { MESSAGE_PARTS, MESSAGE_ROLES, messagePart } from './message-parts.js';
 // Self-contained illustrated themes embed raster assets in their base CSS.
 export const MAX_THEME_CSS_LENGTH = 1_000_000;
 export const TARGETS = [
@@ -20,6 +21,10 @@ export const TARGETS = [
   { id: 'name', name: '角色名字', selector: '#chat .mes .name_text', icon: 'Aa', detail: true, note: '仅名字文字；时间戳和操作按钮可分别调整。' },
   { id: 'timestamp', name: '时间戳', selector: '#chat .mes .timestamp', icon: '◷', detail: true, note: '酒馆需要开启消息时间戳。' },
   { id: 'reasoning', name: '思考正文', selector: '#chat .mes .mes_reasoning', icon: '◌', detail: true, note: '需要包含思考内容并展开思考区的消息。' },
+  { id: 'reasoning-block', name: '整个推理块', selector: '#chat .mes .mes_reasoning_details', icon: '▧', detail: true, note: '包含折叠标题与思考正文；移动或调整宽度，高度随折叠和正文自动变化。' },
+  { id: 'message-body', name: '消息内容组', selector: '#chat .mes .mes_block', icon: '▤', detail: true, note: '包含名字、推理、正文、媒体与附件，头像保持独立；高度随内容变化。' },
+  { id: 'media', name: '图片与媒体区', selector: '#chat .mes .mes_media_wrapper', icon: '▧', detail: true, note: '调整原生媒体区域的位置与宽度，保留图片比例及原生打开操作。' },
+  { id: 'attachments', name: '附件区', selector: '#chat .mes .mes_file_wrapper', icon: '▱', detail: true, note: '调整附件区域的位置与宽度，保留原生附件操作；无附件时不可见。' },
   { id: 'reasoning-header', name: '思考折叠栏', selector: '#chat .mes .mes_reasoning_summary', icon: '⌄', detail: true, note: '思考区域的标题与折叠栏。' },
   { id: 'quote', name: '引用块', selector: '#chat .mes .mes_text blockquote', icon: '❞', detail: true, note: 'Markdown 引用块；普通引号文字不属于此部件。' },
   { id: 'code', name: '代码块', selector: '#chat .mes .mes_text pre', icon: '{}', detail: true, note: '代码块外框；语法高亮可能单独控制文字颜色。' },
@@ -28,6 +33,27 @@ export const TARGETS = [
   { id: 'assistant-before', name: '角色消息 · 前装饰', selector: '#chat .mes[is_user="false"]::before', elementSelector: '#chat .mes[is_user="false"]', pseudo: '::before', icon: '◁', detail: true, note: '已有 ::before 装饰的样式；不会自动生成 content。' },
   { id: 'assistant-after', name: '角色消息 · 后装饰', selector: '#chat .mes[is_user="false"]::after', elementSelector: '#chat .mes[is_user="false"]', pseudo: '::after', icon: '▷', detail: true, note: '已有 ::after 装饰的样式；伪元素通过列表选择。' },
 ];
+
+// Preserve the meaning of saved shared rules and tickets; do not guess which
+// role an older edit intended. Specific targets are the default picking path.
+const sharedMessageTargets = TARGETS.filter(target => Object.hasOwn(MESSAGE_PARTS, target.id));
+for (const [role, label] of Object.entries(MESSAGE_ROLES)) {
+  const messageSelector = `#chat .mes[is_user="${role === 'user'}"]`;
+  for (const target of sharedMessageTargets) {
+    TARGETS.push({ ...target, id: `${role}-${target.id}`, role, part: target.id,
+      name: label + MESSAGE_PARTS[target.id],
+      selector: target.selector.replaceAll('#chat .mes', messageSelector),
+      ...(target.id === 'avatar' && { elementSelector: `${messageSelector} .avatar` }),
+      detail: !['avatar', 'message-text', 'name'].includes(target.id),
+      note: `仅调整${label}消息中的${MESSAGE_PARTS[target.id]}，不修改${role === 'user' ? '角色' : '用户'}对应部件；当前尺寸范围内同类联动。${['reasoning-block','message-body','media','attachments'].includes(target.id) ? target.note : ''}`,
+    });
+  }
+}
+for (const target of sharedMessageTargets) {
+  target.part = target.id; target.shared = true; target.detail = true;
+  target.name = `全部消息 · ${MESSAGE_PARTS[target.id]}`;
+  target.note = '通用样式，同时作用于用户与角色；只改一方请选择对应的用户 / 角色部件。身份专用覆盖优先。';
+}
 
 export const FIELDS = [
   { key: 'background-color', label: '背景颜色', type: 'color', group: '色彩', fallback: '#353941' },
@@ -249,10 +275,12 @@ export function compileOverrides(project) {
   const compile = scope => TARGETS.flatMap(target => {
     const props = project.rules[scope][target.id];
     if (!props || !Object.keys(props).length) return [];
-    const geometry = target.id === 'avatar' ? Object.entries(props).filter(([k]) => CANVAS_PROPERTIES.includes(k)) : [];
+    const avatar = messagePart(target.id) === 'avatar';
+    const avatarSelector = target.elementSelector || '#chat .mes .avatar';
+    const geometry = avatar ? Object.entries(props).filter(([k]) => CANVAS_PROPERTIES.includes(k)) : [];
     const declarations = Object.entries(props).filter(([k]) => !geometry.some(([g]) => g === k)).map(([k, v]) => `  ${k}: ${v} !important;`);
     if ('border-width' in props) declarations.push('  border-style: solid !important;');
-    return [declarations.length && `/* ${target.name} */\n${target.selector} {\n${declarations.join('\n')}\n}`, geometry.length && `/* 头像几何只作用于外框，避免图片重复偏移 */\n#chat .mes .avatar {\n${geometry.map(([k, v]) => `  ${k}: ${v} !important;`).join('\n')}\n}`, target.id === 'avatar' && props.width && '#chat .mes .avatar img { width: 100% !important; max-width: 100% !important; }'].filter(Boolean);
+    return [declarations.length && `/* ${target.name} */\n${target.selector} {\n${declarations.join('\n')}\n}`, geometry.length && `/* 头像几何只作用于外框，避免图片重复偏移 */\n${avatarSelector} {\n${geometry.map(([k, v]) => `  ${k}: ${v} !important;`).join('\n')}\n}`, avatar && props.width && `${avatarSelector} img { width: 100% !important; max-width: 100% !important; }`].filter(Boolean);
   }).join('\n\n');
   const base = compile('base');
   const responsive = (project.breakpoints || defaultBreakpoints()).map(b => { const css = compile(b.id); return css && `@media ${b.condition} {\n${css}\n}`; });

@@ -43,7 +43,7 @@ test('blueprint handoff preserves per-item scopes and class-wide intent in full 
   ]);
   for (const compact of [false, true]) {
     const handoff = formatAgentHandoff([ticket], context, { compact });
-    for (const concept of ['docs/canvas-mode.md', 'items[]', 'scope', 'props', 'matching-elements', 'layout-intent', '不重复应用']) assert.ok(handoff.includes(concept), concept);
+    for (const concept of ['docs/canvas-mode.md', 'items[]', 'scope', 'props', 'matching-elements', 'layout-intent', '不重复应用', 'user-* 只作用于用户', 'assistant-* 只作用于角色']) assert.ok(handoff.includes(concept), concept);
   }
   assert.equal(canvas.items[0].appliesTo, undefined, 'handoff must not mutate the source draft');
 });

@@ -37,7 +37,7 @@ function mount() {
   const drawer = document.createElement('div'); drawer.className = 'inline-drawer';
   const toggle = document.createElement('button'); toggle.type = 'button'; toggle.className = 'inline-drawer-toggle inline-drawer-header tts-settings-toggle';
   toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-controls', 'tts-settings-content');
-  const title = document.createElement('b'); title.textContent = '主题工作台';
+  const title = document.createElement('b'); title.textContent = '喵喵美化工作台';
   const icon = document.createElement('span'); icon.className = 'inline-drawer-icon fa-solid fa-circle-chevron-down down'; icon.setAttribute('aria-hidden', 'true');
   toggle.append(title, icon);
   const content = document.createElement('div'); content.id = 'tts-settings-content'; content.className = 'inline-drawer-content'; content.style.display = 'none';
@@ -82,14 +82,15 @@ function mount() {
         await fixture.open();
         const address = new URLSearchParams(location.hash.slice(1)).get('studio');
         if (address) input.value = address;
-        document.title = '酒馆主题工作台 · 原生测试对话';
+        document.title = '喵喵美化工作台 · 原生测试对话';
         const responsive = new URLSearchParams(location.hash.slice(1)).get('tts-responsive');
         if (responsive && window.parent !== window) {
           // The host may suppress document.referrer. Same-origin parent access
           // verifies the actual container without relying on that header.
           const parentUrl = new URL(window.parent.location.href); if(parentUrl.origin!==location.origin || !parentUrl.pathname.endsWith('/connector/responsive.html'))throw new Error('设计工作台来源无效。');
           const studio = new URL(input.value); if(studio.protocol!=='http:'||!['127.0.0.1','localhost'].includes(studio.hostname))throw new Error('工作台地址无效。');
-          bridge?.dispose(); bridge = attachBridge({peer:window.parent,origin:studio.origin,transportOrigin:location.origin,session:responsive,readTheme,fixture,applyNativeTheme:canApplyNativeTheme()?applyNativeTheme:undefined,onFixtureScene:id=>focusFixtureScene(fixture,id)});
+          const toolbarMount = window.parent.document.getElementById('canvas-tools');
+          bridge?.dispose(); bridge = attachBridge({peer:window.parent,origin:studio.origin,transportOrigin:location.origin,session:responsive,readTheme,fixture,toolbarMount,applyNativeTheme:canApplyNativeTheme()?applyNativeTheme:undefined,onFixtureScene:(id,position)=>focusFixtureScene(fixture,id,position)});
           window.parent.postMessage({channel:'tavern-theme-studio/v1',session:responsive,type:'responsive-host-ready'},location.origin);
         } else throw new Error('请从设计工作台打开测试对话。');
         shield.remove();

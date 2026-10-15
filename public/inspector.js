@@ -1,10 +1,11 @@
 import { FIELDS } from '/shared/core.js';
-import { colorParts, colorValue, paddingSides, supportsField, sameValue, matchesWidth } from '/shared/editing.js';
+import { colorParts, colorValue, paddingSides, supportsField, sameValue, scopeExplanation } from '/shared/editing.js';
 
 const node = (tag, className) => { const el = document.createElement(tag); if (className) el.className = className; return el; };
-export function attachInspector({ getContext, change, select, openLayer }) {
+export function attachInspector({ getContext, change, select, openLayer, resetScope }) {
   const host = document.querySelector('#property-fields'), rows = new Map();
   const related = node('div', 'selection-related'); related.setAttribute('aria-label', '相关部件与装饰'); host.before(related);
+  const scopeBox = node('details', 'scope-explanation'), scopeTitle = node('summary'), scopeBody = node('div'); scopeBox.id = 'scope-explanation'; scopeBox.append(scopeTitle, scopeBody); host.before(scopeBox);
   for (const group of ['文字', '形状与留白', '位置与尺寸', '色彩']) {
     const section = node('section'), heading = node('h3'); heading.textContent = group; section.append(heading); host.append(section);
     for (const field of FIELDS.filter(f => f.group === group)) {
@@ -58,6 +59,22 @@ export function attachInspector({ getContext, change, select, openLayer }) {
   function render() {
     const { project, target, scope, inspection, comparing, drafting } = getContext();
     const current = inspection?.id === target ? inspection : undefined;
+    const explanation = scopeExplanation(project, target, scope, current?.width);
+    scopeTitle.textContent = `尺寸覆盖 · ${explanation.name}${current?.width ? ` · 画面 ${current.width}px` : ''}`;
+    scopeBody.replaceChildren();
+    const describe = text => { const p = node('p', 'panel-hint'); p.textContent = text; scopeBody.append(p); };
+    describe(scope === 'base' ? '基础修改适用于所有尺寸；命中的尺寸覆盖可以替换同一属性。' : `${explanation.name}：仅在 ${explanation.condition} 时生效；未填写的属性沿用基础或原主题。`);
+    describe(current ? `画面命中：${explanation.matching.map(b => b.name).join('、') || '仅基础'}。${explanation.active ? '' : '当前正在编辑的尺寸未命中，修改会保存，但不会显示在此画面。'}` : '等待真实画面读取，暂时无法判断命中的尺寸。');
+    const keys = [...new Set([...Object.keys(explanation.base), ...Object.keys(explanation.own), ...Object.keys(explanation.effective)])];
+    if (keys.length) {
+      const table = node('table'); table.setAttribute('aria-label', '尺寸覆盖值对照');
+      const heading = node('tr'); for (const title of ['属性', '基础', '此尺寸', '画面']) { const th = node('th'); th.textContent = title; heading.append(th); } table.append(heading);
+      for (const key of keys) { const tr = node('tr'); const actualKey = key === 'width' && (explanation.effective[key] || '').endsWith('px') ? 'width-px' : key;
+        for (const text of [FIELDS.find(f => f.key === key)?.label || key, explanation.base[key] ?? '原主题', scope === 'base' ? '—' : explanation.own[key] ?? '沿用', current?.values?.[actualKey] ?? '未读取']) { const td = node('td'); td.textContent = text; tr.append(td); } table.append(tr); }
+      scopeBody.append(table);
+    }
+    describe('画面值包含原主题、共同部件和高级 CSS 的影响。上表说明本工作台的覆盖关系，不代表能判定所有 CSS 的优先级。');
+    const reset = node('button'); reset.type = 'button'; reset.textContent = `还原此部件的${explanation.name}修改`; reset.disabled = !Object.keys(explanation.own).length; reset.addEventListener('click', () => resetScope(target, scope)); scopeBody.append(reset);
     related.replaceChildren();
     for (const item of current?.related || []) { const b = node('button'); b.type = 'button'; b.textContent = item.name; b.addEventListener('click', () => select(item.id)); related.append(b); }
     for (const layer of current?.layers || []) { const b = node('button'); b.type = 'button'; b.textContent = `装饰 · ${layer.name}`; b.addEventListener('click', () => openLayer(layer.id)); related.append(b); }
@@ -70,8 +87,8 @@ export function attachInspector({ getContext, change, select, openLayer }) {
       view.row.hidden = !supportsField(target, field.key) && own === undefined;
       view.row.classList.toggle('modified', own !== undefined); view.reset.disabled = own === undefined;
       view.source.textContent = own !== undefined ? '已修改' : base !== undefined ? '继承基础' : actual !== undefined ? '当前效果' : '未覆盖';
-      const active = scope === 'base' || matchesWidth(project.breakpoints.find(b => b.id === scope)?.condition, current?.width);
-      view.feedback.textContent = own !== undefined && actual !== undefined ? comparing ? '正在对比原主题' : !active ? '当前画面未进入此尺寸' : sameValue(field.key, own, actual) ? '已在画面生效' : `画面值：${actual} · 可展开下方诊断查看原因` : '';
+      const later = explanation.effective[field.key] !== undefined && explanation.effective[field.key] !== own;
+      view.feedback.textContent = own !== undefined && actual !== undefined ? comparing ? '正在对比原主题' : !explanation.active ? '当前画面未进入此尺寸' : later ? `本部件当前由「${explanation.sources[field.key]}」提供 ${explanation.effective[field.key]}` : sameValue(field.key, own, actual) ? '与画面值一致' : `画面值：${actual} · 请查看尺寸覆盖或样式诊断` : '';
       if (view.row.contains(document.activeElement) && drafting) continue;
       // Preserve text edits during incoming preview/heartbeat messages.
       const assign = (control, val) => { if (document.activeElement !== control || ['range', 'color'].includes(control.type)) control.value = val; };

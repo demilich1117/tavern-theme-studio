@@ -49,6 +49,7 @@ export function createDecorationEditor({getProject,getBasis,renderPreview,send,i
   function layerState() {
     const project=getProject(),layer=project?.decorations.find(l=>l.id===selection?.id),slot=project?.recipe?.slots.find(s=>s.id===layer?.slotId);
     if(!layer||!slot||layer.locked||!layer.visible||!slot.geometry) throw new Error('图层已删除、锁定、隐藏或不可定位。');
+    if(effectiveLayer(project,layer,selection.scope).props.frame==='container') throw new Error('此边框随容器伸展，请在长文适配中调整切片与边宽。');
     if(isBlocked(layer.id))throw new Error('真实宿主已占用此插槽，请先修复所有权。');
     if(slot.condition&&!matchMedia(slot.condition).matches) throw new Error('插槽条件尚未命中：'+slot.condition);
     const breakpoint=project.breakpoints.find(b=>b.id===selection.scope);

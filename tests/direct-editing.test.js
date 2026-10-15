@@ -27,8 +27,12 @@ test('picking never falls back to global on unrelated controls; nested targets r
   const body = { matches: s => s === 'body', closest: s => s === 'body' ? body : null };
   const unknown = { matches: () => false, closest: s => s === 'body' ? body : null };
   assert.deepEqual(pickCandidates(unknown), []); assert.equal(pickCandidates(body)[0].target.id, 'global');
-  const quote = { matches: () => false, closest: s => ['#chat .mes .mes_text blockquote', '#chat .mes .mes_text', '#chat .mes[is_user="false"]', '#chat', 'body'].includes(s) ? body : null };
-  assert.deepEqual(pickCandidates(quote).map(h => h.target.id), ['quote', 'message-text', 'assistant', 'chat']);
+  for (const [role, user] of [['assistant', false], ['user', true]]) {
+    const selector = `#chat .mes[is_user="${user}"]`;
+    const quote = { matches: () => false, closest: s => [`${selector} .mes_text blockquote`, `${selector} .mes_text`, selector, '#chat', 'body'].includes(s) ? body : null };
+    assert.deepEqual(pickCandidates(quote).map(h => h.target.id), [`${role}-quote`, `${role}-message-text`, role, 'chat']);
+  }
+  assert(!supportsField('user-avatar', 'font-size')); assert(!supportsField('assistant-name', 'padding'));
 });
 test('diagnosis uses the same ordered breakpoints as the generated stylesheet', () => {
   let p = applyCommand(createProject(), { type: 'breakpoints', breakpoints: [{ id: 'mobile', name: '手机', condition: '(max-width: 767px)' }, { id: 'tablet', name: '平板', condition: '(max-width: 1000px)' }] });

@@ -23,8 +23,9 @@ function harness() {
 }
 test('native fixture contains locally sourced elements, independent swipes and manual reasoning', () => {
   const rows = createFixture({ assetBase, integrity: 'test' });
-  assert.equal(rows.length, 11);
-  for (const scene of FIXTURE_SCENES) assert.equal(rows[scene.message + 1].extra.tts_fixture.sample, scene.message);
+  assert.equal(rows.length, 12);
+  for (const scene of FIXTURE_SCENES) assert.ok(rows.some(row => row.extra?.tts_fixture?.sample === scene.message));
+  assert.equal(rows.find(row => row.extra?.tts_fixture?.sample === 10).is_user, true);
   assert.equal(rows[6].extra.reasoning_type, 'manual');
   assert.match(rows[5].mes, /```javascript/);
   assert.ok(rows[7].extra.media[0].url.startsWith('/scripts/extensions/third-party/'));

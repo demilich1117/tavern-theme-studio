@@ -51,6 +51,9 @@ export function attachNavigation() {
   $('#workbench-nav').after($('#fixture-tools'));
   $('#native-preview-controls').append($('#fixture-open'), $('#fixture-scene'));
   $('#checks-button').textContent = '检查布局'; $('#preview-actions').append($('#checks-button'));
+  const secondary = document.createElement('details'); secondary.className = 'editing-secondary';
+  const summary = document.createElement('summary'); summary.textContent = '场景检查与反馈'; secondary.append(summary, $('.feedback-tools'), $('#preview-actions'));
+  $('.editing-toolbar').append(secondary);
   $('#tool-authoring').append($('#layouts-button'), $('#advanced-button'), $('#source-button'), $('#view-css'));
   $('#tool-preview').append($('#fixture-fresh'));
   $('#tool-workspace').append($('#connect-button'), $('#setup-open'), $('#runtime-open'));

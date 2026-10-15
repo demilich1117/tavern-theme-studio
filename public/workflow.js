@@ -276,7 +276,7 @@ export function attachWorkflow({ getState, getToken, getScope, command, send, to
         if (data.canvas) draft.canvas = data.canvas;
         locationTarget.replaceChildren(new Option('画面部件 · ' + data.anchor.target, 'component:' + data.anchor.target));
         for (const layer of state.project.decorations) locationTarget.add(new Option('图层 · ' + layer.name, 'layer:' + layer.id));
-        for (const target of TARGETS.filter(t => ['stage', 'chat', 'composer', 'left', 'right', 'message-text'].includes(t.id))) locationTarget.add(new Option('容器 · ' + target.name, 'container:' + target.id));
+        for (const target of TARGETS.filter(t => ['stage', 'chat', 'composer', 'left', 'right', 'message-text', 'assistant-message-text', 'user-message-text'].includes(t.id))) locationTarget.add(new Option('容器 · ' + target.name, 'container:' + target.id));
         locationScope.replaceChildren(new Option('所有尺寸', 'base')); for (const b of state.project.breakpoints) locationScope.add(new Option(b.name + ' · ' + b.condition, b.id)); locationScope.value = getScope();
         $('#annotation-context').textContent = describe(data.anchor) + (data.canvas?.kind === 'blueprint' ? ` · 整张蓝图 ${data.canvas.items.length} 个部件，各自范围随蓝图保存；关联目标仅用于定位。尚未写入主题。` : data.canvas ? ' · 包含期望位置和尺寸；尚未写入主题 CSS' : ''); $('#annotation-comment').value = ''; $('#annotation-dialog').showModal(); $('#annotation-comment').focus();
       } else if (data.type === 'annotation-ticket') { $('#ticket-filter').value = 'all'; renderTickets(); openStudioPanel('tickets-dialog'); document.querySelector(`[data-ticket="${data.id}"]`)?.scrollIntoView({ block: 'center' }); }

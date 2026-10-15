@@ -1,4 +1,4 @@
-export const LAYOUT_TARGETS = ['stage', 'chat', 'composer', 'left', 'right', 'message-text'];
+export const LAYOUT_TARGETS = ['stage', 'chat', 'composer', 'left', 'right', 'message-text', 'assistant-message-text', 'user-message-text'];
 export const LAYOUT_FIELDS = [
   { key: 'display', label: '容器排版', values: ['block', 'flex', 'grid'] },
   { key: 'flex-direction', label: 'Flex 方向', values: ['row', 'column'] },

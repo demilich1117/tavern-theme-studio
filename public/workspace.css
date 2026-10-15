@@ -1,4 +1,26 @@
 /* Editing leads; source mechanics stay in the same app, one level deeper. */
+:root{--accent:#8bbaff;--accent-bg:#639ff51a;--radius:4px}
+.primary{background:#376fc0;border-color:#5489d6;color:#fff}.primary:hover{background:#457fd0}
+.object-tabs{display:flex;gap:16px;padding:0 16px;border-block:1px solid var(--border);background:var(--panel);position:sticky;top:0;z-index:2}
+.object-tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;padding:8px 0;min-height:40px;color:var(--secondary);font-size:12px}
+.object-tabs button[aria-pressed=true]{color:var(--text);border-bottom-color:var(--accent)}
+#object-browser{padding:12px 8px}#object-browser>input{display:block;width:calc(100% - 16px);margin:0 8px 8px;padding:8px 10px;min-height:36px}
+.object-hint{padding:4px 8px 12px;color:var(--secondary);font-size:11px;line-height:1.6}
+.object-row{display:flex;align-items:center;padding-left:calc(var(--depth) * 12px);border-radius:4px;min-width:0}
+.object-row:hover{background:var(--raised)}.object-row.selected{background:var(--accent-bg);color:var(--accent)}
+.object-row button{border:0;background:none;min-height:32px;border-radius:0;font-size:12px;padding:4px;transform:none}
+.object-expand{flex:0 0 20px;color:var(--secondary)}.object-row:has(.object-expand[hidden]){padding-left:calc(var(--depth) * 12px + 20px)}
+.object-choice{flex:1;min-width:0;text-align:left;justify-content:flex-start;gap:8px;color:inherit}.object-choice>span:nth-child(2){overflow:hidden;text-overflow:ellipsis}
+.object-choice small{margin-left:auto;font-size:8px;color:var(--accent)}.object-icon{width:16px;color:var(--secondary);text-align:center}
+.object-list h3{font-size:11px;padding:16px 8px 8px;margin-top:12px;border-top:1px solid var(--border)}
+.object-layer{display:flex;width:100%;justify-content:flex-start;text-align:left;font-size:12px;white-space:normal;border:0}
+.object-path{display:flex;flex-wrap:wrap;padding:8px 16px;gap:2px;border-bottom:1px solid var(--border)}
+.object-path button{font-size:11px;color:var(--secondary);min-height:24px;padding:0 2px;border:0}.object-path button:not(:last-child)::after{content:'/';margin-left:4px;color:var(--muted)}.object-path button:disabled{opacity:1;color:var(--text)}
+.embedded .object-tabs{position:static}.embedded #object-properties .field{padding-bottom:12px}
+.editing-secondary{font-size:12px;color:var(--secondary)}.editing-secondary>summary{min-height:32px}.editing-secondary .feedback-tools{margin-top:8px}
+.embedded .topbar{padding:10px 12px;gap:8px}.embedded .header-actions{gap:4px}.embedded .header-actions button,.embedded .history-actions button{min-height:32px;font-size:12px;padding:4px 8px}.embedded .workbench-nav{padding:4px 8px}.embedded .workbench-nav button{min-height:36px;font-size:12px}
+.embedded #object-properties>#selected-note{padding:0 16px 12px}.embedded .editing-toolbar{padding:8px 16px}.embedded .editing-heading{margin-bottom:8px}
+@media(pointer:coarse){.object-row button,.object-layer{min-height:44px}.object-path button{min-height:32px}}
 .co-design-canvas-entry{display:flex;align-items:center;gap:16px;margin:16px 0 24px;padding:16px 0;border-block:1px solid var(--border)}
 #canvas-share-preview{display:block;width:100%;height:auto;margin:16px 0;border:1px solid var(--border);border-radius:var(--radius)}
 #canvas-share-dialog .dialog-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start}#canvas-share-dialog .dialog-actions button{flex:1 1 140px;min-height:40px}
@@ -269,3 +291,35 @@ details>summary { cursor:pointer; min-height:40px; align-content:center; }
   .header-actions .history-actions button{font-size:12px;padding-inline:4px}
   .embedded .header-actions{gap:4px}.tools-grid section{grid-template-columns:minmax(0,1fr)}
 }
+/* Keep touch targets comfortable without making desktop controls bulky. */
+@media(pointer:coarse){.embedded .header-actions button,.embedded .history-actions button{min-height:40px}}
+/* Scope explanations and decoration construction controls share the inspector rhythm. */
+.scope-explanation{margin:8px 0 16px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;min-width:0}
+.scope-explanation summary,.decoration-advanced summary,.slice-editor summary{cursor:pointer;font-size:12px;font-weight:600;line-height:1.6}
+.scope-explanation table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:11px;margin:8px 0}
+.scope-explanation th,.scope-explanation td{text-align:left;overflow-wrap:anywhere;padding:6px 3px;border-bottom:1px solid var(--border)}
+.scope-explanation button{width:100%;white-space:normal}
+.decoration-tool{border-top:1px solid var(--border);padding:16px 0;min-width:0}
+.decoration-tool h4{font-size:13px;margin:0 0 10px;font-weight:600}
+.decoration-tool .layer-field{margin-block:8px;min-width:0}
+.decoration-tool input,.decoration-tool select{min-width:0;max-width:100%}
+.anchor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;max-width:224px}
+.anchor-grid button{min-height:32px;font-size:11px;padding:4px}
+.anchor-grid button[aria-pressed=true]{color:var(--text);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,var(--panel))}
+.slice-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.slice-image{position:relative;width:min(100%,280px);margin:12px auto;overflow:hidden;background:repeating-conic-gradient(#24272c 0 25%,#30343a 0 50%) 0/16px 16px}
+.slice-image img{display:block;width:100%;height:auto}
+.slice-image i{position:absolute;pointer-events:none;background:#70b7ff;box-shadow:0 0 0 1px #1118}
+.slice-image .horizontal{left:0;right:0;height:1px}.slice-image .vertical{top:0;bottom:0;width:1px}
+.long-check{margin-top:16px}.long-check>select{width:100%;margin-bottom:8px}
+.long-check-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.long-check-actions button{white-space:normal;font-size:12px;min-height:36px}
+.decoration-advanced{border-top:1px solid var(--border);padding:12px 0}
+@media(pointer:coarse){.anchor-grid button,.long-check-actions button{min-height:44px}}
+
+/* A quiet mascot at entry points; the editing canvas stays unobstructed. */
+.brand-cat{display:block;object-fit:contain;flex:0 0 auto;pointer-events:none;user-select:none}
+.co-design-welcome{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.co-design-welcome .co-design-lead{margin:0;flex:1}
+.co-design-cat{object-fit:contain;flex:0 0 88px;pointer-events:none;user-select:none}
+@media(max-width:480px){.co-design-cat{width:64px;height:64px;flex-basis:64px}.co-design-welcome{gap:8px}}

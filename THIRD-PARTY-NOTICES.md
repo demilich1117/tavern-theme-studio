@@ -1,5 +1,7 @@
 # 代码与素材许可范围
 
+`public/assets/brand/meow-*.webp` 为本项目按用户要求使用内置 imagegen 生成的原创猫咪装饰，无外部角色参考，按根目录 MIT 条款随项目提供。来源与提示词见 [生成记录](public/assets/brand/GENERATION.md)。
+
 本项目原创工作台代码、连接器、通用起点主题及专用虚构 fixture 的 SVG 示例采用根目录 MIT License。连接器用于 SillyTavern；没有将酒馆核心代码打包进发行物。
 
 运行依赖（版本与完整性见 package-lock.json）：

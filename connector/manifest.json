@@ -1,9 +1,9 @@
 {
-  "display_name": "主题工作台连接器",
+  "display_name": "喵喵美化工作台连接器",
   "loading_order": 100,
   "js": "connector/index.js",
   "author": "Tavern Theme Studio",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "minimum_client_version": "1.14.0",
   "description": "连接本地可视化工作台，拾取元素并临时预览主题。",
   "hooks": {

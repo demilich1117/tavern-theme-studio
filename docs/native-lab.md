@@ -1,6 +1,6 @@
 # 在真实酒馆里修改与验证主题
 
-0.10 使用本流程。验证候选应用时可启动同版本酒馆的独立 `--dataRoot` 与 `--configPath`，只安装测试连接器和虚构对话，通过「应用到酒馆」或原生文件导入验证持久化；不要复制用户聊天或设置。真实发送测试可使用只返回固定虚构文本的本机响应服务，不能把这种测试写成真实模型/流式验证。最新结果和限制见 [0.10 验证](validation-0.10.md)。
+本指南对应 **0.14.0** 的统一设计工作台。验证候选应用时可启动同版本酒馆的独立 `--dataRoot` 与 `--configPath`，只安装测试连接器和虚构对话，通过「应用到酒馆」或原生文件导入验证持久化；不要复制用户聊天或设置。真实发送测试可使用只返回固定虚构文本的本机响应服务，不能把这种测试写成真实模型/流式验证。最新结果和限制见 [0.14 验证](validation-0.14.md)，布局与蓝图操作见 [画布指南](canvas-mode.md)。
 
 0.3.0 起，把正在使用的 SillyTavern 当作预览宿主。工作台仍负责工程、变量、CSS、撤销、快照与导出，连接器负责在真实宿主临时应用样式，浏览器工具负责操作和截图。无需重新搭一个聊天模拟页面。
 
@@ -75,6 +75,7 @@ node scripts/cli.js build-presets
 
 ## 当前宿主依据
 
-0.11.2 起连接器最低版本为 SillyTavern 1.14.0。已对官方 1.14–1.19 标签核对 `getContext`、角色创建接口、原生聊天保存格式、`selectCharacterById`、`openCharacterChat`、reasoning、media、files 与 swipe 元数据。内部导入集中于 `connector/host-adapter.js`，旧版按能力选择主题读取与生成状态路径。具体提交、实测和边界见[版本兼容](compatibility.md)；官方入口见 [UI Extensions](https://docs.sillytavern.app/for-contributors/writing-extensions/)。
+0.12.0 起连接器最低版本为 SillyTavern 1.14.0。已对官方 1.14–1.19 标签核对 `getContext`、角色创建接口、原生聊天保存格式、`selectCharacterById`、`openCharacterChat`、reasoning、media、files 与 swipe 元数据。内部导入集中于 `connector/host-adapter.js`，旧版按能力选择主题读取与生成状态路径。具体提交、实测和边界见[版本兼容](compatibility.md)；官方入口见 [UI Extensions](https://docs.sillytavern.app/for-contributors/writing-extensions/)。
 
 原生测试对话减少了美化工作接触私人内容的需要；它不代表浏览器权限、登录和自动审批的规则被取消。测试页仍加载用户安装的扩展，第三方扩展的自动行为与设置需按实际环境判断。
+长文构筑检查：新建虚构测试副本含用户和角色长消息；“素材 → 可调装饰 → 长文适配”可定位短消息及长文顶部、中段、底部。旧副本不会自动追加或覆盖，缺少用户长文时从“更多工具 → 新建测试副本”创建。推理栏顺序采用原生结构；若导入主题用 `order` 颠倒正文和推理，应修主题并让导出保留修复，不在测试页中隐藏这种差异。

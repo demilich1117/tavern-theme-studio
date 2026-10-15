@@ -1,7 +1,29 @@
 import { validateBlueprint } from './blueprint.js';
+import { rolePartIds, messagePart } from './message-parts.js';
 // Geometry uses the same rules, scopes and history as the property inspector.
-export const CANVAS_TARGETS = ['stage', 'chat', 'composer', 'input', 'assistant', 'user', 'avatar', 'message-text', 'name', 'left', 'right', 'reasoning', 'quote', 'code'];
+const messageTargets = ['avatar', 'message-text', 'message-body', 'name', 'reasoning', 'reasoning-block', 'quote', 'code', 'table', 'media', 'attachments'];
+export const CANVAS_TARGETS = ['stage', 'chat', 'composer', 'input', 'assistant', 'user', 'left', 'right', ...messageTargets, ...rolePartIds(messageTargets)];
+export const canvasAutoHeight = id => ['reasoning-block', 'message-body', 'media', 'attachments', 'table'].includes(messagePart(id));
 export const CANVAS_PROPERTIES = ['margin-left', 'margin-top', 'width', 'min-height'];
+// Keep visible pointer targets separate even for tiny or edge-clipped parts.
+// Coordinates stay in host pixels; size is compensated for workspace zoom.
+export function canvasHandleCenters(rect, { width, height, top = 0, size = 40 }) {
+  const half = size / 2, gap = size + 4;
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const move = { x: clamp(rect.left - 4, half, width - half), y: clamp(rect.top - 4, top + half, height - half) };
+  const resize = { x: clamp(rect.left + rect.width, half, width - half), y: clamp(rect.top + rect.height, top + half, height - half) };
+  if (Math.abs(move.x - resize.x) < size && Math.abs(move.y - resize.y) < size) {
+    const candidates = [
+      [resize, 'y', move.y + gap, top + half, height - half],
+      [move, 'y', resize.y - gap, top + half, height - half],
+      [resize, 'x', move.x + gap, half, width - half],
+      [move, 'x', resize.x - gap, half, width - half],
+    ].filter(([, , value, min, max]) => value >= min && value <= max);
+    candidates.sort((a, b) => Math.abs(a[2] - a[0][a[1]]) - Math.abs(b[2] - b[0][b[1]]));
+    if (candidates.length) { const [handle, axis, value] = candidates[0]; handle[axis] = value; }
+  }
+  return { move, resize };
+}
 export const sameCanvasBasis = (a, b) => !!a && !!b && ['projectId', 'sessionId', 'revision', 'fingerprint'].every(key => a[key] === b[key]);
 export function canvasAvailability(connection) {
   if (!connection.ready) return { disabled: true, reason: '预览尚未连接，请等待连接完成；连接中断时从酒馆扩展重新打开工作台。' };
@@ -43,7 +65,7 @@ export function canvasPatch(initial, kind, dx, dy, snap = false) {
   if (kind !== 'resize') throw new Error('未知画布操作。');
   // Width remains relative to its containing block. Text gets a minimum height,
   // never a fixed height or font scaling, so longer messages can still grow.
-  return { ...(dx !== 0 && { width: initial.pixelWidth ? `${clamp(round(initial.width + dx / initial.scaleX), 8, 512)}px` : `${+clamp(round(initial.width + dx / initial.scaleX) / initial.parentWidth * 100, 20, 100).toFixed(3)}%` }), ...(dy !== 0 && { 'min-height': `${clamp(round(initial.height + dy / initial.scaleY), 0, 4096)}px` }) };
+  return { ...(dx !== 0 && { width: initial.pixelWidth ? `${clamp(round(initial.width + dx / initial.scaleX), 8, 512)}px` : `${+clamp(round(initial.width + dx / initial.scaleX) / initial.parentWidth * 100, 20, 100).toFixed(3)}%` }), ...(dy !== 0 && !initial.autoHeight && { 'min-height': `${clamp(round(initial.height + dy / initial.scaleY), 0, 4096)}px` }) };
 }
 export function validateCanvasProposal(value) {
   if (value == null) return undefined;

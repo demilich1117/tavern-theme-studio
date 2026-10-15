@@ -18,7 +18,7 @@ export function createAnnotationPins({ send, fixtureActive, onReveal, getBasis =
   const shadow = host.attachShadow({ mode: 'open' });
   const style = document.createElement('style');
   style.textContent = ':host{all:initial!important;position:fixed!important;inset:0!important;pointer-events:none!important;z-index:2147483645!important}button{all:initial;box-sizing:border-box;position:fixed;width:32px;height:32px;border-radius:50% 50% 50% 0;background:#e6aa64;color:#241c12;border:2px solid #17191d;box-shadow:0 2px 8px #0005;font:600 13px Segoe UI,sans-serif;text-align:center;cursor:pointer;pointer-events:auto;transform:translate(-4px,-28px)}button:hover,button:focus-visible{outline:2px solid #fff;outline-offset:2px}button[hidden]{display:none}';
-  style.textContent += '.proposal{position:fixed;box-sizing:border-box;border:2px dashed #e6aa64;background:#e6aa6408;color:#e6aa64;font:12px/1.5 Segoe UI,sans-serif;pointer-events:none}.proposal[hidden]{display:none}.proposal span{position:absolute;top:0;left:0;padding:2px 6px;background:#17191de8}';
+  style.textContent += ':host([hidden]){display:none!important}.proposal{position:fixed;box-sizing:border-box;border:2px dashed #e6aa64;background:#e6aa6408;color:#e6aa64;font:12px/1.5 Segoe UI,sans-serif;pointer-events:none}.proposal[hidden]{display:none}.proposal span{position:absolute;top:0;left:0;padding:2px 6px;background:#17191de8}';
   shadow.append(style); document.body.append(host);
   let entries = [], frame = 0;
   function locate(anchor) {
@@ -47,6 +47,7 @@ export function createAnnotationPins({ send, fixtureActive, onReveal, getBasis =
   const observer = new ResizeObserver(schedule); observer.observe(document.body);
   const timer = setInterval(schedule, 1000);
   return {
+    setVisible(visible) { host.hidden = !visible; },
     set(tickets) {
       for (const entry of entries) { entry.button.remove(); entry.proposal?.remove(); } entries = [];
       for (const ticket of tickets.slice(0, 200)) {

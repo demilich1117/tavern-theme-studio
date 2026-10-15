@@ -13,6 +13,7 @@ import { attachRuntimeManager } from '/runtime-manager.js';
 import { attachThemeAnalysis } from '/theme-analysis.js';
 import { attachCoDesign } from '/co-design.js';
 import { attachNavigation, showEditor } from '/panels.js';
+import { attachObjects } from '/objects.js';
 import { attachArtworks } from '/artworks.js';
 import { attachWorkImport } from '/work-import.js';
 import { attachCanvas } from '/canvas.js';
@@ -25,7 +26,7 @@ let commandQueue = Promise.resolve(), previewProject, toastTimer, helloTimer, he
 let fixtureBusy = false, fixtureSupported = false;
 let fixtureState, awaitingFirstPreview = false, connectorCapabilities;
 let themeAnalysis, coDesign, artworks, workImport, inspector, hostViewport, exporter, canvasEditor;
-let runtimeClosing = false;
+let runtimeClosing = false, objects;
 function updateFixture(fixture) {
   if (fixture) fixtureState = fixture;
   fixtureSupported = fixture?.supported === true;
@@ -38,6 +39,7 @@ function updateFixture(fixture) {
   $('#fixture-status').textContent = fixtureBusy ? '正在打开原生测试对话…' : !ready ? '酒馆连接已断开' : awaitingFirstPreview ? '正在应用主题预览…' : !fixtureSupported ? '更新连接器后可使用原生测试对话。' : fixture.active ? '当前为虚构测试对话 · 使用酒馆原生控件' : '连接已就绪 · 进入画布时自动打开测试对话';
   coDesign?.render();
   canvasEditor?.render();
+  objects?.render();
 }
 function toast(text, error = false) { clearTimeout(toastTimer); $('#toast').textContent = text; $('#toast').classList.toggle('error', error); $('#toast').hidden = false; toastTimer = setTimeout(() => $('#toast').hidden = true, 5000); }
 function send(type, payload = {}) { if (peer) peer.postMessage({ channel: CHANNEL, session, type, ...payload }, peerOrigin); }
@@ -122,6 +124,7 @@ function render() {
   workImport?.render();
   coDesign?.render();
   canvasEditor?.render();
+  objects?.render();
 }
 function setSelected(id) { showEditor(); selected = id; inspection = undefined; $('#match-count').textContent = '正在读取…'; render(); send('select', { target: selected }); }
 function setDevice(next) {
@@ -196,7 +199,8 @@ window.addEventListener('message', event => {
       }
       layers?.capabilities(data.capabilities); updateFixture(data.fixture); preview(); send('select', { target: selected }); workflow?.ready(); canvasEditor?.render(); break;
     }
-    case 'inspection': inspection = data.inspection; if (inspection.id === selected) { $('#match-count').textContent = inspection.visible ? `匹配 ${inspection.count} 个 · ${inspection.pseudo ? '附着元素 ' : ''}${inspection.rect.width} × ${inspection.rect.height}` : `匹配 ${inspection.count} 个 · 当前不可见`; renderFields(); } break;
+    case 'inspection': inspection = data.inspection; if (inspection.id === selected) { $('#match-count').textContent = inspection.visible ? `匹配 ${inspection.count} 个 · ${inspection.pseudo ? '附着元素 ' : ''}${inspection.rect.width} × ${inspection.rect.height}` : `匹配 ${inspection.count} 个 · 当前不可见`; renderFields(); objects?.render(); } break;
+    case 'open-objects': showEditor(); objects?.open(); break;
     case 'viewport': hostViewport = data; renderScope(); break;
     case 'pick-unsupported': toast(data.message); break;
     case 'diagnosis': case 'audit-result': advanced?.receive(data); break;
@@ -217,8 +221,13 @@ function download(data, suffix) {
   const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = `${(data.name || state.project.name).replace(/[<>:"/\\|?*]/g, '_')}${suffix}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function buildControls() {
+  const groups = new Map();
+  for (const [id, label] of [['page', '页面与输入'], ['assistant', '角色部件'], ['user', '用户部件'], ['shared', '全部消息 · 通用样式']]) {
+    const group = document.createElement('optgroup'); group.label = label; $('#target-select').append(group); groups.set(id, group);
+  }
   for (const target of TARGETS) {
-    $('#target-select').add(new Option(target.name, target.id));
+    const group = target.shared ? 'shared' : target.role || (['assistant', 'assistant-before', 'assistant-after'].includes(target.id) ? 'assistant' : target.id === 'user' ? 'user' : 'page');
+    groups.get(group).append(new Option(target.name, target.id));
     const button = document.createElement('button'); button.dataset.target = target.id; button.dataset.detail = String(!!target.detail);
     const icon = document.createElement('span'); icon.className = 'target-icon'; icon.textContent = target.icon;
     const name = document.createElement('span'); name.textContent = target.name;
@@ -231,6 +240,7 @@ function buildInspector() {
     getContext: () => ({ project: state.project, target: selected, scope, inspection, comparing: $('#compare').checked, drafting: !!previewProject }),
     select: setSelected,
     openLayer: id => layers.open(id).catch(e => toast(e.message, true)),
+    resetScope: (target, scope) => act({ type: 'reset-target', target, scope }),
     change: (property, value, draft) => {
       const cmd = { type: 'set', target: selected, scope, property, value };
       try { if (draft) { previewProject = applyCommand(state.project, cmd); preview(); } else act(cmd); }
@@ -292,7 +302,9 @@ try {
   coDesign = attachCoDesign({ getState: () => state, connection: () => ({ ready, live, fixtureActive: fixtureSupported && fixtureState?.active && !fixtureBusy && !awaitingFirstPreview }), selectTarget: setSelected, stopPicking: () => setPicking(false), toast });
   canvasEditor = attachCanvas({ getState: () => state, getScope: () => scope, connection: () => ({ ready, live, capabilities: connectorCapabilities, comparing: $('#compare').checked, fixtureActive: fixtureState?.active && !fixtureBusy && !awaitingFirstPreview }), command, settled: () => commandQueue, send, preview, preparePreview: () => { $('#compare').checked = false; $('#canvas').classList.remove('comparing'); preview(); renderFields(); }, stopPicking: () => setPicking(false), toast });
   artworks = attachArtworks({ getState: () => state, getToken: () => token, settled: () => commandQueue, toast, command, newWork: () => workImport.open().catch(e => toast(e.message, true)) });
-  attachNavigation(); render(); connect();
+  attachNavigation();
+  objects = attachObjects({ getContext: () => ({ project:state.project, scope, selected, inspection }), select:setSelected, send, openLayer:id => layers.open(id).catch(e => toast(e.message,true)) });
+  render(); connect();
   $('#artworks-button').click();
   const events = new EventSource('/api/events'); events.onmessage = e => receiveState(JSON.parse(e.data)); events.onerror = () => { $('#save-status').textContent = '本地连接中断'; }; events.onopen = () => { refreshSession().catch(e => toast(e.message, true)); };
   events.addEventListener('runtime-closing', () => {

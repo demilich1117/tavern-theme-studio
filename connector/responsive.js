@@ -23,10 +23,11 @@ try {
   };
   function fit() {
     const space = $('.viewport-space'), padding = narrow.matches ? 24 : 40;
-    const scale = $('#zoom').value === 'fit' ? Math.min(1, Math.max(.1, (space.clientWidth - padding) / width), Math.max(.1, (space.clientHeight - padding - 26) / height)) : 1;
+    const scale = $('#zoom').value === 'fit' ? Math.min(1, Math.max(.1, (space.clientWidth - padding) / width), Math.max(.1, (space.clientHeight - padding - 26) / height)) : Math.min(2, Math.max(.5, Number($('#zoom').value) || 1));
     native.style.transform = `scale(${scale})`;
     $('.viewport-frame').style.width = `${width * scale}px`; $('.viewport-frame').style.height = `${height * scale}px`;
     $('#size').textContent = `${width} × ${height} · ${width <= 767 ? '手机' : '电脑'}视口 · 显示 ${Math.round(scale * 100)}%`;
+    $('#canvas-tools').dispatchEvent(new Event('tts-viewport-change'));
   }
   function resize(nextWidth, nextHeight) {
     if (!Number.isInteger(nextWidth) || nextWidth < 320 || nextWidth > 2560 || !Number.isInteger(nextHeight) || nextHeight < 480 || nextHeight > 1600) { status('宽度请填 320–2560，高度请填 480–1600。', true); return; }
@@ -42,10 +43,11 @@ try {
       if (data.type === 'responsive-host-error') { status(data.error, true); return; }
       if (data.type === 'ready') { connected = true; status('预览尺寸只改变画面；编辑区“应用到”决定修改影响的设备。'); }
       if (data.type === 'disconnected') { connected = false; status('连接已断开。请确认本地工作台仍在运行，再重新连接。刷新前请先保存蓝图小票。', true); }
-      if (data.type === 'canvas-status') canvasActive = data.active;
-      if (['annotation', 'canvas-capture'].includes(data.type) || data.type === 'picked' && !canvasActive) showEditor();
+      if (data.type === 'canvas-status') { canvasActive = data.active; document.body.classList.toggle('canvas-active', canvasActive); }
+      if (['annotation', 'canvas-capture', 'open-objects'].includes(data.type) || data.type === 'picked' && !canvasActive) showEditor();
       if (loaded) editor.contentWindow.postMessage(data, studio.origin);
     } else if (loaded && event.source === editor.contentWindow && event.origin === studio.origin) {
+      if(data.type==='objects-selected'){if(narrow.matches)view('preview');return;}
       if (narrow.matches && (['canvas-start', 'annotate'].includes(data.type) || data.type === 'pick' && data.enabled)) view('preview');
       native.contentWindow.postMessage(data, location.origin);
     }
@@ -54,6 +56,15 @@ try {
   for (const button of document.querySelectorAll('[data-size]')) button.addEventListener('click', () => resize(...button.dataset.size.split(',').map(Number)));
   for (const button of document.querySelectorAll('button[data-view]')) button.addEventListener('click', () => view(button.dataset.view));
   $('#zoom').addEventListener('change', fit);
+  $('#canvas-tools').addEventListener('tts-view-command',event=>{
+    const space=$('.viewport-space'), data=event.detail;
+    if(data.action==='pan')space.scrollBy({left:data.dx,top:data.dy,behavior:'instant'});
+    else if(data.action==='fit'||data.action==='actual'){ $('#zoom').value=data.action==='fit'?'fit':'1';fit(); }
+    else if(data.action==='focus'){
+      const r=native.getBoundingClientRect(), bounds=space.getBoundingClientRect(), scale=r.width/width;
+      space.scrollBy({left:r.left+(data.rect.left+data.rect.width/2)*scale-(bounds.left+bounds.width/2),top:r.top+(data.rect.top+data.rect.height/2)*scale-(bounds.top+bounds.height/2),behavior:'instant'});
+    }
+  });
   $('#toggle-editor').addEventListener('click', () => {
     const hidden = document.body.classList.toggle('editor-hidden'); $('#toggle-editor').textContent = hidden ? '显示编辑' : '收起编辑'; $('#toggle-editor').setAttribute('aria-expanded', String(!hidden));
   });

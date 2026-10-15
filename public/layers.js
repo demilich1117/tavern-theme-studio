@@ -2,10 +2,16 @@ import { openStudioPanel } from '/panels.js';
 import { TARGETS, applyCommand } from '/shared/core.js';
 import { decorationDiagnostics, effectiveLayer, layerAsset } from '/shared/decorations.js';
 import { resolveAssetUrls } from '/shared/assets.js';
+import { mergeLayerProps } from '/shared/decoration-tools.js';
+import { renderDecorationTools } from '/decoration-tools.js';
 const $ = s => document.querySelector(s);
 const node = (tag, text, cls) => { const el = document.createElement(tag); if (text !== undefined) el.textContent = text; if (cls) el.className = cls; return el; };
 export function attachLayers({ getState, command, preview, toast, send, getScope, setScope }) {
   let selected, assets = [], scope = 'base', queue = Promise.resolve(), lastProjectId, hostIssues = [], canEdit = false, viewport;
+  let layerInspection, inspectionKey, requestedKey, fixtureActive = false, editorIdentity, canInspect = false;
+  const basis = () => { const s = getState(); return { projectId: s.projectId, sessionId: s.sessionId, revision: s.revision, fingerprint: s.fingerprint }; };
+  const readKey = () => JSON.stringify([basis(), selected, scope, viewport?.width]);
+  function requestInspection() { const key = readKey(); if (canInspect && selected && key !== requestedKey) { requestedKey = key; send('decoration-inspect', { id: selected, requestId: key, basis: basis() }); } }
   const button = node('button', '◇ 装饰图层'); button.id = 'layers-button'; $('.studio-tools').append(button);
   const dialog = node('dialog', undefined, 'wide-dialog'); dialog.id = 'layers-dialog';
   dialog.innerHTML = `<form method="dialog" class="dialog-header"><h2>可调装饰 <small id="layers-total"></small></h2><button aria-label="关闭装饰图层">×</button></form>
@@ -19,10 +25,12 @@ export function attachLayers({ getState, command, preview, toast, send, getScope
   async function assetList() { const res = await fetch('/api/assets'); if (!res.ok) throw new Error('无法读取本地素材列表。'); assets = await res.json(); }
   function field(parent, label, input) { const wrap = node('label', undefined, 'layer-field'); wrap.append(node('span', label), input); parent.append(wrap); return input; }
   function renderEditor() {
-    const panel = $('#layer-editor'); panel.replaceChildren(); const p = getState().project, layer = selectedLayer(); if (!layer) return;
+    const panel = $('#layer-editor'), identity = JSON.stringify([getState().projectId, selected, scope]);
+    const openDetails = editorIdentity === identity ? [...panel.querySelectorAll('details[open]')].map(n => n.className) : [];
+    editorIdentity = identity; panel.replaceChildren(); const p = getState().project, layer = selectedLayer(); if (!layer) return;
     const slot = p.recipe?.slots.find(s => s.id === layer.slotId), props = effectiveLayer(p, layer, scope).props;
-    const editScope = scope, update = patch => command({ type: 'decoration-update', id: layer.id, scope: editScope, patch });
-    panel.append(node('h3', layer.name), node('p', slot?.note || '目标插槽不存在，请重新选择。', 'panel-hint'));
+    const editScope = scope, projectId = getState().projectId, update = patch => { if (getState().projectId !== projectId) throw new Error('工程已切换，请重新选择装饰。'); return command({ type: 'decoration-update', id: layer.id, scope: editScope, patch }); };
+    panel.append(node('h3', layer.name), node('p', slot ? slot.note || '选择要修改的尺寸，再调整这张装饰；每步都可撤销。' : '目标插槽不存在，请重新选择。', 'panel-hint'));
     const actions = node('div', undefined, 'inline-controls');
     for (const [label, action, disabled] of [
       [layer.visible ? '隐藏' : '显示', () => update({ visible: !layer.visible }), layer.locked],
@@ -31,7 +39,7 @@ export function attachLayers({ getState, command, preview, toast, send, getScope
       ['移除', () => command({ type: 'decoration-remove', id: layer.id }), layer.locked]
     ]) { const b = node('button', label); b.disabled = disabled; b.addEventListener('click', run(action)); actions.append(b); }
     panel.append(actions); const form = node('div', undefined, 'layer-fields');
-    const edit = node('button', '在真实画面定位'); edit.id = 'layer-locate'; edit.disabled = !canEdit || !slot?.geometry || layer.locked || !layer.visible;
+    const edit = node('button', '在真实画面定位'); edit.id = 'layer-locate'; edit.disabled = !canEdit || !slot?.geometry || layer.locked || !layer.visible || props.frame === 'container';
     edit.addEventListener('click', () => { const s = getState(); dialog.close(); send('decoration-edit', { id: layer.id, scope, basis: { projectId: s.projectId, sessionId: s.sessionId, revision: s.revision, fingerprint: s.fingerprint } }); }); panel.append(edit);
     if (viewport) panel.append(node('p', `${viewport.width} × ${viewport.height}px · ${p.breakpoints.filter(b => matchWidth(b.condition, viewport.width)).map(b => b.name).join(' / ') || '基础尺寸'}${slot?.condition ? ' · 插槽 ' + slot.condition + (matchWidth(slot.condition, viewport.width) ? ' 已命中' : ' 未命中') : ''}`, 'panel-hint'));
     const changeProps = (k, value) => { const current = getState().project.decorations.find(l => l.id === layer.id); const next = { ...(editScope === 'base' ? current?.props : current?.overrides[editScope]) }; if (value === undefined) delete next[k]; else next[k] = value; return { props: next }; };
@@ -42,6 +50,13 @@ export function attachLayers({ getState, command, preview, toast, send, getScope
     const assetOptions = [['沿用源码素材', ''], ...assets.map(a => [a.name, a.reference])]; if (layer.asset && !assets.some(a => a.reference === layer.asset)) assetOptions.push(['当前替换素材', layer.asset]);
     select('素材', 'asset', layer.asset || '', assetOptions, asset => update({ asset: asset || null }));
     select('尺寸覆盖', 'scope', scope, [['所有尺寸', 'base'], ...p.breakpoints.map(b => [`${b.name} · ${b.condition}`, b.id])], value => { setScope(value); scope = value; }, true);
+    panel.append(form);
+    renderDecorationTools(panel, { project: p, layer, slot, props, scope, inspection: !canInspect ? { error: '连接配套的新版连接器后可检查长文容器。' } : inspectionKey === readKey() ? layerInspection : null, canReview: canInspect && fixtureActive,
+      save: patch => run(() => { const current = getState().project.decorations.find(l => l.id === layer.id); if (!current) throw new Error('图层已删除。'); return update({ props: mergeLayerProps(current, editScope, patch) }); })(),
+      review: (scene, position) => { send('fixture-scene', { scene, position }); send('objects-selected'); }
+    });
+    const advanced = node('details', undefined, 'decoration-advanced'); advanced.append(node('summary', '精确参数与自定义锚点')); panel.append(advanced);
+    const raw = node('div', undefined, 'layer-fields'); advanced.append(raw);
     if (slot?.geometry) {
       for (const [label, k, min, max, step, fallback] of [['水平偏移 px', 'x', -10000, 10000, 1, 0], ['垂直偏移 px', 'y', -10000, 10000, 1, 0], ['等比缩放', 'scale', 0.05, 10, 0.05, 1], ['旋转 °', 'rotation', -360, 360, 1, 0], ['不透明度', 'opacity', 0, 1, 0.05, 1], ['叠放顺序', 'order', -9999, 9999, 1, 0]]) {
         const el = input(label, k, props[k] ?? fallback, value => update(changeProps(k, Number(value))), 'number'); el.min = min; el.max = max; el.step = step;
@@ -54,8 +69,13 @@ export function attachLayers({ getState, command, preview, toast, send, getScope
     }
     if (slot?.method === 'nine-slice') for (const [k, label] of [['slice', '九切片边界'], ['edgeWidth', '九切片绘制边宽']]) input(label, k, props[k] || '', value => update(changeProps(k, value || undefined))).placeholder = '沿用源码';
     if (slot?.method === 'background') select('背景适配', 'fit', props.fit || '', [['沿用源码', ''], ['完整显示 contain', 'contain'], ['覆盖 cover', 'cover']], value => update(changeProps('fit', value || undefined)));
-    const reset = node('button', '还原当前尺寸参数'); reset.disabled = layer.locked; reset.addEventListener('click', run(() => update({ props: {} }))); form.append(reset); panel.append(form);
+    // Move the existing precise fields into a secondary section; keep their IDs.
+    for (const label of [...form.children].slice(4)) raw.append(label);
+    if (props.frame === 'container') for (const k of ['x', 'y', 'scale', 'rotation', 'width', 'height', 'ratio', 'anchor-enabled', 'containerX', 'containerY', 'imageX', 'imageY']) { const control = raw.querySelector('#layer-' + k); if (control) control.disabled = true; }
+    const reset = node('button', '还原当前尺寸参数'); reset.disabled = layer.locked; reset.addEventListener('click', run(() => update({ props: {} }))); raw.append(reset);
     panel.append(node('code', slot ? `${slot.selector}${slot.pseudo} · ${slot.method === 'nine-slice' ? '九切片' : '背景'}${slot.condition ? ' · ' + slot.condition : ''}` : layer.slotId, 'layer-selector'));
+    for (const detail of panel.querySelectorAll('details')) detail.open = openDetails.includes(detail.className);
+    requestInspection();
   }
   function render() {
     scope = getScope();
@@ -94,10 +114,13 @@ export function attachLayers({ getState, command, preview, toast, send, getScope
   $('#recipe-import').addEventListener('change', run(async e => { const file = e.target.files[0]; try { if (file) { if (file.size > 1048576) throw new Error('配方超过 1 MiB。'); await command({ type: 'recipe', recipe: JSON.parse((await file.text()).replace(/^\uFEFF/, '')) }); selected = undefined; } } finally { e.target.value = ''; } }));
   dialog.addEventListener('close', () => preview());
   function matchWidth(condition, width) { const m=condition.match(/\((min|max)-width: (\d+)px\)/); return m && (m[1]==='max'?width<=Number(m[2]):width>=Number(m[2])); }
-  return { open, capabilities(c) { canEdit=c?.decorationEditor===1;render(); }, render() { const p = getState().project; if (p.projectId !== lastProjectId) { lastProjectId = p.projectId; selected = undefined; } button.textContent = `可调装饰 ${p.decorations.length}`; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); }, receive(data) {
-    if (data.type==='viewport') { viewport=data;render(); }
+  return { open, capabilities(c) { canEdit=c?.decorationEditor===1;canInspect=c?.decorationTools===1;render(); }, render() { const p = getState().project; if (p.projectId !== lastProjectId) { lastProjectId = p.projectId; selected = undefined; } button.textContent = `可调装饰 ${p.decorations.length}`; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); }, receive(data) {
+    if (data.fixture) fixtureActive = data.fixture.active === true;
+    if (data.type==='preview-applied') { requestedKey = undefined; if (dialog.open) { requestInspection(); if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); } }
+    else if (data.type==='decoration-inspection') { if (data.id === selected && data.requestId === readKey() && ['projectId', 'sessionId', 'revision', 'fingerprint'].every(k => data.basis?.[k] === getState()[k])) { inspectionKey = data.requestId; layerInspection = data.inspection; if (!$('#layer-editor').contains(document.activeElement) || !document.activeElement.matches('input,select')) render(); } }
+    else if (data.type==='viewport') { viewport=data;render(); }
     else if (data.type==='decoration-commit') { const s=getState(); if (!['projectId','sessionId','fingerprint','revision'].every(k=>data.basis?.[k]===s[k])) { send('decoration-commit-result',{ok:false,error:'工程更新，此次拖动未保存。'});preview();toast('工程更新，请重新定位。',true);return; } command({type:'decoration-update',id:data.id,scope:data.scope,patch:{props:data.props}}).then(()=>send('decoration-commit-result',{ok:true})).catch(e=>send('decoration-commit-result',{ok:false,error:e.message})); }
     else if (data.type==='decoration-editor-status'&&data.message) toast(data.message);
-    else if (data.type === 'decoration-status') { const changed = JSON.stringify(hostIssues) !== JSON.stringify(data.issues); hostIssues = data.issues || []; if (changed) render(); } else if (data.type === 'disconnected') { hostIssues = [];canEdit=false;render(); }
+    else if (data.type === 'decoration-status') { const changed = JSON.stringify(hostIssues) !== JSON.stringify(data.issues); hostIssues = data.issues || []; if (changed) render(); } else if (data.type === 'disconnected') { hostIssues = [];canEdit=false;canInspect=false;fixtureActive=false;layerInspection=undefined;inspectionKey=undefined;requestedKey=undefined;render(); }
   }, events(events) { events.addEventListener('assets', () => { if (dialog.open) assetList().then(render).catch(e => toast(e.message, true)); }); } };
 }

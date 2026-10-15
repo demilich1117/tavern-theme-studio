@@ -1,5 +1,7 @@
 # API、CLI 与 Agent 工作流
 
+当前本地修订增加身份明确的消息部件，尚未发布：`user-avatar` / `assistant-avatar`、`user-message-text` / `assistant-message-text`、`user-name` / `assistant-name` 等；完整列表使用 `targets` 查询。拾取会自动选择当前身份。旧 `avatar`、`message-text`、`name` 等 ID 继续表示双方通用，不改写旧工程与小票。Agent 按 `anchor.target` 与校验后的选择器落实同类规则，不能把 `user-*` 扩大为全部消息；导出及蓝图沿用同一 ID。
+
 0.13 的设计工作台统一使用 `connector/responsive.html`，旧 `#tts-lab` 自动转入；CLI/API 地址仍是本机工作台地址。画布蓝图复用 `/api/tickets`：`canvas.kind = blueprint` 的 `items[]` 各自带有锚点、原 / 目标矩形、备注，以及新版的 `scope`、`props`、`appliesTo: matching-elements`。先读取最新小票和工程快照，按每项范围处理同类部件；票面关联断点不替代每项范围。蓝图保存不写入工程 CSS。旧单部件 `layout-intent` 保持兼容，见 [画布指南](canvas-mode.md) 与 [小票工作流](annotations-assets.md)。
 
 作品入口继续使用 `/api/artworks`。GET 返回固定目录状态、源码/自动保存位置、最近定稿和 `changedSinceLatest`；POST 的 `action: "open"` 只接受 `target: "work" | "source" | "version"`（版本需 `id`），沿用会话、工程、revision、fingerprint 与 token 校验，不接收任意目录或命令。`GET /api/artworks/theme?id=<版本ID>` 核验后返回冻结主题。CLI 支持 `artwork-open work|source|version [id]`。离线迁移及通用构建见 [固定作品目录](work-folders.md)。

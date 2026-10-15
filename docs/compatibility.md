@@ -40,7 +40,7 @@
 
 ## 更新与复查
 
-核心安装包和校验文件见 [0.12.0 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.12.0)。已有 0.11 用户可双击 `update.cmd` 同时更新工作台和连接器，不能只改旧包的最低版本号。更新前先关闭旧版手动启动的后台；手动更新时保留原 `.local/` 和作品目录，双击 `start.cmd` 会同步连接器。手动安装连接器使用包内 `dist/tavern-theme-studio-connector.zip`，更新后新开或刷新专用测试标签。
+当前核心安装包和校验文件见 [0.14.0 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.14.0)。0.14 真实宿主与画布验证见 [本版记录](validation-0.14.md)。上面的跨版本矩阵保留 0.12 的验证来源，0.13 统一工作台的实测见 [本版记录](validation-0.13.md)。已有 0.11 用户可双击 `update.cmd` 同时更新工作台和连接器，不能只改旧包的最低版本号。更新前先关闭旧版手动启动的后台；手动更新时保留原 `.local/` 和作品目录，双击 `start.cmd` 会同步连接器。手动安装连接器使用包内 `dist/tavern-theme-studio-connector.zip`，更新后新开或刷新专用测试标签。
 
 开发者可对可信的官方源码副本运行：
 
