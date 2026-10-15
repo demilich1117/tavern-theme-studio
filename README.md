@@ -2,7 +2,7 @@
 
 **和 Agent 从一个想法做出美化，在真实酒馆里边看边改。** 从认识界面、看图讨论方向开始，逐步完成原生主题；也可以直接调整现有主题的颜色、圆角、间距和装饰。满意后直接应用到酒馆，或下载主题 JSON 分享。
 
-当前版本 **0.14.0** · Windows 双击启动 · 适配 SillyTavern **1.14 起** · [版本兼容与验证范围](docs/compatibility.md) · [MIT 代码许可](LICENSE)
+当前版本 **0.15.0** · Windows 双击启动 · 适配 SillyTavern **1.14 起** · [版本兼容与验证范围](docs/compatibility.md) · [MIT 代码许可](LICENSE)
 
 **Windows：双击 `start.cmd` 安装并启动，双击 `update.cmd` 更新后启动。** 首次选择一次酒馆目录，之后自动同步连接器；缺少 Node 时自动准备便携运行环境。详见 [一键安装与更新](docs/install-update.md)。
 
@@ -10,11 +10,13 @@
 
 编辑沿用原来的拾取和属性面板，支持透明度、四边间距、手机预览 / 编辑切换与直接应用到酒馆；见 [直接编辑指南](docs/direct-editing.md)。
 
-新增 **共创画布与多部件蓝图**：在「从零共创」或编辑页进入，直接拖动 / 调整部件尺寸，与原有拾取、属性面板和撤销共用工程；多部件蓝图保存为一张修改小票，交给 Agent 落实后再验收，支持截图交接和下载 CSS。使用前同步工作台及连接器，详见 [画布模式](docs/canvas-mode.md)。
+0.15.0 新增 **抽屉与控件编辑**：九类原生抽屉可移动、调宽高和最大高度；各抽屉内的滑块轨道 / 手柄、复选框及勾选图案可分别调整。沿用手机 / 电脑范围、撤销和导出。[使用说明](docs/canvas-mode.md#抽屉与控件0150) · [本版验证](docs/validation-0.15.md)。
+
+支持 **共创画布与多部件蓝图**：在「从零共创」或编辑页进入，直接拖动 / 调整部件尺寸，与原有拾取、属性面板和撤销共用工程；多部件蓝图保存为一张修改小票，交给 Agent 落实后再验收，支持截图交接和下载 CSS。使用前同步工作台及连接器，详见 [画布模式](docs/canvas-mode.md)。
 
 [下载核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/latest) · [浏览源码](https://github.com/demilich1117/tavern-theme-studio) · [自动检查](https://github.com/demilich1117/tavern-theme-studio/actions/workflows/ci.yml)
 
-普通用户下载 [0.14.0 核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/download/v0.14.0/tavern-theme-studio-0.14.0-core.zip)，完整解压后双击 `start.cmd`；不必下载 GitHub 自动生成的 Source code 压缩包。校验文件和更新说明见 [v0.14.0 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.14.0)。以后双击 `update.cmd` 获取更高版本的正式安装包；Git 克隆的源码目录通过快进合并更新。
+已发布的稳定安装包：[0.14.0 核心安装包](https://github.com/demilich1117/tavern-theme-studio/releases/download/v0.14.0/tavern-theme-studio-0.14.0-core.zip)，完整解压后双击 `start.cmd`；不必下载 GitHub 自动生成的 Source code 压缩包。校验文件和更新说明见 [v0.14.0 Release](https://github.com/demilich1117/tavern-theme-studio/releases/tag/v0.14.0)。以后双击 `update.cmd` 获取更高版本的正式安装包；Git 克隆的源码目录通过快进合并更新。
 
 电脑上运行工作台，酒馆里安装连接器。日常入口是「作品」「编辑」「素材」「修改意见」；还没有设计方案时，打开「从零共创」。在「作品」继续编辑、保存定稿或打开作品文件夹，详见 [固定作品目录](docs/work-folders.md)。
 

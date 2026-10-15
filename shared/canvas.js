@@ -1,10 +1,11 @@
+import { DRAWERS } from './drawer-parts.js';
 import { validateBlueprint } from './blueprint.js';
 import { rolePartIds, messagePart } from './message-parts.js';
 // Geometry uses the same rules, scopes and history as the property inspector.
 const messageTargets = ['avatar', 'message-text', 'message-body', 'name', 'reasoning', 'reasoning-block', 'quote', 'code', 'table', 'media', 'attachments'];
-export const CANVAS_TARGETS = ['stage', 'chat', 'composer', 'input', 'assistant', 'user', 'left', 'right', ...messageTargets, ...rolePartIds(messageTargets)];
+export const CANVAS_TARGETS = [...DRAWERS.map(([id]) => id).filter(id => !['left', 'right'].includes(id)), 'stage', 'chat', 'composer', 'input', 'assistant', 'user', 'left', 'right', ...messageTargets, ...rolePartIds(messageTargets)];
 export const canvasAutoHeight = id => ['reasoning-block', 'message-body', 'media', 'attachments', 'table'].includes(messagePart(id));
-export const CANVAS_PROPERTIES = ['margin-left', 'margin-top', 'width', 'min-height'];
+export const CANVAS_PROPERTIES = ['margin-left', 'margin-top', 'width', 'min-height', 'left', 'top', 'height'];
 // Keep visible pointer targets separate even for tiny or edge-clipped parts.
 // Coordinates stay in host pixels; size is compensated for workspace zoom.
 export function canvasHandleCenters(rect, { width, height, top = 0, size = 40 }) {
@@ -61,6 +62,11 @@ export function canvasPatch(initial, kind, dx, dy, snap = false) {
   if (![dx, dy, initial.scaleX, initial.scaleY, initial.parentWidth, initial.width, initial.height, initial.marginLeft, initial.marginTop].every(Number.isFinite) || initial.scaleX <= 0 || initial.scaleY <= 0 || initial.parentWidth <= 0) throw new Error('无法测量当前布局。');
   const step = snap ? 8 : 1, round = n => Math.round(n / step) * step;
   const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+  if (initial.drawer) {
+    if (kind === 'move') return { left: `${clamp(dx ? round(initial.left + dx / initial.scaleX) : initial.left, -2048, 4096)}px`, top: `${clamp(dy ? round(initial.top + dy / initial.scaleY) : initial.top, -2048, 4096)}px` };
+    if (kind !== 'resize') throw new Error('未知画布操作。');
+    return { ...(dx !== 0 && {width: `${clamp(round(initial.width + dx / initial.scaleX), 1, 4096)}px`}), ...(dy !== 0 && {height: `${clamp(round(initial.height + dy / initial.scaleY), 1, 4096)}px`}) };
+  }
   if (kind === 'move') return { ...(dx !== 0 && { 'margin-left': `${clamp(round(initial.marginLeft + dx / initial.scaleX), -2048, 2048)}px` }), ...(dy !== 0 && { 'margin-top': `${clamp(round(initial.marginTop + dy / initial.scaleY), -2048, 2048)}px` }) };
   if (kind !== 'resize') throw new Error('未知画布操作。');
   // Width remains relative to its containing block. Text gets a minimum height,

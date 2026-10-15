@@ -11,7 +11,7 @@ export function captureAnchor(target, element, event, fixture = false) {
     point: { x: Math.max(0, Math.min(1, (event.clientX - rect.left) / (rect.width || 1))), y: Math.max(0, Math.min(1, (event.clientY - rect.top) / (rect.height || 1))) },
     viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
     rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
-    values: Object.fromEntries(FIELDS.map(f => [f.key, computed.getPropertyValue(f.key)])) });
+    values: target.control === 'thumb' ? {} : Object.fromEntries(FIELDS.map(f => [f.key, computed.getPropertyValue(f.key)])) });
 }
 export function createAnnotationPins({ send, fixtureActive, onReveal, getBasis = () => ({}) }) {
   const host = document.createElement('div'); host.id = 'tts-annotation-pins'; host.dataset.ttsUi = '';

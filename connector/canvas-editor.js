@@ -1,4 +1,5 @@
 import { TARGETS, applyCommand } from '../shared/core.js';
+import { isDrawer } from '../shared/drawer-parts.js';
 import { CANVAS_TARGETS, canvasPatch, sameCanvasBasis, canvasHandleCenters, canvasAutoHeight } from '../shared/canvas.js';
 import { matchesWidth } from '../shared/editing.js';
 import { targetElement } from './diagnostics.js';
@@ -83,10 +84,11 @@ export function createCanvasEditor({ getProject, getBasis, getSelection, select,
   }
   function canLayout(target, el) {
     if (!CANVAS_TARGETS.includes(target.id) || target.pseudo) throw new Error('此部件暂不支持位置调整，可用标点评论说明。');
+    if (isDrawer(target.id) && el.classList.contains('maximized')) throw new Error('先退出抽屉最大化，再调整位置与尺寸。');
     const p = mode === 'intent' ? blueprint.project() : getProject(), bp = p.breakpoints.find(b => b.id === scope);
     if (scope !== 'base' && (!bp || !matchesWidth(bp.condition, innerWidth))) throw new Error('当前酒馆宽度未命中所选尺寸，请调整窗口或切换编辑范围。');
     const later = scope === 'base' ? p.breakpoints : p.breakpoints.slice(p.breakpoints.findIndex(b => b.id === scope) + 1);
-    if (later.some(b => matchesWidth(b.condition, innerWidth) && ['width','margin-left','margin-top','min-height'].some(k => p.rules[b.id]?.[target.id]?.[k] !== undefined))) throw new Error('当前画面有后续尺寸覆盖，请切换到生效的编辑范围。');
+    if (later.some(b => matchesWidth(b.condition, innerWidth) && ['width','margin-left','margin-top','min-height','left','top','height'].some(k => p.rules[b.id]?.[target.id]?.[k] !== undefined))) throw new Error('当前画面有后续尺寸覆盖，请切换到生效的编辑范围。');
     for (let parent = el; parent; parent = parent.parentElement) {
       const c = getComputedStyle(parent), m = new DOMMatrix(c.transform === 'none' ? undefined : c.transform);
       if (!m.is2D || Math.abs(m.b) > .001 || Math.abs(m.c) > .001 || m.a <= 0 || m.d <= 0 || (c.rotate && c.rotate !== 'none' && parseFloat(c.rotate) !== 0) || (c.scale !== 'none' && c.scale.split(/\s+/).some(v => parseFloat(v) <= 0))) throw new Error('此处有旋转或透视，请用标点评论说明期望位置。');
@@ -104,7 +106,7 @@ export function createCanvasEditor({ getProject, getBasis, getSelection, select,
     const scopeName = scope === 'base' ? '所有尺寸' : getProject().breakpoints.find(b => b.id === scope)?.name || scope;
     const targetName = TARGETS.find(t => t.id === getSelection().id)?.name || '未选部件';
     const target = TARGETS.find(t => t.id === getSelection().id);
-    resize.title = canvasAutoHeight(target?.id) ? '左右拖动调整宽度，高度随内容自动变化' : '拖动调整宽度和最小高度';
+    resize.title = isDrawer(target?.id) ? '拖动调整抽屉宽度与高度；最大高度可在属性中调整' : canvasAutoHeight(target?.id) ? '左右拖动调整宽度，高度随内容自动变化' : '拖动调整宽度和最小高度';
     resize.style.cursor = canvasAutoHeight(target?.id) ? 'ew-resize' : '';
     const count = target ? targetElement(target).matches.length : 0;
     const contextText = `${scopeName} · ${count} 个同类部件${canvasAutoHeight(target?.id) ? ' · 高度自动' : ''} · ${mode === 'intent' ? `蓝图 ${blueprint.count()} 类，待落实` : saving ? '保存中…' : '自动保存'}`;
@@ -147,7 +149,7 @@ export function createCanvasEditor({ getProject, getBasis, getSelection, select,
     const vertical = css.boxSizing === 'border-box' ? 0 : parseFloat(css.paddingTop) + parseFloat(css.paddingBottom) + parseFloat(css.borderTopWidth) + parseFloat(css.borderBottomWidth);
     gesture = { kind, mode, basis: structuredClone(getBasis()), project: structuredClone(mode==='intent'?blueprint.project():getProject()), selection: s, scope,
       anchor: captureAnchor(s.target,s.el,{clientX:s.rect.left+s.rect.width/2,clientY:s.rect.top+s.rect.height/2},fixtureActive()),
-      initial: { scaleX: s.rect.width / s.el.offsetWidth, scaleY: s.rect.height / s.el.offsetHeight, parentWidth, width: s.el.offsetWidth - horizontal, height: s.el.offsetHeight - vertical, marginLeft: parseFloat(css.marginLeft) || 0, marginTop: parseFloat(css.marginTop) || 0, pixelWidth: messagePart(s.target.id) === 'avatar', autoHeight: canvasAutoHeight(s.target.id) },
+      initial: { drawer: isDrawer(s.target.id), left: s.rect.left / (s.rect.width / s.el.offsetWidth), top: s.rect.top / (s.rect.height / s.el.offsetHeight), scaleX: s.rect.width / s.el.offsetWidth, scaleY: s.rect.height / s.el.offsetHeight, parentWidth, width: s.el.offsetWidth - horizontal, height: s.el.offsetHeight - vertical, marginLeft: parseFloat(css.marginLeft) || 0, marginTop: parseFloat(css.marginTop) || 0, pixelWidth: messagePart(s.target.id) === 'avatar', autoHeight: canvasAutoHeight(s.target.id) },
       rect: { ...(proposal?.after || s.rect) }, previous: proposal && structuredClone(proposal), changed: false };
     return true;
   }

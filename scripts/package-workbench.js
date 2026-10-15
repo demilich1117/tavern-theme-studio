@@ -39,6 +39,7 @@ paths.add('docs/validation-0.13.md');
 paths.add('docs/canvas-ux-plan.md');
 paths.add('docs/validation-canvas-ux.md');
 paths.add('docs/validation-0.14.md');
+paths.add('docs/validation-0.15.md');
 paths.add('docs/showcase.md');
 paths.add('docs/discord-post.md');
 await tree('docs/assets/showcase/0.14.0');

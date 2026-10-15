@@ -3,6 +3,8 @@ import { TARGETS } from './core.js';
 // Semantic navigation only: this order never changes the host DOM or stacking.
 export function parentTarget(id) {
   const target = TARGETS.find(t => t.id === id);
+  if (target?.parent) return target.parent;
+  if (target?.drawer) return 'global';
   if (target?.shared || id === 'global') return null;
   if (target?.role) {
     const parent = ['quote', 'code', 'table'].includes(target.part) ? 'message-text' : ['reasoning', 'reasoning-header'].includes(target.part) ? 'reasoning-block' : ['avatar', 'message-body'].includes(target.part) ? null : 'message-body';

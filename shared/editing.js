@@ -1,3 +1,4 @@
+import { isDrawer, controlKind } from './drawer-parts.js';
 import { CANVAS_TARGETS, canvasAutoHeight } from './canvas.js';
 import { messagePart } from './message-parts.js';
 // Small, DOM-free contracts shared by the inspector and the native connector.
@@ -35,6 +36,12 @@ export function paddingSides(value) {
 const textOnly = new Set(['name', 'timestamp']);
 const noText = new Set(['avatar', 'assistant-before', 'assistant-after']);
 export function supportsField(target, key) {
+  const control = controlKind(target);
+  if (key === '--tts-tick-shape') return control === 'tick';
+  if (['left', 'top', 'max-height'].includes(key)) return isDrawer(target);
+  if (key === 'height') return isDrawer(target) || !!control;
+  if (control) return ['width','height','background-color','border-color','border-width','border-radius','opacity'].includes(key);
+  if (isDrawer(target) && ['margin-left','margin-top','min-height'].includes(key)) return false;
   if (key === 'min-height' && canvasAutoHeight(target)) return false;
   if (['margin-left', 'margin-top', 'min-height'].includes(key)) return CANVAS_TARGETS.includes(target);
   if (textOnly.has(messagePart(target) || target)) return ['color', 'font-size', 'line-height', 'opacity', 'margin-bottom'].includes(key);
@@ -43,6 +50,7 @@ export function supportsField(target, key) {
 }
 export function sameValue(key, requested, actual) {
   if (actual === undefined || requested === undefined) return false;
+  if (key === '--tts-tick-shape') return requested.trim() === actual.trim();
   if (key.endsWith('color')) { const a = colorParts(requested), b = colorParts(actual); return a.hex === b.hex && Math.abs(a.alpha - b.alpha) < .006; }
   if (key === 'padding') { const a = paddingSides(requested), b = paddingSides(actual); return !!a && !!b && a.every((n, i) => Math.abs(n - b[i]) < .1); }
   if (key === 'width' && String(requested).endsWith('%') !== String(actual).endsWith('%')) return false;

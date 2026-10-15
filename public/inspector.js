@@ -1,3 +1,4 @@
+import { controlKind, isDrawer } from '/shared/drawer-parts.js';
 import { FIELDS } from '/shared/core.js';
 import { colorParts, colorValue, paddingSides, supportsField, sameValue, scopeExplanation } from '/shared/editing.js';
 
@@ -12,8 +13,8 @@ export function attachInspector({ getContext, change, select, openLayer, resetSc
       const row = node('div', 'field'); row.id = `field-${field.key}`;
       const labelRow = node('div', 'field-label'), label = node('label'), source = node('span', 'field-source');
       label.htmlFor = `prop-${field.key}`; label.textContent = field.label; labelRow.append(label, source);
-      const controls = node('div', 'field-input'), input = node('input'); input.type = field.type; input.id = label.htmlFor; input.setAttribute('aria-label', field.label);
-      const exact = node('input', 'property-exact'); exact.type = field.type === 'color' ? 'text' : 'number'; exact.setAttribute('aria-label', `${field.label}精确值`);
+      const controls = node('div', 'field-input'), input = node(field.type === 'select' ? 'select' : 'input'); if (field.type === 'select') { for (const [value,label] of field.options) input.add(new Option(label,value)); } else input.type = field.type; input.id = label.htmlFor; input.setAttribute('aria-label', field.label);
+      const exact = node('input', 'property-exact'); exact.type = field.type === 'color' ? 'text' : 'number'; exact.hidden = field.type === 'select'; exact.setAttribute('aria-label', `${field.label}精确值`);
       if (field.type === 'range') for (const control of [input, exact]) { control.min = field.min; control.max = field.max; control.step = field.step; }
       if (field.type === 'range') exact.step = 'any';
       const unit = field.key === 'width' ? node('select', 'property-unit') : null;
@@ -30,6 +31,7 @@ export function attachInspector({ getContext, change, select, openLayer, resetSc
       }
       let preciseAlpha = 1;
       const value = control => {
+        if (field.type === 'select') return input.value;
         if (control === exact) return field.type === 'color' ? exact.value.trim() : `${exact.value}${unit?.value || field.unit}`;
         if (sides?.includes(control)) return sides.map(side => `${side.value}px`).join(' ');
         if (control === alpha) preciseAlpha = +alpha.value / 100;
@@ -37,7 +39,7 @@ export function attachInspector({ getContext, change, select, openLayer, resetSc
       };
       for (const control of [input, exact, alpha, ...(sides || [])].filter(Boolean)) {
         control.addEventListener('input', () => {
-          if (control === exact || sides?.includes(control)) return; // Text entry commits on blur/Enter; no malformed intermediate values.
+          if (field.type === 'select' || control === exact || sides?.includes(control)) return; // Text entry commits on blur/Enter; no malformed intermediate values.
           if (alpha) alphaOutput.textContent = `${alpha.value}%`;
           exact.value = field.type === 'color' ? value(control) : parseFloat(value(control));
           source.textContent = '预览中'; change(field.key, value(control), true);
@@ -49,7 +51,7 @@ export function attachInspector({ getContext, change, select, openLayer, resetSc
       unit?.addEventListener('change', () => {
         const { inspection } = getContext(), raw = unit.value === 'px' ? inspection?.values?.['width-px'] : inspection?.values?.width;
         const n = Number.parseFloat(raw); if (!Number.isFinite(n)) return render();
-        change(field.key, `${Math.max(unit.value === 'px' ? 8 : 20, Math.min(unit.value === 'px' ? 512 : 100, n))}${unit.value}`, false);
+        change(field.key, `${Math.max(unit.value === 'px' ? 1 : 20, Math.min(unit.value === 'px' ? 4096 : 100, n))}${unit.value}`, false);
       });
       controls.append(input, exact, reset); row.append(labelRow, controls, feedback); if (alpha || sides) row.append(extras); section.append(row);
       if (unit) controls.insertBefore(unit, reset);
@@ -74,6 +76,7 @@ export function attachInspector({ getContext, change, select, openLayer, resetSc
       scopeBody.append(table);
     }
     describe('画面值包含原主题、共同部件和高级 CSS 的影响。上表说明本工作台的覆盖关系，不代表能判定所有 CSS 的优先级。');
+    if (current?.measurementNote) describe(current.measurementNote);
     const reset = node('button'); reset.type = 'button'; reset.textContent = `还原此部件的${explanation.name}修改`; reset.disabled = !Object.keys(explanation.own).length; reset.addEventListener('click', () => resetScope(target, scope)); scopeBody.append(reset);
     related.replaceChildren();
     for (const item of current?.related || []) { const b = node('button'); b.type = 'button'; b.textContent = item.name; b.addEventListener('click', () => select(item.id)); related.append(b); }
@@ -81,9 +84,9 @@ export function attachInspector({ getContext, change, select, openLayer, resetSc
     related.hidden = !related.children.length;
     for (const field of FIELDS) {
       const view = rows.get(field.key), own = project.rules[scope]?.[target]?.[field.key], base = scope !== 'base' ? project.rules.base[target]?.[field.key] : undefined;
-      const pixelWidth = field.key === 'width' && (own ?? base)?.endsWith('px');
+      const pixelWidth = field.key === 'width' && ((own ?? base)?.endsWith('px') || (own ?? base) === undefined && (isDrawer(target) || controlKind(target)));
       const actual = current?.values?.[pixelWidth ? 'width-px' : field.key], value = own ?? base ?? actual;
-      if (view.unit) { view.unit.value = pixelWidth ? 'px' : '%'; for (const control of [view.input, view.exact]) { control.min = pixelWidth ? 8 : 20; control.max = pixelWidth ? 512 : 100; } }
+      if (view.unit) { view.unit.value = pixelWidth ? 'px' : '%'; for (const control of [view.input, view.exact]) { control.min = pixelWidth ? 1 : 20; control.max = pixelWidth ? 4096 : 100; } }
       view.row.hidden = !supportsField(target, field.key) && own === undefined;
       view.row.classList.toggle('modified', own !== undefined); view.reset.disabled = own === undefined;
       view.source.textContent = own !== undefined ? '已修改' : base !== undefined ? '继承基础' : actual !== undefined ? '当前效果' : '未覆盖';
@@ -92,7 +95,7 @@ export function attachInspector({ getContext, change, select, openLayer, resetSc
       if (view.row.contains(document.activeElement) && drafting) continue;
       // Preserve text edits during incoming preview/heartbeat messages.
       const assign = (control, val) => { if (document.activeElement !== control || ['range', 'color'].includes(control.type)) control.value = val; };
-      if (field.type === 'color') {
+      if (field.type === 'select') { assign(view.input, value || field.fallback); } else if (field.type === 'color') {
         const color = colorParts(value, field.fallback); view.setAlpha(color.alpha);
         assign(view.input, color.hex); assign(view.exact, value === undefined ? '' : colorValue(color.hex, color.alpha));
         assign(view.alpha, Math.round(color.alpha * 100)); view.alphaOutput.textContent = `${Math.round(color.alpha * 100)}%`;

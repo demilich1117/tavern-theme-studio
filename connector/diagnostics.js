@@ -19,14 +19,15 @@ function splitSelectors(text) {
 }
 function matchesSelector(el, selector, pseudo) {
   return splitSelectors(selector).some(part => {
-    const pseudos = part.match(/::?(before|after)\b/g) || [];
+    const pseudos = part.match(/::?(?:before|after)|::-(?:webkit-slider-thumb|moz-range-thumb)/g) || [];
     if (pseudo ? !pseudos.some(p => p.replace(/^:+/, '') === pseudo.slice(2)) : pseudos.length) return false;
-    try { return el.matches(part.replace(/::?(before|after)\b/g, '')); } catch { return false; }
+    try { return el.matches(part.replace(/::?(?:before|after)|::-(?:webkit-slider-thumb|moz-range-thumb)/g, '')); } catch { return false; }
   });
 }
 export function diagnose(target, property, requested, enabled = true, preferred) {
   const { element: el } = targetElement(target, preferred);
   if (!el) return { target: target.id, property, visible: false, sources: [], message: '当前没有可见匹配。请打开对应界面或切换示例场景。' };
+  if (target.control === 'thumb') return { target: target.id, property, visible: true, sources: [], message: '浏览器无法可靠读取滑块手柄计算样式，请结合已保存覆盖和预览检查。' };
   const computed = getComputedStyle(el, target.pseudo || null);
   const actual = computed.getPropertyValue(property);
   const sources = [], inaccessible = new Set(), limitations = new Set(); let visited = 0;

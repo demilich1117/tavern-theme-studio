@@ -3,10 +3,12 @@ import { migrateProject, bindingRecords, mergeSourceTheme, newProjectId, default
 import { validateRecipe, validateLayer, validateLayerProps, layersFromRecipe, mergeRecipe, compileDecorations, layerAsset } from './decorations.js';
 import { LAYOUT_FIELDS, LAYOUT_TARGETS, normalizeLayoutValue } from './layouts.js';
 import { CANVAS_TARGETS, CANVAS_PROPERTIES } from './canvas.js';
+import { drawerParts, drawerDeclarations, isDrawer, controlKind } from './drawer-parts.js';
 import { MESSAGE_PARTS, MESSAGE_ROLES, messagePart } from './message-parts.js';
 // Self-contained illustrated themes embed raster assets in their base CSS.
 export const MAX_THEME_CSS_LENGTH = 1_000_000;
 export const TARGETS = [
+  ...drawerParts,
   { id: 'global', name: '全局界面', selector: 'body', icon: '◉', note: '页面底色与基础文字；局部主题样式可能覆盖继承值。' },
   { id: 'chat', name: '聊天区域', selector: '#chat', icon: '▤', note: '消息列表的背景、宽度与留白。' },
   { id: 'stage', name: '阅读面板', selector: '#sheld', icon: '▥', note: '原生阅读与输入外框；使用最大宽度与留白避免正文溢出。' },
@@ -56,6 +58,8 @@ for (const target of sharedMessageTargets) {
 }
 
 export const FIELDS = [
+  ...[['left', '距视口左侧', -2048, 4096], ['top', '距视口顶部', -2048, 4096], ['height', '高度', 1, 4096], ['max-height', '最大高度', 1, 4096]].map(([key,label,min,max]) => ({key,label,min,max,type:'range',group:'位置与尺寸',step:1,unit:'px',fallback:24})),
+  { key: '--tts-tick-shape', label: '勾选图案', type: 'select', group: '形状与留白', options: [['check','对勾'],['circle','圆点'],['square','方块'],['diamond','菱形'],['cross','叉号']], fallback: 'check' },
   { key: 'background-color', label: '背景颜色', type: 'color', group: '色彩', fallback: '#353941' },
   { key: 'color', label: '文字颜色', type: 'color', group: '色彩', fallback: '#e8e6e0' },
   { key: 'border-color', label: '边框颜色', type: 'color', group: '色彩', fallback: '#656970' },
@@ -83,8 +87,9 @@ export function createProject(theme = { name: '新主题', custom_css: '' }, { p
   return { schemaVersion: 3, projectId, name: theme.name, baseTheme: validateTheme(theme), rules: { base: {}, mobile: {} }, variableEdits: {}, variableBindings: bindingRecords(theme.custom_css || ''), bindingConflicts: [], breakpoints: defaultBreakpoints(), recipe: null, decorations: [], assetRefs: [], customCss: '' };
 }
 export function normalizeValue(key, value) {
+  if (key === '--tts-tick-shape') { if (value === null) return null; if (!FIELDS.find(f => f.key === key).options.some(([v]) => v === value)) throw new Error('勾选图案无效。'); return value; }
   if (key === 'width' && typeof value === 'string' && /^\d+(?:\.\d+)?px$/.test(value)) {
-    const n = parseFloat(value); if (n < 8 || n > 512) throw new Error('像素宽度范围为 8–512px。'); return `${+n.toFixed(3)}px`;
+    const n = parseFloat(value); if (n < 1 || n > 4096) throw new Error('像素宽度范围为 1–4096px。'); return `${+n.toFixed(3)}px`;
   }
   if (LAYOUT_FIELDS.some(f => f.key === key)) return normalizeLayoutValue(key, value);
   const field = FIELDS.find(x => x.key === key);
@@ -149,8 +154,9 @@ export function validateProject(value) {
       if (!TARGETS.some(x => x.id === target) || !object(props)) throw new Error('样式部件无效。');
       p.rules[scope][target] = {};
       for (const [key, v] of Object.entries(props)) {
+        if ((['left', 'top', 'max-height'].includes(key) && !isDrawer(target)) || (key === 'height' && !isDrawer(target) && !controlKind(target)) || (key === '--tts-tick-shape' && controlKind(target) !== 'tick')) throw new Error('此部件不支持该抽屉或控件属性。');
         if (['margin-left', 'margin-top', 'min-height'].includes(key) && !CANVAS_TARGETS.includes(target)) throw new Error('此部件不支持画布布局。');
-        if (key !== 'min-height' && LAYOUT_FIELDS.some(f => f.key === key) && !LAYOUT_TARGETS.includes(target)) throw new Error('此部件不支持容器布局。');
+        if (key !== 'min-height' && LAYOUT_FIELDS.some(f => f.key === key) && !LAYOUT_TARGETS.includes(target) && !(isDrawer(target) && key === 'max-width')) throw new Error('此部件不支持容器布局。');
         const normalized = normalizeValue(key, v);
         if (normalized !== null) p.rules[scope][target][key] = normalized;
       }
@@ -275,11 +281,25 @@ export function compileOverrides(project) {
   const compile = scope => TARGETS.flatMap(target => {
     const props = project.rules[scope][target.id];
     if (!props || !Object.keys(props).length) return [];
+    if (isDrawer(target.id)) {
+      const geometryKeys = ['left', 'top', 'width', 'height', 'max-height', 'max-width', 'margin-left', 'margin-top', 'min-height'];
+      const geometry = Object.fromEntries(Object.entries(props).filter(([key]) => geometryKeys.includes(key)));
+      const appearance = Object.fromEntries(Object.entries(props).filter(([key]) => !geometryKeys.includes(key)));
+      return [[target.selector, appearance], [`${target.selector}:not(.maximized)`, geometry]].flatMap(([selector, values]) => {
+        if (!Object.keys(values).length) return [];
+        const declarations = Object.entries(values).map(([k,v]) => `  ${k}: ${v} !important;`);
+        declarations.push(...drawerDeclarations(target, values));
+        if ('border-width' in values) declarations.push('  border-style: solid !important;');
+        return `/* ${target.name} */\n${selector} {\n${declarations.join('\n')}\n}`;
+      });
+    }
     const avatar = messagePart(target.id) === 'avatar';
     const avatarSelector = target.elementSelector || '#chat .mes .avatar';
     const geometry = avatar ? Object.entries(props).filter(([k]) => CANVAS_PROPERTIES.includes(k)) : [];
     const declarations = Object.entries(props).filter(([k]) => !geometry.some(([g]) => g === k)).map(([k, v]) => `  ${k}: ${v} !important;`);
+    declarations.push(...drawerDeclarations(target, props));
     if ('border-width' in props) declarations.push('  border-style: solid !important;');
+    if (target.alternateSelector) return [target.selector, target.alternateSelector].map(selector => `/* ${target.name} */\n${selector} {\n${declarations.join('\n')}\n}`);
     return [declarations.length && `/* ${target.name} */\n${target.selector} {\n${declarations.join('\n')}\n}`, geometry.length && `/* 头像几何只作用于外框，避免图片重复偏移 */\n${avatarSelector} {\n${geometry.map(([k, v]) => `  ${k}: ${v} !important;`).join('\n')}\n}`, avatar && props.width && `${avatarSelector} img { width: 100% !important; max-width: 100% !important; }`].filter(Boolean);
   }).join('\n\n');
   const base = compile('base');

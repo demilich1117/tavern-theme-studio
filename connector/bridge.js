@@ -1,3 +1,4 @@
+import { isDrawer } from '../shared/drawer-parts.js';
 import { TARGETS, FIELDS, exportTheme, validateProject } from '../shared/core.js';
 import { targetElement, diagnose, auditScene } from './diagnostics.js';
 import { createThemeIsolation, createThemePresentation } from './theme-isolation.js';
@@ -37,9 +38,13 @@ export function inspectTarget(id, preferred) {
   if (!target) throw new Error('未知部件。');
   const { matches, element: el } = targetElement(target, preferred);
   if (!el) return { id, count: matches.length, visible: false, values: {} };
+  // Chromium exposes the input's computed style for its UA shadow thumb.
+  // Do not present those dimensions as measurements of the thumb itself.
+  if (target.control === 'thumb') return { id, count: matches.length, visible: true, values: {}, pseudo: target.pseudo, measurementNote: '滑块手柄的原生计算值无法可靠读取；这里显示已保存的覆盖，实际效果请看预览。' };
   const computed = getComputedStyle(el, target.pseudo || null);
   const values = Object.fromEntries(FIELDS.map(field => [field.key, computed.getPropertyValue(field.key)]));
   values['width-px'] = computed.width;
+  if (isDrawer(id)) { const r = el.getBoundingClientRect(); values.left = `${r.left}px`; values.top = `${r.top}px`; }
   const width = el.parentElement?.getBoundingClientRect().width;
   if (width) values.width = `${(el.getBoundingClientRect().width / width * 100).toFixed(1)}%`;
   if (values['line-height'].endsWith('px')) values['line-height'] = String(parseFloat(values['line-height']) / parseFloat(values['font-size']));
@@ -133,9 +138,10 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
   }
   const inspect = () => {
     const target = TARGETS.find(t => t.id === selected), el = targetElement(target, pickedElement).element;
+    const children = TARGETS.filter(t => t.parent === selected);
     const inner = ['assistant', 'user'].includes(selected) ? TARGETS.filter(t => t.role === selected && ['message-text', 'avatar', 'name'].includes(t.part) && targetElement(t).matches.some(child => el?.contains(child))) : [];
     send('inspection', { inspection: { ...inspectTarget(selected, pickedElement), width: innerWidth,
-      related: [...inner, ...pickCandidates(el).filter(hit => hit.target.id !== selected).map(hit => hit.target)].map(t => ({ id: t.id, name: t.name })),
+      related: [...children, ...inner, ...pickCandidates(el).filter(hit => hit.target.id !== selected).map(hit => hit.target)].map(t => ({ id: t.id, name: t.name })),
       layers: relatedLayers(currentProject, el, condition => matchMedia(condition).matches) } });
   };
   const move = event => { if (canvasEditor.active()) canvasEditor.hover(event); if (picking) { const hit = match(event.target); outline(hit?.el); pickHint.textContent = hit ? `${hit.target.name} · 点击选择 · Esc 退出` : '此位置暂不支持直接编辑 · 继续选择或按 Esc 退出'; } };

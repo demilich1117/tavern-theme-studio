@@ -6,7 +6,7 @@ import { MESSAGE_PARTS, rolePartIds } from '../shared/message-parts.js';
 const priority = ['avatar', 'input', 'name', 'timestamp', 'reasoning', 'reasoning-block', 'reasoning-header', 'quote', 'code', 'table', 'message-buttons', 'message-text', 'media', 'attachments', 'message-body', 'composer', 'assistant', 'user', 'chat', 'stage', 'left', 'right', 'global'].flatMap(id => Object.hasOwn(MESSAGE_PARTS, id) ? rolePartIds([id]) : [id]);
 export function pickCandidates(element) {
   if (!element?.closest || element.closest('[data-tts-ui]')) return [];
-  return priority.flatMap(id => {
+  return [...TARGETS.filter(t => t.control && !t.pseudo && t.control !== 'checked').map(t => t.id), ...TARGETS.filter(t => t.drawer).map(t => t.id), ...priority].flatMap(id => {
     const target = TARGETS.find(t => t.id === id);
     const el = id === 'global' ? (element.matches('body') ? element : null) : element.closest(target.elementSelector || target.selector);
     return el ? [{ target, el }] : [];
