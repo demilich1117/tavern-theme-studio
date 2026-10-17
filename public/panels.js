@@ -50,7 +50,7 @@ export function attachNavigation() {
   $('#scope-row').after($('#scope-hint'));
   $('#workbench-nav').after($('#fixture-tools'));
   $('#native-preview-controls').append($('#fixture-open'), $('#fixture-scene'));
-  $('#checks-button').textContent = '检查布局'; $('#preview-actions').append($('#checks-button'));
+  $('#checks-button').textContent = '场景检查'; $('#preview-actions').append($('#checks-button'));
   const secondary = document.createElement('details'); secondary.className = 'editing-secondary';
   const summary = document.createElement('summary'); summary.textContent = '场景检查与反馈'; secondary.append(summary, $('.feedback-tools'), $('#preview-actions'));
   $('.editing-toolbar').append(secondary);

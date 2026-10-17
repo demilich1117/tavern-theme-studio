@@ -1,5 +1,7 @@
 # 核心发行包与发布检查
 
+主题作品的交付另按[控件设计与交付验收](control-validation.md)执行：比较源码同步前后的用户覆盖、原生导入刷新后的状态，以及最终 CSS / JSON / 扩展 / 压缩包一致性。工作台程序打包通过不代替作品验收。
+
 源代码使用 MIT；见 LICENSE 和 THIRD-PARTY-NOTICES.md。核心 ZIP 不包含大体积主题样本、用户数据或未确认再分发范围的素材。
 
 源码在 [demilich1117/tavern-theme-studio](https://github.com/demilich1117/tavern-theme-studio)，安装包在 [GitHub Releases](https://github.com/demilich1117/tavern-theme-studio/releases)。普通用户下载 `tavern-theme-studio-<version>-core.zip`；同名 `.sha256` 用于校验。GitHub 自动生成的 Source code 压缩包需要自行安装依赖，不能替代核心包。

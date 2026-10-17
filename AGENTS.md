@@ -1,5 +1,7 @@
 # 本项目的主题修改流程
 
+- 控件或面板美化按[控件设计与交付验收](docs/control-validation.md)执行：完整组件状态、原生点击与遮挡、稳定截图、导入保存刷新和同源发布检查；每轮比较用户微调，缺失状态标为未验证。
+
 - 先遵循上级工作区的 skill 分流规则；先检查本项目 Git 状态，保留已有修改。
 - 后续主题默认兼顾 SillyTavern 与 TauriTavern（TT酒馆）；按[双宿主主题适配](docs/tauritavern-themes.md)核对目标版本、移动几何与配套扩展门槛。TT 源码检查、浏览器契约复现与真实 WebView 验证分别记录，不能用工作台预览代替 TT 实机结论。
 - 服务实现统一放在 `src/`；根目录 `server.js` 保留现有启动和导入入口。解析程序根目录时使用 `src/work-location.js` 的 `studioRoot`，不能把 `.local/`、作品库或构建脚本位置随模块迁移到 `src/`。目录约定见 [文件夹说明](docs/project-layout.md)。

@@ -8,6 +8,9 @@ import { layerAsset } from '../shared/decorations.js';
 import { createDecorationEditor } from './decoration-editor.js';
 import { pickCandidates, relatedLayers } from './picking.js';
 import { activeRules } from '../shared/editing.js';
+import { DIAGNOSTIC_EXTRAS, waitForVisualStability } from './visual-checks.js';
+import { createControlStateCheck } from './control-states.js';
+import { nativeHost } from './host-adapter.js';
 import { createCanvasEditor } from './canvas-editor.js';
 
 export const CHANNEL = 'tavern-theme-studio/v1';
@@ -71,6 +74,7 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
   const headObserver = new MutationObserver(() => isolation.refresh());
   headObserver.observe(document.head, { childList: true, subtree: true, characterData: true });
   const send = (type, payload = {}) => peer.postMessage({ channel: CHANNEL, session, type, ...payload }, transportOrigin);
+  const controlCheck = createControlStateCheck({ allowed: () => !closed && !isDemo && fixture?.status().active === true, idle: async () => !await nativeHost.isGenerating(), identity: () => { if(isDemo)return null;const ctx=nativeHost.getContext();return JSON.stringify([ctx.groupId,ctx.characterId,ctx.chatId]); } });
   const pins = createAnnotationPins({ send, fixtureActive: () => fixture?.status().active === true, onReveal: () => onPickChange(false), getBasis: () => currentBasis });
   const variables = document.createElement('style'); variables.id = VARS_ID;
   document.getElementById(VARS_ID)?.remove(); document.head.append(variables);
@@ -177,7 +181,7 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
     lastSeen = Date.now();
     try {
       switch (data.type) {
-        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, decorationTools: 1, themeAnalysis: 1, directEditing: 1, canvasEditor: 1, canvasWorkflow: 1, blueprint: 1, nativeThemeApply: !!applyNativeTheme }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
+        case 'hello': send('ready', { capabilities: { connectorVersion: STUDIO_VERSION, projectSchema: 3, stableBindings: true, decorations: 1, decorationEditor: 1, decorationTools: 1, themeAnalysis: 1, directEditing: 1, canvasEditor: 1, canvasWorkflow: 1, blueprint: 1, visualChecks: 1, nativeThemeApply: !!applyNativeTheme }, theme: await readTheme(), hostName, isDemo, fixture: fixture?.status(), targets: TARGETS.map(x => ({ id: x.id, count: targetElement(x).matches.length })) }); inspect(); viewport(); break;
         case 'ping': send('pong', { fixture: fixture?.status() }); break;
         case 'preview': {
           if (applying) break;
@@ -262,11 +266,21 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
         case 'collapse': onCollapse(); break;
         case 'diagnose': {
           const target = TARGETS.find(x => x.id === data.target);
-          if (!target || !FIELDS.some(f => f.key === data.property)) throw new Error('诊断目标或属性无效。');
+          if (!target || ![...FIELDS.map(f=>f.key),...DIAGNOSTIC_EXTRAS.map(f=>f[0])].includes(data.property)) throw new Error('诊断目标或属性无效。');
           const requested = activeRules(currentProject, target.id, innerWidth)[data.property];
           send('diagnosis', { requestId: data.requestId, result: diagnose(target, data.property, requested, previewEnabled, selected === target.id ? pickedElement : undefined) }); break;
         }
-        case 'audit': requestAnimationFrame(() => { if (!closed) send('audit-result', { requestId: data.requestId, result: { ...auditScene(), hostName, isDemo, enabled: previewEnabled } }); }); break;
+        case 'audit': {
+          const stability = await waitForVisualStability();
+          if (!closed) { const report = auditScene(); if(!stability.stable)report.checks.unshift({name:'画面稳定',status:'warn',detail:'等待字体、动画和布局稳定超时，请稍后复查'}); send('audit-result', { requestId:data.requestId, result:{...report,stability,hostName,isDemo,enabled:previewEnabled} }); }
+          break;
+        }
+        case 'audit-controls': {
+          try { const report=await controlCheck.run(); if(!closed)send('audit-result',{requestId:data.requestId,result:{...report,hostName,isDemo,enabled:previewEnabled}}); }
+          catch(error){if(!closed)send('audit-result',{requestId:data.requestId,result:{error:error.message}});}
+          break;
+        }
+        case 'audit-cancel': controlCheck.cancel(); break;
         case 'disconnect': dispose(); break;
       }
     } catch (e) { send('error', { error: e.message }); }
@@ -281,7 +295,7 @@ export function attachBridge({ peer, origin, transportOrigin = origin, session, 
   document.addEventListener('contextmenu',contextMenu,true); document.addEventListener('pointerdown',pointerDown,true);
   const timer = setInterval(() => { if (peer.closed || Date.now() - lastSeen > 30000) dispose(); }, 3000);
   function dispose() {
-    if (closed) return; closed = true;
+    if (closed) return; closed = true; controlCheck.cancel();
     send('disconnected'); clearInterval(timer); cancelAnimationFrame(canvasInspectionFrame); observer.disconnect(); headObserver.disconnect(); isolation.dispose(); presentation.restore();
     window.removeEventListener('message', message); window.removeEventListener('pagehide', dispose);
     document.removeEventListener('pointermove', move, true); document.removeEventListener('click', click, true); document.removeEventListener('keydown', key, true);

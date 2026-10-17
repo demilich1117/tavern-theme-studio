@@ -290,7 +290,7 @@ try {
   const response = await fetch('/api/session'); if (!response.ok) throw new Error('本地服务无法连接。');
   const data = await response.json(); token = data.token; state = data;
   buildControls(); buildInspector(); bindControls();
-  advanced = attachAdvanced({ getState: () => state, command, preview, send, toast, getSelected: () => selected, isLive: () => live, isReady: () => ready, setDevice, getDevice: () => device });
+  advanced = attachAdvanced({ getState: () => state, command, preview, send, toast, getSelected: () => selected, isLive: () => live, isReady: () => ready, setDevice, getDevice: () => device, getCapabilities: () => connectorCapabilities });
   workflow = attachWorkflow({ getState: () => state, getToken: () => token, getScope: () => scope, command, send, toast, isReady: () => ready, stopPicking: () => setPicking(false), download });
   attachSetup(() => ({ ready, live, capabilities: connectorCapabilities, fixture: $('#fixture-status').textContent }));
   const runtimeManager = attachRuntimeManager({ getToken: () => token, settled: () => commandQueue });

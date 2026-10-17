@@ -5,6 +5,8 @@ description: 使用 Tavern Theme Studio 与用户共创 SillyTavern 原生主题
 
 # 和用户共创酒馆主题
 
+修改控件、面板、颜色或输入区时读[控件设计与交付验收](../../docs/control-validation.md)。优先在真实测试对话使用场景检查与控件状态检查，再实际验证点击、键盘和原生导入刷新；临时外观状态不等于真实生成行为。
+
 主题默认兼顾 SillyTavern 与 TauriTavern（TT酒馆）。制作和修复前按[双宿主适配](../../docs/tauritavern-themes.md)核对宿主布局、配套扩展最低版本与验证边界；用户明确指定单一宿主时按本次范围执行。
 
 用户表达喜好，Agent 理解宿主并制作，工作台提供部件定位、实时预览、微调、标注和恢复。先读项目根目录 [AGENTS.md](../../AGENTS.md)，具体设计与验收按 [共创指南](../../docs/co-design.md)；只在需要操作服务时读 [API / CLI](../../docs/api.md)。

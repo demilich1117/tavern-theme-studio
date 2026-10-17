@@ -1,5 +1,6 @@
 import { FIELDS, applyCommand } from '/shared/core.js';
 import { scanVariables, variableControl } from '/shared/variables.js';
+import { DIAGNOSTIC_EXTRAS } from '/connector/visual-checks.js';
 
 const $ = selector => document.querySelector(selector);
 function node(tag, text, className) { const el = document.createElement(tag); if (text !== undefined) el.textContent = text; if (className) el.className = className; return el; }
@@ -13,7 +14,7 @@ function rgba(value) {
   const [r, g, b, alpha] = ctx.getImageData(0, 0, 1, 1).data;
   return { hex: '#' + [r, g, b].map(n => n.toString(16).padStart(2, '0')).join(''), alpha: Math.round(alpha / 255 * 100) };
 }
-export function attachAdvanced({ getState, command, preview, send, toast, getSelected, isLive, isReady, setDevice, getDevice }) {
+export function attachAdvanced({ getState, command, preview, send, toast, getSelected, isLive, isReady, setDevice, getDevice, getCapabilities = () => ({}) }) {
   let cssCache, variables = [], selectedSnapshot, reports = [], running = false, diagnosticSequence = 0;
   const pending = new Map();
   function refreshVariables() {
@@ -101,6 +102,7 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
     const sequence = ++diagnosticSequence;
     $('#diagnostic-result').replaceChildren(node('p', '正在读取浏览器计算值…', 'empty-state'));
     try {
+      if(!FIELDS.some(f=>f.key===$('#diagnostic-property').value)&&getCapabilities()?.visualChecks!==1)throw new Error('请更新酒馆连接器并刷新专用测试标签后使用新增诊断');
       const result = await request('diagnose', { target: getSelected(), property: $('#diagnostic-property').value });
       if (sequence !== diagnosticSequence) return;
       const area = $('#diagnostic-result'); area.replaceChildren();
@@ -109,6 +111,7 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
       const values = node('div', undefined, 'diagnostic-values');
       for (const [label, value] of [['部件设置', result.requested ?? '未设置'], ['浏览器计算值', result.actual || '空值']]) { const cell = node('div'); cell.append(node('small', label), node('code', value)); values.append(cell); }
       area.append(values);
+      if(result.appearance){const details=node('details');details.append(node('summary','控件状态、伪元素与命中采样'),node('pre',JSON.stringify(result.appearance,null,2)));area.append(details);}
       if (result.pseudo) area.append(node('p', `伪元素 ${result.pseudo} · content: ${result.content}`, 'panel-hint'));
       if (result.inaccessible) area.append(node('p', `${result.inaccessible} 个样式表无法读取，来源列表不完整。`, 'diagnostic-warning'));
       for (const text of result.limitations || []) area.append(node('p', text, 'panel-hint'));
@@ -146,16 +149,22 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
     for (const report of reports) {
       const details = node('details', undefined, 'check-report'); details.open = reports.length === 1;
       const warnings = report.checks.filter(c => c.status === 'warn').length;
-      details.append(node('summary', `${report.isDemo ? '示例' : '真实画面'} · ${report.scene} · ${report.viewport.width} × ${report.viewport.height} · ${warnings ? `${warnings} 项待检查` : '未发现所检布局问题'}`));
-      for (const check of report.checks) { const row = node('div', undefined, 'check-row'); row.append(node('span', check.status === 'pass' ? '通过' : check.status === 'warn' ? '检查' : '跳过', `check-${check.status}`), node('b', check.name), node('small', check.detail)); details.append(row); }
+      details.append(node('summary', `${report.isDemo ? '示例' : '真实画面'} · ${report.states?'控件状态':report.scene} · ${report.viewport.width} × ${report.viewport.height} · ${warnings ? `${warnings} 项待检查` : '未发现所检问题'}`));
+      if(report.limitations)details.append(node('p',report.limitations,'panel-hint'));
+      const rows=(parent,checks)=>{for (const check of checks) { const row = node('div', undefined, 'check-row'); row.append(node('span', check.status === 'pass' ? '通过' : check.status === 'warn' ? '检查' : '跳过', `check-${check.status}`), node('b', check.name), node('small', check.detail)); parent.append(row); }};
+      if(report.states){
+        const labels={unchecked:'未勾选',checked:'已勾选',disabled:'禁用',idle:'发送',generating:'停止生成',executing:'脚本执行',paused:'脚本暂停'};
+        for(const state of report.states){const group=node('details');const n=state.checks.filter(c=>c.status==='warn').length;group.open=n>0;group.append(node('summary',`${labels[state.state]||state.state} · ${n?n+' 项待检查':state.checks.every(c=>c.status==='skip')?'跳过':'已检查'}`));if(state.stability&&!state.stability.stable)group.append(node('p','画面尚未稳定，请复查','diagnostic-warning'));rows(group,state.checks);details.append(group);}
+      }else rows(details,report.checks);
       area.append(details);
     }
     $('#export-checks').disabled = !reports.length || running;
   }
-  async function check(matrix) {
+  async function check(matrix, controls = false) {
     if (running) return;
+    if(controls&&getCapabilities()?.visualChecks!==1)return toast('请更新酒馆连接器并刷新专用测试标签后检查控件状态',true);
     if (matrix && isLive()) return toast('真实酒馆仅检查当前画面。请在独立工作台运行示例组合。', true);
-    running = true; reports = []; renderReports(); $('#check-current').disabled = true; $('#check-matrix').disabled = true;
+    running = true; reports = []; renderReports(); $('#check-current').disabled = true; $('#check-matrix').disabled = true; $('#check-controls').disabled = true;
     const initialDevice = getDevice(), initialScene = $('#scene').value, compared = $('#compare').checked, revision = getState().revision;
     document.querySelectorAll('.check-progress').forEach(el => el.remove());
     const status = node('p', '正在检查…', 'check-progress'); $('#checks-results').before(status);
@@ -167,15 +176,14 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
           for (const scene of ['chat', 'long', 'rich', 'reasoning', 'sidebar', 'composer']) {
             if (getState().revision !== revision) throw new Error('检查期间工程发生变化，请重新运行以获得同一版本的报告。');
             $('#scene').value = scene; send('scene', { scene });
-            await new Promise(resolve => setTimeout(resolve, 180));
             const report = await request('audit'); reports.push({ ...report, revision }); renderReports(); status.textContent = `已检查 ${reports.length} / 12`;
           }
         }
-      } else reports.push({ ...await request('audit'), revision });
+      } else { const report=await request(controls?'audit-controls':'audit');if(report.error)throw new Error(report.error);if(getState().revision!==revision)throw new Error('检查期间工程发生变化，请重新运行');reports.push({...report,revision}); }
     } catch (e) { toast(e.message, true); status.textContent = e.message; }
     finally {
       if (matrix) { setDevice(initialDevice); $('#scene').value = initialScene; send('scene', { scene: initialScene }); $('#compare').checked = compared; preview(); }
-      running = false; $('#check-current').disabled = false; $('#check-matrix').disabled = isLive(); renderReports();
+      running = false; $('#check-current').disabled = false; $('#check-matrix').disabled = isLive(); $('#check-controls').disabled = !isLive(); renderReports();
       if (reports.length === (matrix ? 12 : 1)) status.remove();
     }
   }
@@ -185,6 +193,8 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
   $('#variables-list').addEventListener('focusout', event => { if (!$('#variables-list').contains(event.relatedTarget)) setTimeout(renderVariables, 0); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#variables-panel').hidden && !document.querySelector('dialog[open]')) $('#close-variables').click(); });
   for (const field of FIELDS) { const option = node('option', field.label); option.value = field.key; $('#diagnostic-property').append(option); } $('#diagnostic-property').value = 'padding';
+  for(const [key,label]of DIAGNOSTIC_EXTRAS){if(FIELDS.some(f=>f.key===key))continue;const option=node('option',label);option.value=key;$('#diagnostic-property').append(option);}
+  $('#check-controls').addEventListener('click',()=>check(false,true));
   $('#diagnose-button').addEventListener('click', () => { $('#diagnostic-dialog').showModal(); diagnostics(); });
   $('#diagnostic-property').addEventListener('change', diagnostics); $('#refresh-diagnostic').addEventListener('click', diagnostics);
   $('#snapshots-button').addEventListener('click', () => { $('#snapshots-dialog').showModal(); listSnapshots().catch(e => toast(e.message, true)); });
@@ -197,9 +207,10 @@ export function attachAdvanced({ getState, command, preview, send, toast, getSel
     if (selectedSnapshot.comparedRevision !== getState().revision) { await compareSnapshot(selectedSnapshot.id); toast('工程已更新，已重新显示差异。请查看后再次恢复。'); return; }
     try { await command({ type: 'snapshot-restore', id: selectedSnapshot.id }); await compareSnapshot(selectedSnapshot.id); toast('已恢复快照，可撤销返回。'); } catch {}
   });
-  $('#checks-button').addEventListener('click', () => { $('#check-matrix').disabled = isLive(); $('#check-help').textContent = isLive() ? '检查真实酒馆当前画面。请手动打开要检查的聊天、思考区或侧栏；完整示例组合在独立工作台中运行。' : '轮流检查桌面与手机下的聊天、长文本、代码表格、思考区、侧栏和多行输入。'; $('#checks-dialog').showModal(); });
+  $('#checks-button').addEventListener('click', () => { $('#check-matrix').disabled = isLive(); $('#check-controls').disabled = !isLive(); $('#check-help').textContent = isLive() ? '请先打开要检查的抽屉或弹窗。控件状态检查仅在空闲的专用测试对话可用，检查后自动恢复。' : '轮流检查桌面与手机下的聊天、长文本、代码表格、思考区、侧栏和多行输入。'; $('#checks-dialog').showModal(); });
   $('#check-current').addEventListener('click', () => check(false)); $('#check-matrix').addEventListener('click', () => check(true));
   $('#checks-dialog').addEventListener('cancel', e => { if (running) e.preventDefault(); });
+  $('#checks-dialog').addEventListener('close',()=>{if(running)send('audit-cancel');});
   $('#export-checks').addEventListener('click', () => {
     const blob = new Blob([JSON.stringify({ schemaVersion: 1, project: getState().project.name, reports }, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob), a = node('a'); a.href = url; a.download = 'theme-scene-report.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);

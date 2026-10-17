@@ -1,4 +1,5 @@
 import { TARGETS } from '../shared/core.js';
+import { auditControls, controlAppearance } from './visual-checks.js';
 
 export function targetElement(target, preferred) {
   const matches = [...document.querySelectorAll(target.elementSelector || target.selector)].filter(el => !el.closest('[data-tts-ui]'));
@@ -31,7 +32,7 @@ export function diagnose(target, property, requested, enabled = true, preferred)
   const computed = getComputedStyle(el, target.pseudo || null);
   const actual = computed.getPropertyValue(property);
   const sources = [], inaccessible = new Set(), limitations = new Set(); let visited = 0;
-  const inherited = ['color', 'font-size', 'line-height'].includes(property);
+  const inherited = ['color', 'font-size', 'line-height', 'font-family'].includes(property) || property.startsWith('--');
   function collect(style, selector, source, context, ancestor = false) {
     const value = style.getPropertyValue(property);
     if (value && sources.length < 100) sources.push({ selector, source, context, value, important: style.getPropertyPriority(property) === 'important', inherited: ancestor });
@@ -76,6 +77,7 @@ export function diagnose(target, property, requested, enabled = true, preferred)
     else if (property !== 'width') applied = (expanded[property] || [property]).every(key => style.getPropertyValue(key) === computed.getPropertyValue(key));
   }
   return { target: target.id, property, visible: true, actual, requested: requested || null, applied, enabled, pseudo: target.pseudo || null,
+    appearance: controlAppearance(el),
     content: target.pseudo ? computed.content : null, sources, inaccessible: inaccessible.size, limitations: [...limitations],
     message: !enabled ? '正在查看原样，工程覆盖暂停。' : !requested ? '此属性没有部件覆盖；下方显示当前值与候选来源。' : applied === null ? '该属性需要结合布局核实，当前值已列出。' : applied ? '当前计算值与部件设置一致。' : '当前计算值与部件设置不同。请检查候选规则、继承、动画或布局约束。' };
 }
@@ -92,5 +94,6 @@ export function auditScene() {
     const clipped = element.scrollWidth > element.clientWidth + 2 && ['hidden', 'clip'].includes(style.overflowX);
     checks.push({ name: target.name, status: outside || clipped ? 'warn' : 'pass', detail: `${Math.round(rect.width)} × ${Math.round(rect.height)} px${outside ? ' · 超出横向视口' : ''}${clipped ? ' · 内容可能被裁切' : ''}` });
   }
-  return { viewport, scene: document.body.dataset.scene || 'current', createdAt: new Date().toISOString(), checks };
+  const controls = auditControls(); checks.push(...controls.checks);
+  return { viewport, scene: document.body.dataset.scene || 'current', createdAt: new Date().toISOString(), checks, controls: controls.samples };
 }
