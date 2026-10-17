@@ -4,6 +4,8 @@
 
 ## 知识从哪里来
 
+后续主题默认兼顾 ST 与 TT；TT 的源码入口是 `src/`，并有独立的移动布局约束，详见[双宿主主题适配](tauritavern-themes.md)。
+
 | 来源 | 用来确认 | 不能据此声称 |
 | --- | --- | --- |
 | 目标安装的版本 / 提交、`public/index.html`、`public/style.css`、`public/css/mobile-styles.css`、`public/scripts/power-user.js` 与实际 DOM | 控件结构、主题字段、显隐行为、响应式条件；文件位置按版本核对 | 旧版本的选择器和数值始终有效 |

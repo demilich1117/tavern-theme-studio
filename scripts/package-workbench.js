@@ -24,6 +24,7 @@ for (const file of ['api.md', 'annotations-assets.md', 'native-lab.md', 'source-
 await tree('docs/assets/doublecheese');
 paths.add('docs/work-folders.md');
 paths.add('docs/host-reference.md');
+paths.add('docs/tauritavern-themes.md');
 paths.add('docs/direct-editing.md');
 paths.add('docs/validation-0.10.md');
 paths.add('docs/install-update.md');
@@ -40,6 +41,7 @@ paths.add('docs/canvas-ux-plan.md');
 paths.add('docs/validation-canvas-ux.md');
 paths.add('docs/validation-0.14.md');
 paths.add('docs/validation-0.15.md');
+paths.add('docs/releases/0.15.1.md');
 paths.add('docs/showcase.md');
 paths.add('docs/discord-post.md');
 await tree('docs/assets/showcase/0.14.0');

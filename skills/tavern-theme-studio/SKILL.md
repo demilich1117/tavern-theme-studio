@@ -5,6 +5,8 @@ description: 使用 Tavern Theme Studio 与用户共创 SillyTavern 原生主题
 
 # 和用户共创酒馆主题
 
+主题默认兼顾 SillyTavern 与 TauriTavern（TT酒馆）。制作和修复前按[双宿主适配](../../docs/tauritavern-themes.md)核对宿主布局、配套扩展最低版本与验证边界；用户明确指定单一宿主时按本次范围执行。
+
 用户表达喜好，Agent 理解宿主并制作，工作台提供部件定位、实时预览、微调、标注和恢复。先读项目根目录 [AGENTS.md](../../AGENTS.md)，具体设计与验收按 [共创指南](../../docs/co-design.md)；只在需要操作服务时读 [API / CLI](../../docs/api.md)。
 
 提出布局或界面概念图前，读[宿主参考](../../docs/host-reference.md)：其中包含功能地图、知识来源和参考图的选择方法。`#tts-lab` 隔离聊天内容，不会自动去掉当前美化；“查看原样”也不是基础外观。从零设计与继承旧主题采用不同参考，独立基础环境不可用时可用明确标注的结构示意继续讨论。

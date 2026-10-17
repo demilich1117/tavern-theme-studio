@@ -2,7 +2,7 @@
 
 「作品」入口支持继续编辑、保存定稿、下载历史主题及打开文件夹。已有作品可整理为独立目录，升级时保留完整作品；见 [固定作品目录](work-folders.md)。
 
-在真实酒馆里调整颜色、圆角、间距和装饰，满意后直接应用到酒馆，或下载主题 JSON 分享。本包版本 **0.15.0**；连接器适配 **SillyTavern 1.14 起**，已核对 1.14–1.19，实测范围与限制见[版本兼容](compatibility.md)。
+在真实酒馆里调整颜色、圆角、间距和装饰，满意后直接应用到酒馆，或下载主题 JSON 分享。本包版本 **0.15.1**；连接器适配 **SillyTavern 1.14 起**，已核对 1.14–1.19，实测范围与限制见[版本兼容](compatibility.md)。
 
 **Windows 双击 `start.cmd` 安装并启动，双击 `update.cmd` 更新并启动。** 首次选择一次酒馆目录，连接器、缺少的运行环境和依赖自动准备。详见 [一键安装与更新](install-update.md)。编辑仍用原来的拾取与属性面板，见 [直接编辑指南](direct-editing.md)。
 
@@ -11,6 +11,8 @@
 服务代码已集中到 `src/`，日常只需上述五个入口；目录用途与数据保留位置见[文件夹说明](project-layout.md)。
 
 运行依赖和连接器 ZIP 已包含在包里。入门与进阶是同一个工作台的两种路线。
+
+本版包含抽屉与原生控件编辑，以及 [ST / TT 双宿主主题制作规范](tauritavern-themes.md)。TT 指南覆盖后续主题的适配要求；工作台自动安装、连接器与测试聊天流程尚未完成 TT 实机验证。详见 [0.15.1 更新说明](releases/0.15.1.md)。
 
 [发行下载与更新](https://github.com/demilich1117/tavern-theme-studio/releases) · [源码仓库](https://github.com/demilich1117/tavern-theme-studio)
 

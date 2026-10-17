@@ -75,6 +75,8 @@ node scripts/cli.js build-presets
 
 ## 当前宿主依据
 
+后续主题同时以 TT 为兼容目标，方法见[双宿主适配](tauritavern-themes.md)。本页启动、安装器与测试聊天流程仍以 ST 为实测依据；TT 需独立核验连接器和 WebView，不能把 ST 浏览器预览写成 TT 实机结果。
+
 0.12.0 起连接器最低版本为 SillyTavern 1.14.0。已对官方 1.14–1.19 标签核对 `getContext`、角色创建接口、原生聊天保存格式、`selectCharacterById`、`openCharacterChat`、reasoning、media、files 与 swipe 元数据。内部导入集中于 `connector/host-adapter.js`，旧版按能力选择主题读取与生成状态路径。具体提交、实测和边界见[版本兼容](compatibility.md)；官方入口见 [UI Extensions](https://docs.sillytavern.app/for-contributors/writing-extensions/)。
 
 原生测试对话减少了美化工作接触私人内容的需要；它不代表浏览器权限、登录和自动审批的规则被取消。测试页仍加载用户安装的扩展，第三方扩展的自动行为与设置需按实际环境判断。
